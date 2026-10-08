@@ -3,12 +3,24 @@
 Admin-only web app for running an internship program (SEO + Social Media): interns, daily attendance, leaves,
 tasks, performance reviews, certificates, reports and CSV export. Interns do not log in.
 
-**Stack:** Next.js 15 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS 4 · PostgreSQL (`pg`, parameterized SQL) ·
+**Stack:** Next.js 15 (App Router, Server Actions) · React 19 · TypeScript · Tailwind CSS 4 · PostgreSQL (`pg`, parameterized SQL; embedded PGlite for zero-setup local use) ·
 bcrypt + signed httpOnly session cookie (`jose`) · zod validation.
 
-## Run it locally
+## Quick start on your own computer (no database setup)
 
-Requires Node 20+ and a PostgreSQL database (local, or Supabase — just use its connection string).
+1. Install **Node.js (LTS)** from https://nodejs.org (once).
+2. Open the `projects/hsim-intern-portal` folder and **double-click `start.bat`** (Windows) or `start.command` (macOS; Linux: `./start.sh`).
+3. First time only it asks for your name, admin email, a password (10+ characters) and whether to add 20 demo interns. Then it installs,
+   builds (about a minute) and opens **http://localhost:3000** in your browser. Log in with the email/password you just typed.
+4. Next time, double-click the same file; it starts in a few seconds. Closing that window stops the portal.
+
+Your data lives in the `data/` folder next to the app (a built-in PostgreSQL, PGlite) — **copy that folder to back it up**. Forgot the password? Stop the
+portal, set `ADMIN_EMAIL`/`ADMIN_PASSWORD` in `.env.local` and run `npm run admin:create`. Don't run two copies at once on the same `data/` folder.
+This mode is meant for one computer / one admin; for hosting or several users use a real PostgreSQL (below).
+
+## Run with a real PostgreSQL (server / hosting)
+
+Requires Node 20+ and a PostgreSQL database (local, Supabase, Neon…). If `DATABASE_URL` is set the app uses it; if not, it uses the built-in database above.
 
 ```bash
 cd projects/hsim-intern-portal
@@ -26,7 +38,7 @@ Create/reset an admin only (no demo data): set `ADMIN_EMAIL` / `ADMIN_PASSWORD` 
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `DATABASE_URL` | yes | PostgreSQL connection string. Non-localhost hosts use SSL automatically. |
+| `DATABASE_URL` | no (needed for hosting) | PostgreSQL connection string. Non-localhost hosts use SSL automatically. Leave unset to use the built-in local database. |
 | `SESSION_SECRET` | yes | ≥ 32 random chars used to sign session cookies (`openssl rand -base64 48`). Changing it logs everyone out. |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` (≥ 10 chars), `ADMIN_NAME` | for seed / `admin:create` | Admin login to create. Not read by the running app. |
 | `APP_TIMEZONE` | no | Timezone for "today" (default `Asia/Kolkata`). |
@@ -38,7 +50,8 @@ Nothing is hard-coded: no default passwords, and `.env*` is git-ignored.
 ```bash
 npm run typecheck
 npm test            # unit tests: attendance %, dates, CSV, validation, rating
-npm run test:e2e    # browser flow test against a running server + seeded DB (Playwright/Chromium)
+npm run test:e2e    # browser flow test against a running server + seeded PostgreSQL (Playwright/Chromium)
+node tests/e2e/embedded.mjs   # same idea for the built-in database mode (UI only)
 ```
 The e2e test needs `DATABASE_URL`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` in the environment and a running `npm start`/`npm run dev`;
 it creates a throwaway intern (`HSIM900`) and removes it afterwards.

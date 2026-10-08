@@ -11,9 +11,11 @@
     "test:e2e": "node tests/e2e/smoke.mjs",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:seed": "tsx scripts/seed.ts",
-    "admin:create": "tsx scripts/create-admin.ts"
+    "admin:create": "tsx scripts/create-admin.ts",
+    "local": "tsx scripts/local.ts"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "jose": "^6.2.12",

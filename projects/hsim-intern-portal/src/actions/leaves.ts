@@ -1,5 +1,5 @@
 "use server";
-import type { PoolClient } from "pg";
+import type { DbClient } from "@/lib/db-core";
 import { z } from "zod";
 import { fail, guard, guardAdmin, refresh, unexpected, type ActionResult } from "@/lib/action";
 import { LEAVE_STATUSES } from "@/lib/constants";
@@ -13,7 +13,7 @@ class Conflict extends Error {
   constructor(public lines: string[]) { super("CONFLICT"); }
 }
 
-async function assertNoOverlap(c: PoolClient, internId: number, start: string, end: string, excludeId?: number) {
+async function assertNoOverlap(c: DbClient, internId: number, start: string, end: string, excludeId?: number) {
   const r = await c.query(
     `SELECT 1 FROM leaves WHERE intern_id = $1 AND status <> 'Rejected' AND start_date <= $3 AND end_date >= $2
         AND ($4::bigint IS NULL OR id <> $4) LIMIT 1`,
@@ -23,7 +23,7 @@ async function assertNoOverlap(c: PoolClient, internId: number, start: string, e
 }
 
 /** Marks every non-Sunday date of an approved leave as Leave. Throws Conflict if Present/Absent/Half Day rows exist and !force. */
-async function applyLeaveToAttendance(c: PoolClient, leave: LeaveRecord, force: boolean) {
+async function applyLeaveToAttendance(c: DbClient, leave: LeaveRecord, force: boolean) {
   const dates = eachDate(leave.start_date, leave.end_date).filter((d) => !isSunday(d));
   if (!dates.length) return;
   const existing = await c.query<{ attendance_date: string; status: string }>(
@@ -43,7 +43,7 @@ async function applyLeaveToAttendance(c: PoolClient, leave: LeaveRecord, force: 
   );
 }
 
-const revertLeaveAttendance = (c: PoolClient, leaveId: number) =>
+const revertLeaveAttendance = (c: DbClient, leaveId: number) =>
   c.query("DELETE FROM attendance WHERE leave_id = $1", [leaveId]);
 
 function mapError(e: unknown): ActionResult<never> {

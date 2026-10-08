@@ -1,51 +1,28 @@
-import { Pool, types, type PoolClient, type QueryResultRow } from "pg";
+import type { QueryResultRow } from "pg";
+import { createDb, type Db, type DbClient } from "./db-core";
 
-// Return DATE columns as 'YYYY-MM-DD' strings (no timezone shifts) and numerics/bigints as numbers.
-types.setTypeParser(1082, (v) => v);
-types.setTypeParser(1700, (v) => parseFloat(v));
-types.setTypeParser(20, (v) => parseInt(v, 10));
+const g = globalThis as unknown as { __hsimDb?: Promise<Db> };
 
-const globalForPg = globalThis as unknown as { __pgPool?: Pool };
+/** One shared database handle per server process (survives hot reloads). */
+export const database = (): Promise<Db> => (g.__hsimDb ??= createDb());
 
-function createPool() {
-  const url = process.env.DATABASE_URL;
-  if (!url) throw new Error("DATABASE_URL is not set");
-  const local = /localhost|127\.0\.0\.1/.test(url);
-  return new Pool({
-    connectionString: url,
-    max: 10,
-    ssl: local ? undefined : { rejectUnauthorized: false },
-  });
+export async function query<T extends QueryResultRow = QueryResultRow>(text: string, params: unknown[] = []): Promise<T[]> {
+  return (await (await database()).query<T>(text, params)).rows;
 }
 
-export function pool(): Pool {
-  return (globalForPg.__pgPool ??= createPool());
-}
-
-export async function query<T extends QueryResultRow = QueryResultRow>(
-  text: string,
-  params: unknown[] = [],
-): Promise<T[]> {
-  const res = await pool().query<T>(text, params);
-  return res.rows;
-}
-
-export async function queryOne<T extends QueryResultRow = QueryResultRow>(
-  text: string,
-  params: unknown[] = [],
-): Promise<T | null> {
+export async function queryOne<T extends QueryResultRow = QueryResultRow>(text: string, params: unknown[] = []): Promise<T | null> {
   return (await query<T>(text, params))[0] ?? null;
 }
 
-export async function transaction<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
-  const client = await pool().connect();
+export async function transaction<T>(fn: (client: DbClient) => Promise<T>): Promise<T> {
+  const client = await (await database()).connect();
   try {
     await client.query("BEGIN");
     const result = await fn(client);
     await client.query("COMMIT");
     return result;
   } catch (e) {
-    await client.query("ROLLBACK");
+    await client.query("ROLLBACK").catch(() => undefined);
     throw e;
   } finally {
     client.release();
