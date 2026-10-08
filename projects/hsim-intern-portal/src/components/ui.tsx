@@ -123,3 +123,14 @@ export function Pagination({ page, total, pageSize, hrefFor }: { page: number; t
     </nav>
   );
 }
+
+/** CSV + Excel download buttons for the same export URL (filters already encoded in `to`). */
+export function ExportButtons({ to, label = "Export" }: { to: string; label?: string }) {
+  const sep = to.includes("?") ? "&" : "?";
+  return (
+    <>
+      <LinkButton variant="secondary" prefetch={false} href={to}>{label} CSV</LinkButton>
+      <LinkButton variant="secondary" prefetch={false} href={`${to}${sep}format=xlsx`}>{label} Excel</LinkButton>
+    </>
+  );
+}

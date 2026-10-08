@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FilterBar, SearchFilter, SelectFilter } from "@/components/Filters";
-import { Badge, EmptyState, LinkButton, PageHeader, Pagination } from "@/components/ui";
+import { Badge, EmptyState, ExportButtons, LinkButton, PageHeader, Pagination } from "@/components/ui";
 import { DEPARTMENTS, INTERN_STATUSES } from "@/lib/constants";
 import { formatDate } from "@/lib/dates";
 import { href, oneOf, pageParam, str, type SearchParams } from "@/lib/params";
@@ -23,7 +23,7 @@ export default async function InternsPage({ searchParams }: { searchParams: Sear
   return (
     <>
       <PageHeader title="Interns" subtitle={`${total} intern${total === 1 ? "" : "s"}${filtered ? " match your filters" : ""}`}
-        actions={<><LinkButton variant="secondary" href={exportHref} prefetch={false}>Export CSV</LinkButton><LinkButton href="/interns/new">Add intern</LinkButton></>} />
+        actions={<><ExportButtons to={exportHref} /><LinkButton href="/interns/new">Add intern</LinkButton></>} />
       <FilterBar>
         <SearchFilter placeholder="Search name, HSIM ID, email, phone" />
         <SelectFilter param="department" label="All departments" options={DEPARTMENTS} />

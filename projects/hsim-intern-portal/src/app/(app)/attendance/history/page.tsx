@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DateFilter, FilterBar, SearchFilter, SelectFilter } from "@/components/Filters";
 import { HistoryTable } from "@/components/HistoryTable";
-import { EmptyState, LinkButton, PageHeader, Pagination } from "@/components/ui";
+import { EmptyState, ExportButtons, LinkButton, PageHeader, Pagination } from "@/components/ui";
 import { ATTENDANCE_RULE_TEXT } from "@/lib/attendance-stats";
 import { DEPARTMENTS } from "@/lib/constants";
 import { monthStart, todayISO } from "@/lib/dates";
@@ -28,7 +28,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Sear
   return (
     <>
       <PageHeader title="Attendance history" subtitle="Browse, search and correct past attendance."
-        actions={<><LinkButton variant="secondary" prefetch={false} href={href("/api/export/attendance", keep)}>Export CSV</LinkButton><LinkButton variant="secondary" href="/attendance">Back to today</LinkButton></>} />
+        actions={<><ExportButtons to={href("/api/export/attendance", keep)} /><LinkButton variant="secondary" href="/attendance">Back to today</LinkButton></>} />
       <FilterBar>
         <SearchFilter placeholder="Search intern or HSIM ID" />
         <DateFilter param="from" label="From" />

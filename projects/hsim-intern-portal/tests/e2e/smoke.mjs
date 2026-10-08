@@ -144,12 +144,15 @@ await page.getByText("Certificate pending").first().waitFor(); ok("dashboard ale
 await page.goto(BASE + "/reports");
 await page.getByRole("heading", { name: "Reports" }).waitFor();
 const dl = page.waitForEvent("download");
-await page.getByRole("link", { name: "Export summary CSV" }).click();
+await page.getByRole("link", { name: "Summary CSV" }).click();
 const csv = await (await dl).createReadStream(); let txt = ""; for await (const c of csv) txt += c;
 assert.match(txt, /HSIM ID,Name,Department/); assert.match(txt, /HSIM900/); ok("attendance summary CSV export");
 const cookies = await ctx.cookies();
 const res = await ctx.request.get(BASE + "/api/export/tasks?department=SEO");
 assert.equal(res.status(), 200); assert.ok((await res.text()).startsWith("﻿Task,")); ok("tasks CSV export");
+const x = await ctx.request.get(BASE + "/api/export/attendance?view=summary&format=xlsx");
+assert.equal(x.status(), 200); assert.match(x.headers()["content-type"], /spreadsheetml/);
+const buf = await x.body(); assert.equal(buf.subarray(0, 2).toString(), "PK"); assert.ok(buf.length > 1000); ok("attendance summary Excel (.xlsx) export");
 await page.goto(BASE + "/attendance/history");
 await page.getByRole("table").first().waitFor(); ok("attendance history loads");
 

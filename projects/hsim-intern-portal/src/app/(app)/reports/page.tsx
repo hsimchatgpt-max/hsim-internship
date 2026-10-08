@@ -2,7 +2,7 @@ import clsx from "clsx";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { DateFilter, FilterBar, SelectFilter } from "@/components/Filters";
-import { Badge, EmptyState, LinkButton, OverdueBadge, PageHeader, StatCard } from "@/components/ui";
+import { Badge, EmptyState, ExportButtons, OverdueBadge, PageHeader, StatCard } from "@/components/ui";
 import { ATTENDANCE_RULE_TEXT, attendancePercent } from "@/lib/attendance-stats";
 import { DEPARTMENTS } from "@/lib/constants";
 import { addDays, formatDate, monthStart, todayISO } from "@/lib/dates";
@@ -68,8 +68,8 @@ async function AttendanceReport({ f }: { f: F }) {
         </div>
       </div>
       <div className="mb-3 flex gap-2">
-        <LinkButton variant="secondary" prefetch={false} href={exp("summary")}>Export summary CSV</LinkButton>
-        <LinkButton variant="secondary" prefetch={false} href={exp("records")}>Export daily records CSV</LinkButton>
+        <ExportButtons to={exp("summary")} label="Summary" />
+        <ExportButtons to={exp("records")} label="Daily records" />
       </div>
       {rows.length === 0 ? <EmptyState title="No interns match these filters." /> : (
         <div className="table-wrap"><table className="table">
@@ -92,7 +92,7 @@ async function TaskReport({ f }: { f: F }) {
         <StatCard label="Total" value={counts.total} /><StatCard label="Completed" value={counts.completed} tone="good" /><StatCard label="Pending" value={counts.notStarted} hint="Not started" />
         <StatCard label="In progress" value={counts.inProgress} /><StatCard label="Overdue" value={counts.overdue} tone={counts.overdue ? "warn" : undefined} />
       </div>
-      <div className="mb-3"><LinkButton variant="secondary" prefetch={false} href={href("/api/export/tasks", { from: f.from, to: f.to, department: f.department, intern: f.internId })}>Export CSV</LinkButton></div>
+      <div className="mb-3"><ExportButtons to={href("/api/export/tasks", { from: f.from, to: f.to, department: f.department, intern: f.internId })} /></div>
       {tasks.length === 0 ? <EmptyState title="No tasks found." /> : (
         <div className="table-wrap"><table className="table">
           <thead><tr><th>Task</th><th>Intern</th><th>Department</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead>
@@ -107,7 +107,7 @@ async function PerformanceReport({ f }: { f: F }) {
   const reviews = await listReviews(filt);
   return (
     <>
-      <div className="mb-3"><LinkButton variant="secondary" prefetch={false} href={href("/api/export/performance", { from: f.from, to: f.to, department: f.department, intern: f.internId })}>Export CSV</LinkButton></div>
+      <div className="mb-3"><ExportButtons to={href("/api/export/performance", { from: f.from, to: f.to, department: f.department, intern: f.internId })} /></div>
       {reviews.length === 0 ? <EmptyState title="No performance reviews found for these filters." /> : (
         <div className="table-wrap"><table className="table">
           <thead><tr><th>Intern</th><th>Department</th><th>Review date</th><th>Overall</th><th>Feedback</th></tr></thead>
@@ -135,7 +135,7 @@ async function InternshipReport({ department }: { department: string }) {
         <StatCard label="Active" value={counts.active} /><StatCard label="Completed" value={counts.completed} /><StatCard label="Left" value={counts.left} />
         <StatCard label="Ending soon" value={counts.ending} hint={`Within ${settings.endingSoonDays} days`} tone={counts.ending ? "warn" : undefined} />
       </div>
-      <div className="mb-3"><LinkButton variant="secondary" prefetch={false} href={href("/api/export/interns", { department })}>Export intern list CSV</LinkButton></div>
+      <div className="mb-3"><ExportButtons to={href("/api/export/interns", { department })} label="Intern list" /></div>
       <h2 className="mb-2 text-base font-semibold">Ending soon or past end date</h2>
       {ending.length === 0 ? <EmptyState title="No active internships are ending soon." /> : (
         <div className="table-wrap"><table className="table"><thead><tr><th>HSIM ID</th><th>Intern</th><th>Department</th><th>End date</th><th></th></tr></thead>

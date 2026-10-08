@@ -59,8 +59,9 @@ it creates a throwaway intern (`HSIM900`) and removes it afterwards.
 - **Certificates** are never auto-issued: mark eligible → Issue (number, date, optional link). Number must be unique.
 - **History is preserved:** foreign keys are `ON DELETE RESTRICT`. An intern with any history can't be deleted — mark them *Left*/*Completed*.
 - **Alerts/reminders are computed live** from the database, so there is no stored notifications table to go stale.
-- **Export:** CSV (UTF-8 with BOM for Excel; cells starting with `= + - @` are neutralised against formula injection). Exports honour the active filters.
-  XLSX was not added to avoid a heavy dependency.
+- **Export:** CSV and Excel (`.xlsx`, via `write-excel-file`) for interns, attendance (daily records or per-intern summary), tasks and
+  performance. Exports honour the active filters (add `&format=xlsx` to any `/api/export/*` URL). CSV is UTF-8 with BOM and neutralises cells
+  starting with `= + - @`; in `.xlsx` text is stored as text so formulas are never evaluated.
 - **Security:** every page is gated by middleware *and* each server action / route handler re-checks the session; inputs validated with zod;
   all SQL is parameterized; login is throttled (8 failures / 15 min per IP+email, in-memory — use a shared store if you run multiple instances);
   security headers set in `next.config.ts`.

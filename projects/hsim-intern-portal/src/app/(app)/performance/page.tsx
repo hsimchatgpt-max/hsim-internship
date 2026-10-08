@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DateFilter, FilterBar, SearchFilter, SelectFilter } from "@/components/Filters";
 import { ReviewsManager } from "@/components/ReviewsManager";
-import { LinkButton, PageHeader } from "@/components/ui";
+import { ExportButtons, PageHeader } from "@/components/ui";
 import { DEPARTMENTS } from "@/lib/constants";
 import { dateParam, href, intParam, oneOf, str, type SearchParams } from "@/lib/params";
 import { internOptions } from "@/lib/queries/interns";
@@ -16,7 +16,7 @@ export default async function PerformancePage({ searchParams }: { searchParams: 
   return (
     <>
       <PageHeader title="Performance" subtitle="Periodic trainer reviews. Ratings are 1–5."
-        actions={<LinkButton variant="secondary" prefetch={false} href={href("/api/export/performance", f)}>Export CSV</LinkButton>} />
+        actions={<ExportButtons to={href("/api/export/performance", f)} />} />
       <FilterBar>
         <SearchFilter placeholder="Search intern or HSIM ID" />
         <SelectFilter param="department" label="All departments" options={DEPARTMENTS} />
