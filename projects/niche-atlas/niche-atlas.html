@@ -1704,29 +1704,45 @@ function narrowIdeas(name){
     L(`${name} for working people`, `${name} job karne walon ke liye`),
   ];
 }
+function microFit(main, name){
+  const n = String(name).toLowerCase();
+  if (/treatment|diagnos|prescription|legal drafting|investment advice|trading signals/.test(n)) return 'hard';
+  if (/guide|guidance|explained|checklist|tips|education|videos|notes|review|comparison|content|templates|listing|portfolio|brand|prep|preparation/.test(n)) return (main.isYMYL || main.caution) ? 'med' : 'easy';
+  if (/servic|repair|installation|clinic|coaching|training|consult|practice|studio|agency|amc|doorstep|on call|on-call|assistance|booking|appointment|replacement/.test(n)) return 'med';
+  return fresherLevel(main, 'micro');
+}
 function breakdownHtml(result){
   const main = result.mainRef, subSel = result.subRef, microSel = result.microRef;
   if (!main) return '';
-  const ordered = main.subNiches.slice().sort((a, b) => (subSel && b.id === subSel.id) - (subSel && a.id === subSel.id));
-  const microLvl = fresherLevel(main, 'micro');
-  const subs = ordered.map((s) => {
+  const subLvl = fresherLevel(main, 'sub');
+  const renderSub = (s) => {
     const isSel = subSel && s.id === subSel.id;
     const micros = s.micro.map((m) => {
       const here = isSel && microSel && m.name === microSel.name;
-      return `<li class="${here ? 'here' : ''}">${escapeHtml(m.name)}${here ? ` <span class="narrow">(${escapeHtml(L('your topic', 'aapka topic'))})</span>` : ''}${fitBadge(microLvl)}</li>`;
+      return `<li class="${here ? 'here' : ''}">${escapeHtml(m.name)}${here ? ` <span class="narrow">(${escapeHtml(L('your topic', 'aapka topic'))})</span>` : ''}${fitBadge(microFit(main, m.name))}</li>`;
     }).join('');
     return `<div class="subn-block">
       <h3 class="subn-title">${escapeHtml(s.name)}${isSel ? `<span class="fit easy">${escapeHtml(L('Closest to your topic', 'Aapke topic ke sabse paas'))}</span>` : ''}</h3>
       <ul class="mylist">${micros}</ul></div>`;
-  }).join('');
-  const pick = (microSel && microSel.name) || (subSel && subSel.name) ||(main.subNiches[0] && main.subNiches[0].micro[0] && main.subNiches[0].micro[0].name) || main.name;
+  };
+  const selected = subSel ? main.subNiches.filter((x) => x.id === subSel.id) : [];
+  const others = main.subNiches.filter((x) => !subSel || x.id !== subSel.id);
+  const shown = subSel ? selected : others.slice(0, 3);
+  const hidden = subSel ? others : others.slice(3);
+  const subs = shown.map(renderSub).join('') + (hidden.length
+    ? `<details class="subn"><summary>${escapeHtml(L(`Other areas inside ${main.name} (${hidden.length})`, `${main.name} ke baaki areas (${hidden.length})`))}</summary>${hidden.map(renderSub).join('')}</details>`
+    : '');
+  const placed = [main.name, subSel && subSel.name, microSel && microSel.name].filter(Boolean).map((x) => `<strong>${escapeHtml(x)}</strong>`).join(' → ');
+  const topicLine = `<p class="topic-line" style="margin:0 0 14px;font-size:.92rem;line-height:1.6">${escapeHtml(L('Your topic', 'Aapka topic'))} “${escapeHtml(result.rawTopic)}” ${escapeHtml(L('sits at', 'yahan aata hai'))}: ${placed}</p>`;
+  const pick = (microSel && microSel.name) || (subSel && subSel.micro[0] && subSel.micro[0].name) || (main.subNiches[0] && main.subNiches[0].micro[0] && main.subNiches[0].micro[0].name) || main.name;
   const sharpen = `<div class="sharpen"><strong>${escapeHtml(L('Make your pick sharper.', 'Apni pick ko aur sharp banao.'))}</strong>
     ${escapeHtml(L('Take one micro-niche and add WHO it is for, WHERE, or in which LANGUAGE. For example:', 'Ek micro-niche lo aur usme jodo ki ye KISKE liye hai, KAHAN, ya kis BHASHA me. Jaise:'))}
-    <ul class="mylist"><li>${escapeHtml(pick)} — ${escapeHtml(L('for college students', 'college students ke liye'))}</li>
+    <ul class="mylist"><li>${escapeHtml(pick)} — ${escapeHtml(L('for first-time customers', 'pehli baar lene walon ke liye'))}</li>
     <li>${escapeHtml(pick)} — ${escapeHtml(L('in Hindi', 'Hindi me'))}</li>
     <li>${escapeHtml(pick)} — ${escapeHtml(L('for people in your city', 'aapke sheher ke logon ke liye'))}</li></ul></div>`;
   const legend = `<p class="legend"><span class="fit easy">${escapeHtml(L('Easy for freshers', 'Fresher ke liye aasaan'))}</span> ${escapeHtml(L('very specific, less competition, no licence needed.', 'bahut specific, competition kam, licence nahi chahiye.'))}
-    <span class="fit med">${escapeHtml(L('Medium', 'Medium'))}</span> ${escapeHtml(L('specific, but needs real knowledge or trust (health and money topics).', 'specific hai, par asli knowledge ya trust chahiye (health aur paise ke topics).'))}</p>`;  const ymyl = main.isYMYL
+    <span class="fit med">${escapeHtml(L('Medium', 'Medium'))}</span> ${escapeHtml(L('needs real skill, equipment or trust (services, health and money topics).', 'asli skill, equipment ya trust chahiye (services, health aur paise ke topics).'))}
+    <span class="fit hard">${escapeHtml(L('Hard', 'Mushkil'))}</span> ${escapeHtml(L('needs a licence or professional qualification.', 'licence ya professional degree chahiye.'))}</p>`;  const ymyl = main.isYMYL
     ? `<p class="warn-box" style="margin-top:12px">${escapeHtml(L('Health and money topics need extra care. Freshers should not give medical or financial advice. Work as a writer, designer or editor with an expert reviewing the content.', 'Health aur paise ke topics me extra dhyan rakho. Fresher ko medical ya financial advice nahi deni chahiye. Writer, designer ya editor ki tarah kaam karo, aur content kisi expert se check karwao.'))}</p>` : '';
   const ids = ROLE_BY_MAIN[main.id] || ['content-writing','social-media','design','va'];
   const nm = result.hierarchy.microNiche || result.hierarchy.subNiche || main.name;
@@ -1742,6 +1758,7 @@ function breakdownHtml(result){
       <p class="rank">${escapeHtml(L('Break it down', 'Tod ke dekho'))}</p>
       <h2>${escapeHtml(L('Ideas inside ', 'Is niche ke andar ke ideas: '))}${escapeHtml(main.name)}</h2>
       <p class="fine" style="margin-top:0">${escapeHtml(L('A sub-niche is a smaller area inside the niche. A micro-niche is one very specific topic inside that area. Freshers do better with micro-niches, because the broad niche is too crowded.', 'Sub-niche niche ke andar ka chhota area hai. Micro-niche us area ke andar ek bahut specific topic hai. Freshers ke liye micro-niche behtar hai, kyunki broad niche me bahut bheed hoti hai.'))}</p>
+      ${topicLine}
       ${legend}
       ${subs}
       ${sharpen}
