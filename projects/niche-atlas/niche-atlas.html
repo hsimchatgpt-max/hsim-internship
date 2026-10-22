@@ -24,9 +24,8 @@ details.subn[open] summary::before{transform:rotate(90deg)}
 .sharpen{border:1px dashed var(--border-strong);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:.9rem;line-height:1.5}
 .sharpen .mylist{margin:8px 0 0}
 </style></head><body>
-<div class="floaters" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><svg class="rings r1" viewBox="0 0 400 400"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="100"/><circle cx="200" cy="200" r="140"/><circle cx="200" cy="200" r="180"/><path d="M200 8v384M8 200h384" stroke-dasharray="3 7"/><path d="M200 8l10 26h-20z" fill="currentColor"/></g></svg><svg class="rings r2" viewBox="0 0 400 400"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="70"/><circle cx="200" cy="200" r="120"/><circle cx="200" cy="200" r="170"/><path d="M60 60L340 340M340 60L60 340" stroke-dasharray="3 7"/></g></svg><b class="dot" style="left:11%;top:7%;animation-delay:-0.0s"></b><b class="dot" style="left:48%;top:60%;animation-delay:-1.3s"></b><b class="dot" style="left:85%;top:20%;animation-delay:-2.6s"></b><b class="dot" style="left:25%;top:73%;animation-delay:-3.9s"></b><b class="dot" style="left:62%;top:33%;animation-delay:-5.2s"></b><b class="dot" style="left:2%;top:86%;animation-delay:-6.5s"></b><b class="dot" style="left:39%;top:46%;animation-delay:-7.8s"></b><b class="dot" style="left:76%;top:6%;animation-delay:-9.1s"></b><b class="dot" style="left:16%;top:59%;animation-delay:-10.4s"></b><b class="dot" style="left:53%;top:19%;animation-delay:-11.7s"></b><b class="dot" style="left:90%;top:72%;animation-delay:-13.0s"></b><b class="dot" style="left:30%;top:32%;animation-delay:-14.3s"></b><b class="dot" style="left:67%;top:85%;animation-delay:-15.6s"></b><b class="dot" style="left:7%;top:45%;animation-delay:-16.9s"></b></div>
 <title>Niche Atlas</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
   --bg:#f5f1e8;
@@ -156,7 +155,7 @@ header.masthead{
   margin:0 0 10px;
 }
 h1{
-  font-family:"Playfair Display", Georgia, serif;
+  font-family:"Inter", -apple-system, sans-serif;
   font-weight:600;
   font-size:2.3rem;
   letter-spacing:-.01em;
@@ -281,7 +280,7 @@ button.primary:disabled{ opacity:.55; cursor:not-allowed; }
   margin:0 0 4px;
 }
 .card h2{
-  font-family:"Playfair Display", Georgia, serif;
+  font-family:"Inter", -apple-system, sans-serif;
   font-size:1.28rem;
   font-weight:600;
   margin:0 0 16px;
@@ -349,7 +348,7 @@ button.primary:disabled{ opacity:.55; cursor:not-allowed; }
 .ruler-labels span{ text-align:left; }
 .ruler-labels span:last-child{ text-align:right; }
 .niche-type-name{
-  font-family:"Playfair Display", Georgia, serif;
+  font-family:"Inter", -apple-system, sans-serif;
   font-size:1.1rem;
   font-weight:600;
   color:var(--accent);
@@ -603,6 +602,46 @@ h1{ background-size:200% auto; background-image:linear-gradient(100deg, var(--in
 @keyframes spin{ to{ transform:rotate(360deg); } }
 @media (max-width:700px){ .rings{ opacity:.14; } }
 @media (prefers-reduced-motion:reduce){ .rings{ animation:none !important; } }
+
+/* ---- White & blue research theme ---- */
+:root{--bg:#f4f8ff;--surface:#ffffff;--surface-2:#f1f6fd;--border:#dce6f5;--border-strong:#bccfe8;
+--ink:#0f1c36;--ink-muted:#4d5d7a;--ink-faint:#8795ae;--accent:#1d5fe0;--accent-ink:#ffffff;--accent-soft:#e3edff;
+--warm:#5aa0ff;--warm-soft:#e6f0ff;--warm-ink:#0b1f45;
+--sem-good:#1f8a5b;--sem-good-soft:#dff3ea;--sem-warn:#b7791f;--sem-warn-soft:#fbf0d9;--sem-bad:#c0392b;--sem-bad-soft:#fbe6e3;
+--sem-severe:#9b2c3a;--sem-severe-soft:#f6e1e4;--danger:#c0392b;
+--shadow:0 1px 2px rgba(15,28,54,.05),0 12px 30px -16px rgba(29,95,224,.25);}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0a1226;--surface:#101b36;--surface-2:#15233f;--border:#22345a;--border-strong:#2f4572;
+--ink:#eaf1ff;--ink-muted:#a5b4d0;--ink-faint:#71819f;--accent:#5b9dff;--accent-ink:#06122b;--accent-soft:#16294f;
+--warm:#7db2ff;--warm-soft:#172b52;--warm-ink:#e6f0ff;
+--sem-good:#5fcf9a;--sem-good-soft:#12291f;--sem-warn:#e0b45a;--sem-warn-soft:#30260f;--sem-bad:#ef8a7a;--sem-bad-soft:#341e1b;
+--sem-severe:#ef9aa5;--sem-severe-soft:#341d22;--danger:#ef9aa5;
+--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.7);}}
+:root[data-theme="dark"]{--bg:#0a1226;--surface:#101b36;--surface-2:#15233f;--border:#22345a;--border-strong:#2f4572;
+--ink:#eaf1ff;--ink-muted:#a5b4d0;--ink-faint:#71819f;--accent:#5b9dff;--accent-ink:#06122b;--accent-soft:#16294f;
+--warm:#7db2ff;--warm-soft:#172b52;--warm-ink:#e6f0ff;
+--sem-good:#5fcf9a;--sem-good-soft:#12291f;--sem-warn:#e0b45a;--sem-warn-soft:#30260f;--sem-bad:#ef8a7a;--sem-bad-soft:#341e1b;
+--sem-severe:#ef9aa5;--sem-severe-soft:#341d22;--danger:#ef9aa5;
+--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 40px -20px rgba(0,0,0,.7);}
+.floaters,.rings,.orb,.dot{ display:none !important; }
+body{
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 380px),
+    linear-gradient(color-mix(in srgb, var(--border) 40%, transparent) 1px, transparent 1px) 0 0/56px 56px,
+    linear-gradient(90deg, color-mix(in srgb, var(--border) 40%, transparent) 1px, transparent 1px) 0 0/56px 56px,
+    var(--bg);
+  background-attachment:scroll;
+}
+h1{ background:none; -webkit-background-clip:initial; background-clip:initial; color:var(--ink); animation:none; font-weight:800; letter-spacing:-.03em; font-size:2.5rem; }
+h1::after{ content:""; display:block; width:56px; height:4px; border-radius:4px; margin-top:12px; background:var(--accent); }
+.eyebrow::before{ content:""; }
+header.masthead::after{ background:var(--border); }
+.card h2::after{ background:var(--accent); width:28px; border-radius:2px; }
+button.primary{ background:var(--accent); box-shadow:0 8px 18px -8px color-mix(in srgb, var(--accent) 70%, transparent); }
+.log-card,.card{ border-color:var(--border); box-shadow:var(--shadow); }
+.signal{ background:var(--surface-2); }
+.month-strip .cell.peak{ color:#fff; }
+.ai-card{ background:var(--surface); }
+footer{ border-top-color:var(--border); }
 </style>
 
 <div class="page">
