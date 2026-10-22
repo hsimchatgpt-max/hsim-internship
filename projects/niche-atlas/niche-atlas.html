@@ -1,0 +1,1863 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.fit{display:inline-block;font-size:.74rem;font-weight:700;padding:2px 9px;border-radius:999px;margin-left:8px;vertical-align:middle;white-space:nowrap}
+.fit.easy{background:var(--sem-good-soft);color:var(--sem-good)}
+.fit.med{background:var(--sem-warn-soft);color:var(--sem-warn)}
+.fit.hard{background:var(--sem-bad-soft);color:var(--sem-bad)}
+details.subn{border:1px solid var(--border);border-radius:10px;background:var(--surface-2);margin-bottom:10px;padding:0 14px}
+details.subn[open]{border-color:var(--accent)}
+details.subn summary{cursor:pointer;padding:12px 0;font-weight:600;font-size:.97rem;list-style:none}
+details.subn summary::-webkit-details-marker{display:none}
+details.subn summary::before{content:"›";display:inline-block;margin-right:8px;color:var(--ink-faint);transition:transform .15s}
+details.subn[open] summary::before{transform:rotate(90deg)}
+.mylist{margin:0 0 12px;padding:0;list-style:none}
+.mylist li{padding:8px 0;border-top:1px solid var(--border);font-size:.92rem;line-height:1.45}
+.mylist .here{color:var(--accent);font-weight:600}
+.narrow{font-size:.8rem;color:var(--ink-faint);margin-top:3px}
+.role{border:1px solid var(--border);border-radius:10px;background:var(--surface-2);padding:13px 15px;margin-bottom:10px}
+.role h3{margin:0 0 4px;font-size:1rem;font-family:"Public Sans",sans-serif}
+.role p{margin:4px 0;font-size:.9rem;line-height:1.5;color:var(--ink-muted)}
+.role .meta{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);text-transform:uppercase}
+.fine{font-size:.8rem;color:var(--ink-faint);line-height:1.5;margin:10px 0 0}
+.subn-block{margin-bottom:14px}
+.subn-title{font-family:"Public Sans",sans-serif;font-size:.98rem;margin:14px 0 2px}
+.legend{font-size:.82rem;color:var(--ink-muted);line-height:1.9;margin:10px 0 4px}
+.legend .fit{margin-left:0;margin-right:4px}
+.sharpen{border:1px dashed var(--border-strong);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:.9rem;line-height:1.5}
+.sharpen .mylist{margin:8px 0 0}
+</style></head><body>
+<title>Niche Atlas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#eef1ea;
+  --surface:#fbfbf7;
+  --surface-2:#f2f4ed;
+  --border:#d9ddd0;
+  --border-strong:#c3c9b6;
+  --ink:#1e2b22;
+  --ink-muted:#5c6659;
+  --ink-faint:#8b9484;
+  --accent:#1f6f78;
+  --accent-ink:#eef7f6;
+  --accent-soft:#e1eeed;
+  --warm:#c9862c;
+  --warm-soft:#f6ead2;
+  --warm-ink:#221a09;
+  --sem-good:#3f8f5f;
+  --sem-good-soft:#e2efe4;
+  --sem-warn:#b8862a;
+  --sem-warn-soft:#f2ead5;
+  --sem-bad:#b2482f;
+  --sem-bad-soft:#f3e2dc;
+  --sem-severe:#8f3230;
+  --sem-severe-soft:#ecdcda;
+  --danger:#a13232;
+  --shadow: 0 1px 2px rgba(30,43,34,.06), 0 6px 20px -12px rgba(30,43,34,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12160f;
+    --surface:#191f16;
+    --surface-2:#1f261b;
+    --border:#2c3427;
+    --border-strong:#3c4634;
+    --ink:#e8ece2;
+    --ink-muted:#a3ac97;
+    --ink-faint:#727c67;
+    --accent:#5cb8bf;
+    --accent-ink:#0d1a1a;
+    --accent-soft:#1b2f2e;
+    --warm:#e0a544;
+    --warm-soft:#332510;
+    --warm-ink:#fbeed2;
+    --sem-good:#63b382;
+    --sem-good-soft:#1c2e21;
+    --sem-warn:#d3a552;
+    --sem-warn-soft:#332a15;
+    --sem-bad:#d17a5f;
+    --sem-bad-soft:#33201a;
+    --sem-severe:#e0968f;
+    --sem-severe-soft:#331e1c;
+    --danger:#e0968f;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12160f;
+  --surface:#191f16;
+  --surface-2:#1f261b;
+  --border:#2c3427;
+  --border-strong:#3c4634;
+  --ink:#e8ece2;
+  --ink-muted:#a3ac97;
+  --ink-faint:#727c67;
+  --accent:#5cb8bf;
+  --accent-ink:#0d1a1a;
+  --accent-soft:#1b2f2e;
+  --warm:#e0a544;
+  --warm-soft:#332510;
+  --warm-ink:#fbeed2;
+  --sem-good:#63b382;
+  --sem-good-soft:#1c2e21;
+  --sem-warn:#d3a552;
+  --sem-warn-soft:#332a15;
+  --sem-bad:#d17a5f;
+  --sem-bad-soft:#33201a;
+  --sem-severe:#e0968f;
+  --sem-severe-soft:#331e1c;
+  --danger:#e0968f;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Public Sans", -apple-system, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{ background:var(--accent-soft); }
+
+.lang-btn{
+  position:absolute; top:0; right:0;
+  font-family:"Public Sans", sans-serif; font-size:.82rem; font-weight:600;
+  padding:6px 12px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent);
+}
+header.masthead{ position:relative; }
+.page{
+  max-width:760px;
+  margin:0 auto;
+  padding:40px 20px 80px;
+  position:relative;
+}
+.page::before{
+  content:"";
+  position:absolute;
+  left:20px; top:120px; bottom:40px;
+  width:1px;
+  background:linear-gradient(var(--border-strong), var(--border) 85%, transparent);
+}
+@media (max-width:600px){ .page::before{ display:none; } }
+
+header.masthead{
+  padding-bottom:28px;
+  margin-bottom:28px;
+  border-bottom:1px solid var(--border);
+}
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-weight:600;
+  margin:0 0 10px;
+}
+h1{
+  font-family:"Fraunces", Georgia, serif;
+  font-weight:600;
+  font-size:2.3rem;
+  letter-spacing:-.01em;
+  margin:0 0 8px;
+  text-wrap:balance;
+}
+.masthead p{
+  margin:0;
+  color:var(--ink-muted);
+  font-size:.98rem;
+  max-width:52ch;
+  line-height:1.55;
+}
+
+.log-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:20px 22px;
+  margin-bottom:22px;
+}
+.log-card .rank{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin:0 0 12px;
+}
+.input-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+input[type="text"], input[type="password"], select{
+  font-family:"Public Sans", sans-serif;
+  font-size:1rem;
+  flex:1;
+  min-width:220px;
+  padding:11px 13px;
+  border-radius:9px;
+  border:1px solid var(--border-strong);
+  background:var(--surface-2);
+  color:var(--ink);
+}
+input::placeholder{ color:var(--ink-faint); }
+input:focus-visible, select:focus-visible, button:focus-visible, .toggle-link:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+button.primary{
+  font-family:"Public Sans", sans-serif;
+  font-weight:600;
+  font-size:.97rem;
+  padding:11px 20px;
+  border-radius:9px;
+  border:1px solid var(--accent);
+  background:var(--accent);
+  color:var(--accent-ink);
+  cursor:pointer;
+}
+button.primary:hover{ filter:brightness(1.05); }
+button.primary:disabled{ opacity:.55; cursor:not-allowed; }
+
+.toggle-link{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  margin-top:14px;
+  background:none;
+  border:none;
+  padding:0;
+  font-family:"Public Sans", sans-serif;
+  font-size:.86rem;
+  color:var(--ink-muted);
+  cursor:pointer;
+}
+.toggle-link .chevron{
+  display:inline-block;
+  transition:transform .15s ease;
+  font-size:.75rem;
+}
+.toggle-link[aria-expanded="true"] .chevron{ transform:rotate(90deg); }
+
+.ai-fields{
+  display:none;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px dashed var(--border);
+}
+.ai-fields.visible{ display:flex; }
+.ai-note{
+  flex-basis:100%;
+  font-size:.78rem;
+  color:var(--ink-faint);
+  margin:0;
+}
+
+.example-flag{
+  font-size:.78rem;
+  color:var(--ink-faint);
+  margin:10px 0 0;
+}
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:22px 24px;
+  margin-bottom:16px;
+}
+.card .rank{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin:0 0 4px;
+}
+.card h2{
+  font-family:"Fraunces", Georgia, serif;
+  font-size:1.28rem;
+  font-weight:600;
+  margin:0 0 16px;
+}
+
+/* Taxonomic trail */
+.trail{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.trail .stop{
+  display:flex; flex-direction:column; gap:3px;
+}
+.trail .stop .rank-label{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:9.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.trail .stop .name{
+  font-size:.95rem;
+  font-weight:600;
+  padding:5px 11px;
+  border-radius:999px;
+  border:1px solid var(--border-strong);
+  background:var(--surface-2);
+  color:var(--ink-muted);
+}
+.trail .stop.active .name{
+  border-color:var(--accent);
+  color:var(--accent);
+  background:var(--accent-soft);
+}
+.trail .sep{ color:var(--border-strong); font-size:1rem; margin-top:16px; }
+
+/* Zoom ruler */
+.ruler{
+  margin-top:18px;
+}
+.ruler-track{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:4px;
+}
+.ruler-track .step{
+  height:7px;
+  border-radius:4px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+}
+.ruler-track .step.filled{ background:var(--accent); border-color:var(--accent); }
+.ruler-labels{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  margin-top:7px;
+  font-family:"IBM Plex Mono", monospace;
+  font-size:9.5px;
+  letter-spacing:.03em;
+  color:var(--ink-faint);
+}
+.ruler-labels span{ text-align:left; }
+.ruler-labels span:last-child{ text-align:right; }
+.niche-type-name{
+  font-family:"Fraunces", Georgia, serif;
+  font-size:1.1rem;
+  font-weight:600;
+  color:var(--accent);
+  margin-top:14px;
+}
+
+/* Seasonality month strip */
+.season-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-family:"IBM Plex Mono", monospace;
+  font-size:11.5px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  font-weight:600;
+  padding:5px 12px;
+  border-radius:999px;
+  margin-bottom:14px;
+}
+.season-badge.seasonal{ background:var(--warm-soft); color:var(--warm-ink); }
+.season-badge.evergreen{ background:var(--sem-good-soft); color:var(--sem-good); }
+.month-strip{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:4px;
+  margin:6px 0 12px;
+}
+.month-strip .cell{
+  aspect-ratio:1;
+  border-radius:5px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:"IBM Plex Mono", monospace;
+  font-size:9px;
+  color:var(--ink-faint);
+}
+.month-strip .cell.peak{
+  background:var(--warm);
+  border-color:var(--warm);
+  color:var(--warm-ink);
+  font-weight:700;
+}
+.month-strip .cell.evergreen-on{
+  background:var(--sem-good-soft);
+  border-color:var(--sem-good);
+  color:var(--sem-good);
+}
+.season-note{
+  font-size:.86rem;
+  color:var(--ink-muted);
+  line-height:1.55;
+  margin:0;
+}
+
+/* Signals grid */
+.signals-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+}
+.signal{
+  padding:13px 14px;
+  border-radius:10px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+}
+.signal.wide{ grid-column:1/-1; }
+.signal .label{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:6px;
+}
+.signal .value{ font-size:1rem; font-weight:600; }
+.signal .value.small{ font-size:.85rem; font-weight:500; line-height:1.5; }
+
+.meter{ display:flex; gap:3px; margin-top:8px; }
+.meter .seg{ height:6px; flex:1; border-radius:3px; background:var(--border); }
+.meter .seg.on{ background:currentColor; }
+
+.pill-inline{
+  display:inline-block;
+  font-size:.82rem;
+  font-weight:600;
+  padding:3px 10px;
+  border-radius:999px;
+}
+.ymyl-flag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:8px;
+  font-size:.78rem;
+  color:var(--sem-warn);
+  background:var(--sem-warn-soft);
+  padding:4px 9px;
+  border-radius:7px;
+}
+
+/* Tags */
+.tag-group{ margin-bottom:16px; }
+.tag-group:last-child{ margin-bottom:0; }
+.tag-group .label{
+  font-family:"IBM Plex Mono", monospace;
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin-bottom:8px;
+}
+.tag-row{ display:flex; flex-wrap:wrap; gap:7px; }
+.tag{
+  font-size:.83rem;
+  padding:5px 11px;
+  border-radius:7px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--ink-muted);
+}
+
+ul.idea-list{ margin:0; padding-left:0; list-style:none; }
+ul.idea-list li{
+  padding:9px 0;
+  border-bottom:1px solid var(--border);
+  font-size:.94rem;
+  line-height:1.5;
+}
+ul.idea-list li:last-child{ border-bottom:none; }
+ul.idea-list.related li{ color:var(--ink-muted); }
+
+.warn-box{
+  background:var(--sem-bad-soft);
+  color:var(--sem-bad);
+  border-radius:10px;
+  padding:12px 14px;
+  font-size:.88rem;
+  line-height:1.5;
+}
+
+.ai-card{ border-color:var(--warm); }
+.ai-card .rank{ color:var(--warm); }
+.spinner-note{ color:var(--ink-muted); font-size:.9rem; }
+
+footer{
+  margin-top:32px;
+  padding-top:20px;
+  border-top:1px solid var(--border);
+  color:var(--ink-faint);
+  font-size:.8rem;
+  line-height:1.6;
+}
+</style>
+
+<div class="page">
+  <header class="masthead">
+    <button type="button" id="langBtn" class="lang-btn" aria-label="Change language">हिंग्लिश</button>
+    <p class="eyebrow">Niche classification tool</p>
+    <h1>Niche Atlas</h1>
+    <p>Type a topic and see where it sits: broad niche, sub-niche or micro-niche, whether demand is seasonal or all-year, and how good the business opportunity looks.</p>
+  </header>
+
+  <div class="log-card">
+    <p class="rank">Your topic</p>
+    <div class="input-row">
+      <input type="text" id="topicInput" placeholder="e.g. vegan keto recipes for diabetics" autocomplete="off" />
+      <button class="primary" id="analyzeBtn">Analyze</button>
+    </div>
+    <p class="example-flag" id="exampleFlag">This is an example. Type your own topic above and click Analyze.</p>
+
+    <button class="toggle-link" id="aiToggleBtn" aria-expanded="false">
+      <span class="chevron">›</span> Add AI deep analysis (optional, needs your own Anthropic API key)
+    </button>
+    <div class="ai-fields" id="aiFields">
+      <input type="password" id="apiKey" placeholder="Anthropic API key (sk-ant-...)" autocomplete="off" />
+      <select id="modelSelect">
+        <option value="claude-sonnet-5" selected>claude-sonnet-5</option>
+        <option value="claude-opus-4-8">claude-opus-4-8</option>
+        <option value="claude-haiku-4-5-20251001">claude-haiku-4-5-20251001</option>
+      </select>
+      <p class="ai-note">Your key is saved only in this browser and sent only to api.anthropic.com.</p>
+    </div>
+  </div>
+
+  <div id="results"></div>
+
+  <footer>The basic classification runs fully offline in your browser using a built-in list of niches. AI mode is optional and uses the key you provide.</footer>
+</div>
+
+<script>
+// ---------- Taxonomy data ----------
+const TAXONOMY = [
+  { id:'health-fitness', name:'Health & Fitness', monetization:'high', isYMYL:true,
+    keywords:['health','fitness','wellness','workout','exercise','gym','nutrition','muscle','cardio'],
+    platforms:['YouTube','Instagram','Blog/SEO'],
+    monetizationMethods:['Affiliate marketing (supplements, equipment)','Digital products (workout/meal plans)','Coaching/consulting','Display ads','Sponsored content'],
+    subNiches:[
+      { id:'weight-loss', name:'Weight Loss', keywords:['weight loss','fat loss','lose weight','slimming'],
+        micro:[
+          { name:'Keto diet for weight loss', keywords:['keto','ketogenic'] },
+          { name:'Intermittent fasting for weight loss', keywords:['intermittent fasting','16:8','16/8 fasting'] },
+          { name:'Postpartum weight loss', keywords:['postpartum weight loss','after pregnancy weight loss'] },
+        ]},
+      { id:'yoga-mindfulness', name:'Yoga & Mindfulness', keywords:['yoga','meditation','mindfulness','breathwork'],
+        micro:[
+          { name:'Prenatal yoga', keywords:['prenatal yoga','pregnancy yoga'] },
+          { name:'Yoga for anxiety and stress relief', keywords:['yoga for anxiety','yoga for stress'] },
+        ]},
+      { id:'strength-training', name:'Strength Training', keywords:['strength training','weightlifting','bodybuilding','resistance training'],
+        micro:[
+          { name:'Home strength training without equipment', keywords:['no equipment','bodyweight training'] },
+          { name:'Strength training for women over 40', keywords:['women over 40','strength training women'] },
+        ]},
+    ]},
+  { id:'personal-finance', name:'Personal Finance', monetization:'high', isYMYL:true,
+    keywords:['finance','money','financial planning','wealth','personal finance'],
+    platforms:['Blog/SEO','YouTube','Newsletter'],
+    monetizationMethods:['Affiliate marketing (credit cards, apps, brokers)','Display ads (high RPM niche)','Digital products (courses, templates)','Sponsored content','Lead generation for financial services'],
+    subNiches:[
+      { id:'investing', name:'Investing', keywords:['investing','stock market','mutual funds','stocks','crypto','cryptocurrency'],
+        micro:[
+          { name:'Investing for beginners with small amounts', keywords:['investing for beginners','small amount investing'] },
+          { name:'Crypto investing for retirement', keywords:['crypto retirement','bitcoin retirement'] },
+        ]},
+      { id:'budgeting-saving', name:'Budgeting & Saving', keywords:['budgeting','saving money','frugal living','emergency fund'],
+        micro:[
+          { name:'Budgeting for single parents', keywords:['single parent budget','single mom budgeting'] },
+          { name:'Zero-based budgeting for freelancers', keywords:['zero-based budget','freelancer budgeting'] },
+        ]},
+      { id:'credit-debt', name:'Credit & Debt', keywords:['credit score','debt','credit card','loan','debt payoff'],
+        micro:[
+          { name:'Credit card debt payoff for students', keywords:['student credit card debt','college debt payoff'] },
+          { name:'Rebuilding credit after bankruptcy', keywords:['rebuild credit','credit after bankruptcy'] },
+        ]},
+      { id:'tax-planning', name:'Tax Planning', keywords:['tax planning','tax filing','income tax return','tax deductions'],
+        micro:[
+          { name:'Tax filing for freelancers and gig workers', keywords:['freelancer tax filing','gig worker taxes'] },
+        ]},
+    ]},
+  { id:'technology', name:'Technology', monetization:'high',
+    keywords:['technology','software','tech','app','gadget','computer'],
+    platforms:['YouTube','Blog/SEO','Reddit/Forums'],
+    monetizationMethods:['Affiliate marketing (Amazon, SaaS referral programs)','Display ads','Sponsored reviews','Digital products'],
+    subNiches:[
+      { id:'ai-tools', name:'AI Tools & SaaS', keywords:['ai tools','saas','artificial intelligence','chatbot','automation software'],
+        micro:[
+          { name:'AI tools for freelance writers', keywords:['ai writing tools','ai tools for writers'] },
+          { name:'AI automation for small e-commerce stores', keywords:['ai automation ecommerce','shopify ai automation'] },
+        ]},
+      { id:'gadgets-electronics', name:'Gadgets & Electronics', keywords:['gadgets','electronics','smartphone','laptop review','wearables'],
+        micro:[
+          { name:'Budget smartphones under a fixed price', keywords:['budget smartphone','cheap smartphone under'] },
+          { name:'Best laptops for video editing', keywords:['laptops for video editing','video editing laptop'] },
+        ]},
+      { id:'cybersecurity', name:'Cybersecurity', keywords:['cybersecurity','vpn','antivirus','data privacy','password manager'],
+        micro:[
+          { name:'VPN for remote workers', keywords:['vpn remote workers','vpn work from home'] },
+        ]},
+    ]},
+  { id:'beauty-skincare', name:'Beauty & Skincare', monetization:'high',
+    keywords:['beauty','skincare','makeup','cosmetics','skin care'],
+    platforms:['Instagram','YouTube','Pinterest','TikTok'],
+    monetizationMethods:['Affiliate marketing','Sponsored posts/brand deals','Own product line','Display ads'],
+    subNiches:[
+      { id:'skincare', name:'Skincare', keywords:['skincare routine','anti-aging','acne treatment','moisturizer'],
+        micro:[
+          { name:'Skincare routine for acne-prone teenagers', keywords:['teenage acne skincare','acne skincare teens'] },
+          { name:'Anti-aging skincare for sensitive skin', keywords:['anti-aging sensitive skin','sensitive skin anti aging'] },
+        ]},
+      { id:'haircare', name:'Haircare', keywords:['haircare','hair growth','hair loss','hairstyle'],
+        micro:[ { name:'Natural remedies for postpartum hair loss', keywords:['postpartum hair loss','hair loss after pregnancy'] } ]},
+      { id:'makeup', name:'Makeup', keywords:['makeup tutorial','makeup products','cosmetics review'],
+        micro:[ { name:'Cruelty-free makeup for beginners', keywords:['cruelty-free makeup','vegan makeup beginners'] } ]},
+    ]},
+  { id:'food-cooking', name:'Food & Cooking', monetization:'medium',
+    keywords:['food','cooking','recipe','recipes','culinary'],
+    platforms:['Pinterest','YouTube','Instagram','Blog/SEO'],
+    monetizationMethods:['Display ads (high pageviews)','Affiliate marketing (kitchen tools)','Digital products (ebooks/meal plans)','Sponsored content'],
+    subNiches:[
+      { id:'diet-specific-recipes', name:'Diet-specific Recipes', keywords:['vegan recipes','gluten free recipes','low carb recipes','diabetic recipes'],
+        micro:[
+          { name:'Vegan keto recipes for diabetics', keywords:['vegan keto diabetic','diabetic keto vegan recipes'] },
+          { name:'Gluten-free baking for beginners', keywords:['gluten free baking beginners','beginner gluten free baking'] },
+        ]},
+      { id:'meal-prep', name:'Meal Prep', keywords:['meal prep','meal planning','batch cooking'],
+        micro:[ { name:'Meal prep for busy working parents', keywords:['meal prep working parents','meal prep busy moms'] } ]},
+      { id:'cuisine-specific', name:'Cuisine-specific Cooking', keywords:['italian cooking','indian cooking','thai cooking','mexican cooking'],
+        micro:[ { name:'Authentic regional Indian recipes for beginners', keywords:['regional indian recipes','authentic indian cooking beginners'] } ]},
+      { id:'festive-baking', name:'Festive & Holiday Cooking', keywords:['christmas recipes','diwali sweets','holiday baking','festive recipes'],
+        micro:[
+          { name:'Diwali sweets and snacks recipes', keywords:['diwali sweets recipes','diwali snacks recipes'] },
+          { name:'Christmas cookie recipes for beginners', keywords:['christmas cookie recipes','beginner christmas baking'] },
+        ]},
+    ]},
+  { id:'travel', name:'Travel', monetization:'medium',
+    keywords:['travel','trip','vacation','tourism','destination'],
+    platforms:['Instagram','YouTube','Blog/SEO','Pinterest'],
+    monetizationMethods:['Affiliate marketing (booking sites, gear)','Sponsored trips/content','Display ads','Digital products (guides)'],
+    subNiches:[
+      { id:'budget-travel', name:'Budget Travel', keywords:['budget travel','backpacking','cheap flights','travel hacking'],
+        micro:[ { name:'Budget solo travel for women', keywords:['budget solo female travel','solo female budget travel'] } ]},
+      { id:'family-travel', name:'Family Travel', keywords:['family travel','traveling with kids','family vacation'],
+        micro:[ { name:'Traveling with toddlers on long flights', keywords:['toddler long flight','flying with toddlers'] } ]},
+      { id:'luxury-travel', name:'Luxury Travel', keywords:['luxury travel','luxury resort','first class travel'],
+        micro:[ { name:'Luxury honeymoon destinations on a set budget', keywords:['luxury honeymoon budget','honeymoon destinations budget'] } ]},
+      { id:'seasonal-travel', name:'Seasonal Travel', keywords:['summer vacation','winter getaway','monsoon travel destinations'],
+        micro:[ { name:'Summer vacation destinations for families', keywords:['summer vacation family','family summer destinations'] } ]},
+    ]},
+  { id:'home-garden', name:'Home & Garden', monetization:'medium',
+    keywords:['home decor','gardening','home improvement','interior design','renovation'],
+    platforms:['Pinterest','YouTube','Blog/SEO','Instagram'],
+    monetizationMethods:['Affiliate marketing (Amazon, home goods)','Display ads','Sponsored content','Digital products'],
+    subNiches:[
+      { id:'gardening', name:'Gardening', keywords:['gardening','vegetable garden','indoor plants','houseplants'],
+        micro:[ { name:'Indoor herb gardening for small apartments', keywords:['apartment herb garden','small space herb garden'] } ]},
+      { id:'diy-renovation', name:'DIY & Renovation', keywords:['diy renovation','home diy','diy repair'],
+        micro:[ { name:'DIY kitchen renovation on a budget', keywords:['budget kitchen renovation','diy kitchen remodel budget'] } ]},
+      { id:'organization', name:'Cleaning & Organization', keywords:['home organization','decluttering','cleaning tips','minimalism','spring cleaning'],
+        micro:[
+          { name:'Decluttering small apartments with kids', keywords:['declutter apartment kids','organizing small home with kids'] },
+          { name:'Spring cleaning checklist for small homes', keywords:['spring cleaning checklist','spring cleaning small home'] },
+        ]},
+    ]},
+  { id:'parenting-family', name:'Parenting & Family', monetization:'high',
+    keywords:['parenting','family','baby','child','kids'],
+    platforms:['Blog/SEO','Instagram','Pinterest','YouTube'],
+    monetizationMethods:['Affiliate marketing','Display ads','Digital products (courses/printables)','Sponsored content'],
+    subNiches:[
+      { id:'pregnancy-newborn', name:'Pregnancy & Newborn', keywords:['pregnancy','newborn care','baby care','postpartum'],
+        micro:[
+          { name:'Newborn sleep training for first-time parents', keywords:['newborn sleep training','first time parent sleep'] },
+          { name:'Second trimester pregnancy nutrition', keywords:['second trimester nutrition','pregnancy nutrition trimester'] },
+        ]},
+      { id:'toddler-parenting', name:'Toddler Parenting', keywords:['toddler','tantrums','potty training'],
+        micro:[ { name:'Potty training toddlers with autism', keywords:['potty training autism','autism toddler potty training'] } ]},
+      { id:'homeschooling', name:'Homeschooling', keywords:['homeschool','homeschooling curriculum','home education'],
+        micro:[ { name:'Homeschooling curriculum for working parents', keywords:['homeschool working parents','homeschooling while working'] } ]},
+      { id:'back-to-school', name:'Back to School', keywords:['back to school','school supplies','school prep'],
+        micro:[ { name:'Back to school checklist for kindergarten', keywords:['back to school kindergarten','kindergarten school checklist'] } ]},
+    ]},
+  { id:'pets', name:'Pets', monetization:'medium',
+    keywords:['pet','pets','dog','cat','animal care'],
+    platforms:['YouTube','Instagram','Blog/SEO','TikTok'],
+    monetizationMethods:['Affiliate marketing (pet products)','Display ads','Sponsored content','Digital products'],
+    subNiches:[
+      { id:'dog-care', name:'Dog Care', keywords:['dog training','dog food','puppy care','dog health'],
+        micro:[ { name:'Puppy training for anxious rescue dogs', keywords:['rescue dog anxiety training','anxious rescue puppy training'] } ]},
+      { id:'cat-care', name:'Cat Care', keywords:['cat care','kitten care','cat behavior','cat food'],
+        micro:[ { name:'Diet plans for overweight indoor cats', keywords:['overweight cat diet','indoor cat weight loss'] } ]},
+      { id:'exotic-pets', name:'Exotic Pets', keywords:['exotic pets','reptile care','bird care'],
+        micro:[ { name:'Beginner care guide for pet reptiles', keywords:['beginner reptile care','pet reptile guide beginners'] } ]},
+    ]},
+  { id:'business-marketing', name:'Business & Marketing', monetization:'high',
+    keywords:['business','marketing','entrepreneur','startup'],
+    platforms:['Blog/SEO','YouTube','LinkedIn','Newsletter'],
+    monetizationMethods:['Digital products (courses, templates)','Affiliate marketing (SaaS tools)','Consulting/services','Sponsored content'],
+    subNiches:[
+      { id:'digital-marketing', name:'Digital Marketing', keywords:['digital marketing','seo','social media marketing','content marketing'],
+        micro:[
+          { name:'Local SEO for small service businesses', keywords:['local seo small business','seo service business'] },
+          { name:'Instagram marketing for local restaurants', keywords:['instagram marketing restaurant','restaurant social media marketing'] },
+        ]},
+      { id:'freelancing', name:'Freelancing & Remote Work', keywords:['freelancing','remote work','freelance career','digital nomad'],
+        micro:[ { name:'Freelance writing niches for beginners', keywords:['freelance writing beginners','freelance writing niche'] } ]},
+      { id:'ecommerce', name:'E-commerce', keywords:['ecommerce','dropshipping','online store','shopify'],
+        micro:[ { name:'Dropshipping niche selection for beginners', keywords:['dropshipping niche beginners','best dropshipping niches'] } ]},
+      { id:'holiday-sales', name:'Holiday Sales & Promotions', keywords:['black friday marketing','holiday sales strategy','cyber monday deals'],
+        micro:[ { name:'Black Friday marketing strategy for small stores', keywords:['black friday small business','black friday marketing small store'] } ]},
+    ]},
+  { id:'relationships-dating', name:'Relationships & Dating', monetization:'medium',
+    keywords:['relationship','dating','marriage','love'],
+    platforms:['Blog/SEO','YouTube','Instagram','TikTok'],
+    monetizationMethods:['Digital products (courses/ebooks)','Affiliate marketing (dating apps/services)','Coaching','Display ads'],
+    subNiches:[
+      { id:'dating-advice', name:'Dating Advice', keywords:['dating advice','online dating','dating apps','first date'],
+        micro:[ { name:'Online dating advice for divorced professionals over 40', keywords:['dating over 40 divorced','divorced dating advice'] } ]},
+      { id:'marriage-longterm', name:'Marriage & Long-term Relationships', keywords:['marriage advice','long distance relationship','couples therapy'],
+        micro:[ { name:'Rebuilding trust after infidelity in marriage', keywords:['rebuilding trust infidelity','marriage after cheating'] } ]},
+      { id:'lgbtq-relationships', name:'LGBTQ+ Relationships', keywords:['lgbtq relationship','same-sex relationship','queer dating'],
+        micro:[ { name:'Coming out advice for teenagers', keywords:['coming out teenagers','lgbtq teen coming out'] } ]},
+      { id:'valentines', name:"Valentine's Day & Gifting", keywords:["valentine's day gift",'valentines gift ideas','anniversary gift ideas'],
+        micro:[ { name:"Valentine's Day gift ideas for long-distance couples", keywords:['valentines gift long distance','long distance valentines gift'] } ]},
+    ]},
+  { id:'education-career', name:'Education & Career', monetization:'medium',
+    keywords:['education','career','study','exam','job'],
+    platforms:['Blog/SEO','YouTube','LinkedIn'],
+    monetizationMethods:['Digital products (courses)','Affiliate marketing (job boards, learning platforms)','Coaching/resume services','Display ads'],
+    subNiches:[
+      { id:'career-change', name:'Career Change', keywords:['career change','career transition','switching careers'],
+        micro:[ { name:'Career change into tech for non-technical professionals', keywords:['career change into tech','non-tech to tech career'] } ]},
+      { id:'exam-prep', name:'Study Skills & Exam Prep', keywords:['exam preparation','study tips','study techniques','test prep'],
+        micro:[ { name:'Study techniques for adult learners returning to college', keywords:['adult learner study tips','returning to college study'] } ]},
+      { id:'resume-interview', name:'Resume & Interview', keywords:['resume writing','interview tips','job interview','cover letter'],
+        micro:[ { name:'Resume writing for career changers with no direct experience', keywords:['resume career changer','resume no experience career change'] } ]},
+    ]},
+  { id:'gaming-entertainment', name:'Gaming & Entertainment', monetization:'low',
+    keywords:['gaming','video games','esports','streaming'],
+    platforms:['YouTube','Twitch','TikTok'],
+    monetizationMethods:['Ad revenue (YouTube/Twitch)','Sponsorships','Affiliate marketing (gear)','Donations/subscriptions'],
+    subNiches:[
+      { id:'mobile-gaming', name:'Mobile Gaming', keywords:['mobile gaming','mobile games','android games','ios games'],
+        micro:[ { name:'Best strategy mobile games for offline play', keywords:['offline strategy mobile games','offline mobile strategy games'] } ]},
+      { id:'streaming-creation', name:'Streaming & Content Creation', keywords:['twitch streaming','youtube gaming','content creation','streaming setup'],
+        micro:[ { name:'Budget streaming setup for beginner streamers', keywords:['budget streaming setup','beginner streamer setup'] } ]},
+      { id:'tabletop-games', name:'Board Games & Tabletop', keywords:['board games','tabletop games','dungeons and dragons','card games'],
+        micro:[ { name:'Board games for family game night with young kids', keywords:['family board games young kids','board game night kids'] } ]},
+    ]},
+  { id:'automotive', name:'Automotive', monetization:'medium',
+    keywords:['automotive','car','cars','vehicle','auto'],
+    platforms:['YouTube','Blog/SEO','Instagram'],
+    monetizationMethods:['Affiliate marketing (parts, tools)','Display ads','Sponsored content','Digital products (repair guides)'],
+    subNiches:[
+      { id:'car-buying', name:'Car Buying & Reviews', keywords:['car buying guide','car review','used car buying'],
+        micro:[ { name:'Buying a reliable used car on a tight budget', keywords:['reliable used car budget','budget used car buying'] } ]},
+      { id:'car-maintenance', name:'Car Maintenance & DIY', keywords:['car maintenance','diy car repair','car care tips'],
+        micro:[ { name:'DIY car maintenance for first-time car owners', keywords:['diy car maintenance beginners','first time car owner maintenance'] } ]},
+      { id:'electric-vehicles', name:'Electric Vehicles', keywords:['electric vehicle','ev charging','ev review','electric car'],
+        micro:[ { name:'Home EV charging setup for apartment dwellers', keywords:['ev charging apartment','home ev charger apartment'] } ]},
+      { id:'winter-car-care', name:'Winter Car Care', keywords:['winter car care','winterize car','cold weather car tips'],
+        micro:[ { name:'Winterizing your car battery and tires', keywords:['winter car battery','winter tires prep'] } ]},
+    ]},
+  { id:'online-learning', name:'Online Learning & Training', monetization:'high',
+    keywords:['training','training platform','online course','e-learning','elearning','lms','edtech','online classes','learning platform'],
+    platforms:['YouTube','LinkedIn','Instagram','Blog/SEO'],
+    monetizationMethods:['Course sales','Memberships/subscriptions','Corporate training contracts','Coaching/cohort programs'],
+    subNiches:[
+      { id:'course-platforms', name:'Course & Training Platforms', keywords:['training platform','learning platform','lms','course platform','e-learning','elearning','edtech'],
+        micro:[
+          { name:'Training platform for small businesses and their staff', keywords:['staff training platform','employee training','corporate training'] },
+          { name:'Skill-based course platform for college students', keywords:['student course platform','skill courses students'] },
+          { name:'Exam prep platform for government jobs', keywords:['exam prep platform','government exam','sarkari exam'] },
+        ]},
+      { id:'course-creation', name:'Course Creation & Cohorts', keywords:['online course','create course','cohort','course creator','course launch'],
+        micro:[
+          { name:'Cohort-based courses for working professionals', keywords:['cohort course','working professionals course'] },
+          { name:'Course creation services for coaches', keywords:['course creation service','coach course'] },
+        ]},
+      { id:'coaching-business', name:'Coaching & Mentoring', keywords:['coaching institute','mentoring','mentor','coach','coaching classes','online coaching'],
+        micro:[
+          { name:'Career coaching for freshers', keywords:['career coaching fresher','fresher mentoring'] },
+          { name:'Spoken English coaching for job seekers', keywords:['spoken english','english speaking course'] },
+        ]},
+    ]},
+  { id:'ai-automation', name:'AI & Automation Services', monetization:'high',
+    keywords:['ai automation','automation','chatbot','ai agent','workflow','zapier','n8n','make.com','ai services'],
+    platforms:['LinkedIn','YouTube','Upwork/Fiverr','Reddit/Forums'],
+    monetizationMethods:['Project fees','Monthly retainers','Productized services','Training/workshops'],
+    subNiches:[
+      { id:'business-automation', name:'Business Workflow Automation', keywords:['workflow automation','business automation','zapier','n8n','make.com','crm automation'],
+        micro:[
+          { name:'Lead follow-up automation for local service businesses', keywords:['lead follow up','local business automation'] },
+          { name:'Invoice and data entry automation for bookkeepers', keywords:['invoice automation','bookkeeper automation'] },
+        ]},
+      { id:'ai-chatbots', name:'AI Chatbots & Assistants', keywords:['chatbot','ai assistant','ai agent','whatsapp bot'],
+        micro:[
+          { name:'WhatsApp chatbots for small shops', keywords:['whatsapp chatbot','shop bot'] },
+          { name:'Customer support bots for e-commerce stores', keywords:['support bot','ecommerce chatbot'] },
+        ]},
+      { id:'ai-content-ops', name:'AI Content Operations', keywords:['ai content','content automation','ai writing workflow'],
+        micro:[ { name:'AI content repurposing for coaches and creators', keywords:['content repurposing','repurpose content'] } ]},
+    ]},
+  { id:'real-estate', name:'Real Estate', monetization:'high', isYMYL:true,
+    keywords:['real estate','property','housing','realtor','broker','rental','plots'],
+    platforms:['YouTube','Instagram','Facebook','Blog/SEO'],
+    monetizationMethods:['Lead generation for agents','Brokerage commissions','Sponsored content','Consulting'],
+    subNiches:[
+      { id:'property-buying', name:'Property Buying Guides', keywords:['property buying','buy house','home loan','buy flat','plots'],
+        micro:[ { name:'First-time home buyer guide for salaried people', keywords:['first time home buyer','salaried home loan'] } ]},
+      { id:'rentals-pg', name:'Rentals & PG', keywords:['rental','pg','tenant','landlord','rent agreement'],
+        micro:[ { name:'Rental property management for NRI owners', keywords:['nri rental','property management nri'] } ]},
+      { id:'property-marketing', name:'Property Marketing', keywords:['property marketing','real estate marketing','real estate leads'],
+        micro:[ { name:'Instagram and Reels marketing for property agents', keywords:['property reels','real estate instagram'] } ]},
+    ]},
+  { id:'astrology-spirituality', name:'Astrology & Spirituality', monetization:'medium',
+    keywords:['astrology','astrologer','jyotish','vedic','horoscope','vastu','spiritual','numerology','tarot'],
+    platforms:['YouTube','Instagram','Blog/SEO','WhatsApp'],
+    monetizationMethods:['Paid consultations','Online courses','Remedy products (affiliate)','Subscriptions/reports'],
+    subNiches:[
+      { id:'vedic-astrology', name:'Vedic Astrology', keywords:['vedic astrology','vedic astrologer','astrologer','kundli','jyotish','birth chart','horoscope'],
+        micro:[
+          { name:'Kundli matching and marriage guidance', keywords:['kundli matching','marriage astrology'] },
+          { name:'Career astrology for students and job seekers', keywords:['career astrology','job astrology'] },
+        ]},
+      { id:'vastu-numerology', name:'Vastu & Numerology', keywords:['vastu','numerology','lucky number','name correction'],
+        micro:[ { name:'Vastu tips for small flats', keywords:['vastu flat','vastu small home'] } ]},
+      { id:'tarot', name:'Tarot & Divination', keywords:['tarot','card reading','divination'],
+        micro:[ { name:'Tarot reading for love and relationships', keywords:['love tarot','relationship tarot'] } ]},
+    ]},
+  { id:'fashion-jewellery', name:'Fashion & Jewellery', monetization:'high',
+    keywords:['fashion','jewellery','jewelry','clothing','apparel','boutique','accessories','ethnic wear'],
+    platforms:['Instagram','Pinterest','YouTube','Facebook'],
+    monetizationMethods:['Own online store','Affiliate marketing','Brand collaborations','Resale/dropshipping'],
+    subNiches:[
+      { id:'jewellery', name:'Jewellery', keywords:['jewellery','jewelry','earrings','necklace','silver jewellery','artificial jewellery'],
+        micro:[
+          { name:'Handmade silver jewellery for gifting', keywords:['handmade silver','gift jewellery'] },
+          { name:'Bridal and festive artificial jewellery rentals', keywords:['bridal jewellery','jewellery rental'] },
+        ]},
+      { id:'clothing', name:'Clothing & Ethnic Wear', keywords:['clothing','ethnic wear','kurti','saree','boutique','apparel'],
+        micro:[ { name:'Office-wear kurtis for working women', keywords:['office wear kurti','working women kurti'] } ]},
+      { id:'styling', name:'Styling & Fashion Advice', keywords:['styling','outfit ideas','fashion tips','personal stylist'],
+        micro:[ { name:'Budget outfit ideas for college students', keywords:['budget outfit','college outfit'] } ]},
+    ]},];
+
+const MODIFIERS = {
+  audience:['beginner','beginners','women','men','moms','mom','dads','dad','kids','children','teens','teenagers','seniors','elderly','students','professionals','entrepreneurs','freelancers','vegans','vegetarians','couples','singles','remote workers','small business','startups','athletes','runners','parents','working parents','first-time','first time'],
+  lifeStage:['pregnant','pregnancy','postpartum','newborn','toddler','menopause','diabetic','diabetes','cancer','anxiety','depression','pcos','thyroid','arthritis','autism','adhd','over 40','over 50','divorced','retired','retirement','trimester','first trimester','second trimester','third trimester'],
+  constraint:['budget','cheap','affordable','free','luxury','premium','diy','quick','5-minute','15-minute','no equipment','at home','one week','30 day','30-day','low cost','tight budget'],
+  format:['guide','checklist','course','ebook','template','app','plan','routine','tutorial','step by step'],
+  geography:['india','usa','uk','canada','australia','delhi','mumbai','bangalore','pune','chennai','hyderabad','new york','london','near me','in 2026','2026','apartment','apartments'],
+};
+
+const COMMERCIAL_INTENT_WORDS = ['best','top','review','reviews','vs','versus','buy','price','cost','discount','coupon','deal','deals','cheapest','comparison','alternative','alternatives'];
+const INFORMATIONAL_INTENT_WORDS = ['how to','what is','why','guide','tips','learn','explained','meaning','benefits of'];
+
+const SEASONAL_SIGNALS = [
+  { name:'Christmas / Holiday Season', keywords:['christmas','xmas','holiday gift','holiday season','stocking stuffer'], peakMonths:[10,11] },
+  { name:'New Year / Resolutions', keywords:['new year resolution','new year',"new year's resolution"], peakMonths:[11,0] },
+  { name:"Valentine's Day", keywords:["valentine's day",'valentines day','valentine gift'], peakMonths:[1] },
+  { name:'Diwali / Festive Season (India)', keywords:['diwali','navratri','durga puja','festive season'], peakMonths:[9,10] },
+  { name:'Halloween', keywords:['halloween'], peakMonths:[9] },
+  { name:'Black Friday / Holiday Shopping', keywords:['black friday','cyber monday','boxing day sale'], peakMonths:[10,11] },
+  { name:'Summer', keywords:['summer'], peakMonths:[4,5,6,7] },
+  { name:'Winter', keywords:['winter'], peakMonths:[10,11,0,1] },
+  { name:'Monsoon / Rainy Season', keywords:['monsoon','rainy season'], peakMonths:[5,6,7,8] },
+  { name:'Back to School', keywords:['back to school','school supplies'], peakMonths:[5,6,7] },
+  { name:'Tax Season', keywords:['tax season','tax filing','income tax return','file taxes'], peakMonths:[0,1,2,3] },
+  { name:'Wedding Season', keywords:['wedding season'], peakMonths:[9,10,11,0,1] },
+  { name:'Spring Cleaning', keywords:['spring cleaning','spring'], peakMonths:[2,3] },
+  { name:"Mother's Day", keywords:["mother's day",'mothers day'], peakMonths:[4] },
+  { name:"Father's Day", keywords:["father's day",'fathers day'], peakMonths:[5] },
+];
+const MONTH_ABBR = ['J','F','M','A','M','J','J','A','S','O','N','D'];
+
+// ---------- Matching logic ----------
+function tokenize(text){ return text.match(/[a-z0-9]+/g) || []; }
+function wordMatches(tw, kw){
+  if (tw === kw) return true;
+  if (kw.length < 3 || tw.length < 3) return false;
+  if (tw.startsWith(kw)) return kw.length >= 4 && tw.length - kw.length <= 3;
+  if (kw.startsWith(tw)) return tw.length >= 5 && kw.length - tw.length <= 3;
+  return false;
+}
+function phraseMatches(topicWords, phrase){
+  return tokenize(phrase).every((pw) => topicWords.some((tw) => wordMatches(tw, pw)));
+}
+function scoreNode(topicWords, keywords){
+  let score = 0;
+  for (const phrase of keywords) if (phraseMatches(topicWords, phrase)) score += tokenize(phrase).length;
+  return score;
+}
+function detectModifiers(topicWords){
+  let categoriesHit = 0;
+  for (const words of Object.values(MODIFIERS)) if (words.some((w) => phraseMatches(topicWords, w))) categoriesHit++;
+  return categoriesHit;
+}
+function detectIntent(topicWords){
+  const isCommercial = COMMERCIAL_INTENT_WORDS.some((w) => phraseMatches(topicWords, w));
+  const isInformational = INFORMATIONAL_INTENT_WORDS.some((w) => phraseMatches(topicWords, w));
+  if (isCommercial && isInformational) return 'Mixed (Informational + Commercial)';
+  if (isCommercial) return 'Commercial / Transactional';
+  if (isInformational) return 'Informational';
+  return 'Informational (default)';
+}
+function detectSeasonality(topicWords){
+  for (const s of SEASONAL_SIGNALS){
+    if (s.keywords.some((kw) => phraseMatches(topicWords, kw))){
+      return { type:'Seasonal', occasion:s.name, peakMonths:s.peakMonths,
+        note:`Demand goes up in these months. Publish your content 6 to 8 weeks before, and expect less traffic after.` };
+    }
+  }
+  return { type:'Evergreen', occasion:null, peakMonths:null,
+    note:'No seasonal pattern found. Demand should stay fairly steady all year, which is safer for long-term content.' };
+}
+
+const NICHE_LEVELS = [
+  { max:1, label:'Broad Niche', audience:'Very Large (Millions)', competitionBase:'Very High' },
+  { max:2, label:'Niche', audience:'Large (100K–1M+)', competitionBase:'High' },
+  { max:3, label:'Sub-niche', audience:'Medium (10K–100K)', competitionBase:'Medium' },
+  { max:4, label:'Micro-niche', audience:'Small (1K–10K)', competitionBase:'Low-Medium' },
+  { max:Infinity, label:'Nano-niche', audience:'Very Small / Hyper-targeted (<1K, high-intent)', competitionBase:'Low' },
+];
+function levelFromScore(score){ return NICHE_LEVELS.find((l) => score <= l.max); }
+function monetizationForNiche(mainNiche, hasCommercialIntent){
+  const order = ['low','medium','high'];
+  let idx = order.indexOf(mainNiche.monetization);
+  if (hasCommercialIntent && idx < order.length - 1) idx++;
+  return order[idx].charAt(0).toUpperCase() + order[idx].slice(1);
+}
+function competitionForResult(levelInfo, monetization){
+  const order = ['Low','Low-Medium','Medium','High','Very High'];
+  let idx = order.indexOf(levelInfo.competitionBase);
+  if (monetization === 'High' && idx < order.length - 1) idx++;
+  return order[idx];
+}
+function barrierToEntry(mainNiche, competition){
+  const base = { 'Very High':'Very High', High:'High', Medium:'Medium', 'Low-Medium':'Low-Medium', Low:'Low (good starting point for beginners)' }[competition] || 'Medium';
+  if (mainNiche.isYMYL) return `${base} — YMYL topic (health or money): Google checks quality more strictly, so trust and expert authorship matter more.`;
+  return base;
+}
+const CONTENT_TEMPLATES = [
+  (n) => `Beginner's Guide to ${n}`,
+  (n) => `${n}: Common Mistakes to Avoid`,
+  (n) => `${n} on a Budget`,
+  (n) => `Is ${n} Worth It in 2026?`,
+];
+function buildContentIdeas(matchedName, siblingMicro){
+  const ideas = CONTENT_TEMPLATES.map((tpl) => tpl(matchedName));
+  const related = siblingMicro.filter((m) => m.name !== matchedName).map((m) => m.name).slice(0, 5);
+  return { ideas, related };
+}
+function bestPathForMain(topicWords, main){
+  const mainScore = scoreNode(topicWords, main.keywords);
+  let bestSub = null, bestSubOwnScore = 0, bestMicro = null, bestSubTotal = 0;
+  for (const sub of main.subNiches){
+    const subScore = scoreNode(topicWords, sub.keywords);
+    let localBestMicro = null, localBestMicroScore = 0;
+    for (const m of sub.micro){
+      const s = scoreNode(topicWords, m.keywords);
+      if (s > localBestMicroScore){ localBestMicroScore = s; localBestMicro = m; }
+    }
+    const subTotal = subScore + localBestMicroScore;
+    if (subTotal > bestSubTotal){
+      bestSubTotal = subTotal; bestSubOwnScore = subScore; bestSub = sub;
+      bestMicro = localBestMicroScore > 0 ? localBestMicro : null;
+    }
+  }
+  return { total: mainScore + bestSubTotal, main, sub: (bestSubOwnScore > 0 || bestMicro) ? bestSub : null, micro: bestMicro };
+}
+function classifyTopic(rawTopic){
+  const topic = rawTopic.toLowerCase().trim().replace(/\s+/g, ' ');
+  const topicWords = tokenize(topic);
+  const STOP = ['for','the','and','of','in','to','a','an','with','on','my','your','is','are','how','what','best','near','me'];
+  const matchWords = topicWords.filter((w) => !STOP.includes(w));
+  let best = null;
+  for (const main of TAXONOMY){
+    const path = bestPathForMain(matchWords, main);
+    if (!best || path.total >= best.total) best = path;
+  }
+  if (!best || best.total === 0){
+    return { recognized:false, rawTopic, seasonality: detectSeasonality(topicWords) };
+  }
+  const { main, sub, micro } = best;
+  const depth = micro ? 3 : sub ? 2 : 1;
+  const categoriesHit = detectModifiers(topicWords);
+  const levelInfo = levelFromScore(depth + categoriesHit);
+  const intent = detectIntent(topicWords);
+  const monetization = monetizationForNiche(main, intent.includes('Commercial'));
+  const competition = competitionForResult(levelInfo, monetization);
+  const seasonality = detectSeasonality(topicWords);
+  const matchedName = micro ? micro.name : sub ? sub.name : main.name;
+  const { ideas, related } = buildContentIdeas(matchedName, sub ? sub.micro : []);
+  return {
+    recognized:true, rawTopic, mainRef:main, subRef:sub, microRef:micro,
+    hierarchy:{ mainNiche:main.name, subNiche: sub ? sub.name : null, microNiche: micro ? micro.name : null },
+    nicheType: levelInfo.label, nicheDepthIndex: NICHE_LEVELS.indexOf(levelInfo),
+    signals:{ audienceSize:levelInfo.audience, monetizationPotential:monetization, competitionLevel:competition, searchIntent:intent, barrierToEntry: barrierToEntry(main, competition) },
+    seasonality,
+    strategy:{ platforms: main.platforms || [], monetizationMethods: main.monetizationMethods || [] },
+    content:{ ideas, relatedMicroNiches: related },
+  };
+}
+
+const AI_SYSTEM_PROMPT = `You are a niche research analyst for content and affiliate websites. Given a single topic, return ONLY a JSON object (no markdown fences, no prose) with this exact shape:
+{
+  "mainNiche": string, "subNiche": string, "microNiche": string,
+  "nicheType": "Broad Niche" | "Niche" | "Sub-niche" | "Micro-niche" | "Nano-niche",
+  "audienceSize": string, "monetizationPotential": "Low" | "Medium" | "High",
+  "competitionLevel": string, "searchIntent": string, "barrierToEntry": string,
+  "seasonality": { "type": "Seasonal" | "Evergreen", "occasion": string | null, "peak": string | null, "note": string },
+  "platforms": string[3], "monetizationMethods": string[4],
+  "contentIdeas": string[4], "relatedMicroNiches": string[5], "reasoning": string
+}`;
+
+async function classifyWithAI(topic, apiKey, model){
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{ 'content-type':'application/json', 'x-api-key':apiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({ model, max_tokens:1200, system:AI_SYSTEM_PROMPT, messages:[{ role:'user', content:`Topic: ${topic}` }] }),
+  });
+  if (!res.ok) throw new Error(`Anthropic API error ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  const text = data.content && data.content[0] && data.content[0].text;
+  if (!text) throw new Error('Empty response from model');
+  const jsonStart = text.indexOf('{'), jsonEnd = text.lastIndexOf('}');
+  if (jsonStart === -1 || jsonEnd === -1) throw new Error('Model did not return JSON');
+  return JSON.parse(text.slice(jsonStart, jsonEnd + 1));
+}
+
+// ---------- Rendering ----------
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+function semanticFor(level){
+  const map = { 'Low':'good', 'Low-Medium':'good', 'Medium':'warn', 'High':'bad', 'Very High':'severe' };
+  return map[level] || 'warn';
+}
+function meterSegs(level){
+  const order = ['Low','Low-Medium','Medium','High','Very High'];
+  const idx = order.indexOf(level);
+  const on = idx === -1 ? 2 : idx + 1;
+  const sem = semanticFor(level);
+  const color = `var(--sem-${sem})`;
+  let html = `<div class="meter" style="color:${color}">`;
+  for (let i=0;i<5;i++) html += `<div class="seg${i<on?' on':''}"></div>`;
+  return html + `</div>`;
+}
+function monetizationMeter(level){
+  const order = ['Low','Medium','High'];
+  const idx = Math.max(0, order.indexOf(level));
+  const color = idx===2 ? 'var(--sem-good)' : idx===1 ? 'var(--sem-warn)' : 'var(--sem-bad)';
+  let html = `<div class="meter" style="color:${color}">`;
+  for (let i=0;i<3;i++) html += `<div class="seg${i<=idx?' on':''}"></div>`;
+  return html + `</div>`;
+}
+function trailHtml(hierarchy){
+  const stops = [
+    { rank:'Main niche', name:hierarchy.mainNiche },
+    { rank:'Sub-niche', name:hierarchy.subNiche },
+    { rank:'Micro-niche', name:hierarchy.microNiche },
+  ].filter((s) => s.name);
+  return `<div class="trail">${stops.map((s, i) => {
+    const isLast = i === stops.length - 1;
+    const sep = isLast ? '' : '<span class="sep">→</span>';
+    return `<div class="stop${isLast?' active':''}"><span class="rank-label">${s.rank}</span><span class="name">${escapeHtml(s.name)}</span></div>${sep}`;
+  }).join('')}</div>`;
+}
+function rulerHtml(depthIndex, typeName){
+  const labels = ['Broad','Niche','Sub','Micro','Nano'];
+  let steps = '';
+  for (let i=0;i<5;i++) steps += `<div class="step${i<=depthIndex?' filled':''}"></div>`;
+  return `
+    <div class="ruler">
+      <div class="ruler-track">${steps}</div>
+      <div class="ruler-labels">${labels.map((l)=>`<span>${l}</span>`).join('')}</div>
+      <div class="niche-type-name">${escapeHtml(typeName)}</div>
+    </div>`;
+}
+function monthStripHtml(seasonality){
+  let cells = '';
+  for (let i=0;i<12;i++){
+    let cls = 'cell';
+    if (seasonality.type === 'Seasonal' && seasonality.peakMonths && seasonality.peakMonths.includes(i)) cls += ' peak';
+    if (seasonality.type === 'Evergreen') cls += ' evergreen-on';
+    cells += `<div class="${cls}">${MONTH_ABBR[i]}</div>`;
+  }
+  return `<div class="month-strip">${cells}</div>`;
+}
+function seasonalityCardHtml(seasonality){
+  const badgeCls = seasonality.type === 'Seasonal' ? 'seasonal' : 'evergreen';
+  const badgeLabel = seasonality.type === 'Seasonal' ? `Seasonal — ${seasonality.occasion}` : 'Evergreen';
+  return `
+    <div class="card">
+      <p class="rank">Demand through the year</p>
+      <h2>Seasonality</h2>
+      <span class="season-badge ${badgeCls}">${escapeHtml(badgeLabel)}</span>
+      ${monthStripHtml(seasonality)}
+      <p class="season-note">${escapeHtml(seasonality.note)}</p>
+    </div>`;
+}
+function tagRow(items){ return `<div class="tag-row">${(items||[]).map((i)=>`<span class="tag">${escapeHtml(i)}</span>`).join('')}</div>`; }
+
+// ---------- Fresher breakdown ----------
+const ROLES = {
+  'content-writing':{ en:'Content writer', hi:'Content writer', kind:'Freelance / Job', lvl:'easy', skills:'Writing, basic research',
+    taskEn:'Write blog posts, captions and product descriptions about {n}.', taskHi:'{n} par blog posts, captions aur product descriptions likho.' },
+  'social-media':{ en:'Social media assistant', hi:'Social media assistant', kind:'Freelance / Job', lvl:'easy', skills:'Canva, posting, basic captions',
+    taskEn:'Plan posts, publish and reply to comments for {n} pages.', taskHi:'{n} ke pages ke liye posts plan karo, publish karo aur comments ka reply do.' },
+  'design':{ en:'Graphic designer (Canva)', hi:'Graphic designer (Canva)', kind:'Freelance', lvl:'easy', skills:'Canva, Photoshop basics',
+    taskEn:'Make posts, carousels, thumbnails and printables for {n} brands.', taskHi:'{n} brands ke liye posts, carousels, thumbnails aur printables banao.' },
+  'video-editing':{ en:'Video editor', hi:'Video editor', kind:'Freelance', lvl:'easy', skills:'CapCut / Premiere, storytelling',
+    taskEn:'Edit Reels, Shorts and YouTube videos in the {n} space.', taskHi:'{n} space ke Reels, Shorts aur YouTube videos edit karo.' },
+  'seo':{ en:'SEO assistant', hi:'SEO assistant', kind:'Freelance / Job', lvl:'med', skills:'Keyword research, on-page SEO',
+    taskEn:'Do keyword research and basic on-page SEO for {n} websites.', taskHi:'{n} websites ke liye keyword research aur basic on-page SEO karo.' },
+  'research-data':{ en:'Research / data assistant', hi:'Research / data assistant', kind:'Freelance / Job', lvl:'easy', skills:'Excel / Sheets, careful reading',
+    taskEn:'Collect lists, prices and competitor details in {n}.', taskHi:'{n} me lists, prices aur competitor details collect karo.' },
+  'va':{ en:'Virtual assistant', hi:'Virtual assistant', kind:'Freelance / Job', lvl:'easy', skills:'Email, scheduling, data entry',
+    taskEn:'Handle emails, bookings and data entry for {n} businesses.', taskHi:'{n} businesses ke liye emails, bookings aur data entry sambhalo.' },
+  'support':{ en:'Customer support', hi:'Customer support', kind:'Job', lvl:'easy', skills:'Communication, patience',
+    taskEn:'Answer customer chats and emails for {n} companies.', taskHi:'{n} companies ke customers ke chats aur emails ka jawab do.' },
+  'web-wp':{ en:'Website helper (WordPress)', hi:'Website helper (WordPress)', kind:'Freelance', lvl:'med', skills:'WordPress, page builders',
+    taskEn:'Build simple websites and landing pages for {n} businesses.', taskHi:'{n} businesses ke liye simple websites aur landing pages banao.' },
+  'automation':{ en:'Automation helper (Zapier / Make)', hi:'Automation helper (Zapier / Make)', kind:'Freelance', lvl:'med', skills:'Zapier or Make, APIs basics',
+    taskEn:'Set up simple automations (forms, emails, sheets) for {n} businesses.', taskHi:'{n} businesses ke liye simple automations (forms, emails, sheets) set karo.' },
+  'translation':{ en:'Translator (English and Hindi)', hi:'Translator (English aur Hindi)', kind:'Freelance', lvl:'easy', skills:'Strong English and Hindi',
+    taskEn:'Translate articles and guides about {n} between English and Hindi.', taskHi:'{n} ke articles aur guides ko English aur Hindi me translate karo.' },
+  'tutor':{ en:'Tutor / coach', hi:'Tutor / coach', kind:'Freelance / Own business', lvl:'med', skills:'Real knowledge, patience',
+    taskEn:'Teach the basics of {n} to beginners. Only choose this where you truly know the topic.', taskHi:'{n} ke basics beginners ko sikhao. Ye tabhi chuno jab topic aapko sach me aata ho.' },
+  'digital-products':{ en:'Digital product seller', hi:'Digital product seller', kind:'Own business', lvl:'med', skills:'Canva or Sheets, a clear idea',
+    taskEn:'Make templates, checklists or planners for {n} and sell them. Income is slow at first.', taskHi:'{n} ke liye templates, checklists ya planners banao aur becho. Shuru me income dheere aati hai.' },
+  'affiliate':{ en:'Niche blogger / creator', hi:'Niche blogger / creator', kind:'Own business', lvl:'hard', skills:'Consistency, SEO or video',
+    taskEn:'Start a small site or channel on one micro-niche of {n} and earn from affiliate links. Takes months to earn.', taskHi:'{n} ke ek micro-niche par chhoti site ya channel shuru karo aur affiliate links se kamao. Kamaane me mahine lagte hain.' },
+};
+const ROLE_BY_MAIN = {
+  'health-fitness':['content-writing','social-media','design','video-editing','support','digital-products'],
+  'personal-finance':['content-writing','research-data','seo','translation','digital-products'],
+  'technology':['content-writing','seo','video-editing','research-data','web-wp','automation','support'],
+  'beauty-skincare':['social-media','design','video-editing','content-writing','affiliate'],
+  'food-cooking':['content-writing','design','video-editing','social-media','affiliate','digital-products'],
+  'travel':['content-writing','social-media','video-editing','design','affiliate','research-data'],
+  'home-garden':['design','content-writing','video-editing','affiliate','social-media'],
+  'parenting-family':['content-writing','design','digital-products','social-media','affiliate'],
+  'pets':['social-media','video-editing','content-writing','affiliate','design'],
+  'business-marketing':['social-media','seo','va','content-writing','web-wp','automation','design'],
+  'relationships-dating':['content-writing','social-media','video-editing','digital-products'],
+  'education-career':['content-writing','tutor','design','digital-products','research-data','translation'],
+  'gaming-entertainment':['video-editing','social-media','design','content-writing'],
+  'automotive':['content-writing','video-editing','research-data','affiliate','seo'],
+  'online-learning':['content-writing','design','video-editing','support','va','web-wp','tutor'],
+  'ai-automation':['automation','research-data','va','content-writing','web-wp','support'],
+  'real-estate':['social-media','video-editing','design','content-writing','research-data','va'],
+  'astrology-spirituality':['content-writing','social-media','video-editing','design','translation','support'],
+  'fashion-jewellery':['social-media','design','video-editing','content-writing','va','affiliate'],
+};
+// ---------- Broader coverage: extra niches ----------
+ROLES['lead-gen']={ en:'Lead generation / sales assistant', hi:'Lead generation / sales assistant', kind:'Freelance / Job', lvl:'easy', skills:'Outreach, spreadsheets, communication',
+  taskEn:'Find potential customers for {n} businesses and reach out to them.', taskHi:'{n} businesses ke liye possible customers dhundho aur unse contact karo.' };
+ROLES['photo-edit']={ en:'Photographer / photo editor', hi:'Photographer / photo editor', kind:'Freelance', lvl:'med', skills:'Camera basics, Lightroom or Canva',
+  taskEn:'Shoot or edit product and promo photos for {n} brands.', taskHi:'{n} brands ke liye product aur promo photos shoot ya edit karo.' };
+ROLES['local-mkt']={ en:'Local business marketing helper', hi:'Local business marketing helper', kind:'Freelance', lvl:'easy', skills:'Google Business Profile, WhatsApp, basic ads',
+  taskEn:'Set up and manage Google Maps listings, reviews and simple promotions for {n} businesses.', taskHi:'{n} businesses ke liye Google Maps listing, reviews aur simple promotions set aur manage karo.' };
+function mk(id,name,mon,ymyl,kw,plat,meth,roles,subs){
+  TAXONOMY.push({ id, name, monetization:mon, isYMYL:!!ymyl, keywords:kw, platforms:plat, monetizationMethods:meth,
+    subNiches: subs.map(([sid,sname,skw,micros]) => ({ id:sid, name:sname, keywords:skw, micro: micros.map(([n,k]) => ({ name:n, keywords:k })) })) });
+  ROLE_BY_MAIN[id] = roles;
+}
+const P_SOC=['Instagram','YouTube','Facebook'], P_B2B=['LinkedIn','Blog/SEO','YouTube'], P_LOC=['Google Maps','WhatsApp','Instagram'];
+mk('photography-video','Photography & Videography','medium',false,['photography','photographer','photo','videography','video shoot','wedding photography','drone','camera','cinematography'],P_SOC,['Client shoots','Presets/templates','Stock photos','Courses'],
+  ['photo-edit','video-editing','social-media','design','local-mkt'],[
+  ['wedding-event-photo','Wedding & Event Photography',['wedding photography','event photography','pre-wedding','candid','wedding photographer','event photographer'],[['Pre-wedding shoots for small-town couples',['pre-wedding','couple shoot']],['Birthday and baby shoot packages',['birthday shoot','baby shoot']]]],
+  ['product-photo','Product & Commercial Photography',['product photography','food photography','catalog shoot','ecommerce photos','product photographer'],[['Product photos for Instagram sellers',['instagram sellers','product shoot']],['Menu and food photos for restaurants',['menu photos','restaurant photography']]]],
+  ['video-production','Video Production',['videography','videographer','video production','corporate video','drone video','youtube video'],[['Short promo videos for local shops',['promo video','shop video']],['Drone shots for real estate',['drone real estate','drone shoot']]]],
+]);
+mk('music-audio','Music & Audio','medium',false,['music','song','singer','audio','podcast','guitar','piano','dj','sound','recording'],['YouTube','Instagram','Spotify'],['Lessons','Streaming/royalties','Sample packs','Sponsorships'],
+  ['video-editing','social-media','content-writing','design','tutor'],[
+  ['music-lessons','Music Lessons',['music lessons','guitar lessons','piano lessons','singing classes','vocal training'],[['Online guitar lessons for adult beginners',['guitar adults','guitar beginners']],['Singing classes for kids',['singing kids','vocal kids']]]],
+  ['podcasting','Podcasting & Audio Content',['podcast','audiobook','voiceover','audio editing'],[['Podcast editing service for solo creators',['podcast editing','podcast production']],['Voiceover for explainer videos',['voiceover','voice over']]]],
+  ['music-production','Music Production & DJ',['music production','beat making','dj','mixing','mastering'],[['Beats and instrumentals for independent artists',['beats','instrumental']],['Wedding DJ and event sound',['wedding dj','event sound']]]],
+]);
+mk('legal-services','Legal Services','high',true,['legal','law','lawyer','advocate','attorney','court','contract','compliance','trademark','gst'],P_B2B,['Consultations','Document drafting','Retainers','Lead generation'],
+  ['content-writing','research-data','va','design','lead-gen'],[
+  ['business-legal','Business & Startup Legal',['company registration','startup legal','trademark','gst registration','compliance','contract'],[['Company registration help for first-time founders',['company registration','pvt ltd']],['Contract templates for freelancers',['freelancer contract','contract template']]]],
+  ['personal-legal','Personal & Family Legal',['divorce','property dispute','will','family law','consumer court','legal notice'],[['Legal notice drafting for consumers',['legal notice','consumer complaint']]]],
+  ['legal-content','Legal Information & Tech',['legal blog','legal tech','law students','legal awareness'],[['Simple legal guides in Hindi',['legal hindi','law hindi']]]],
+]);
+mk('medical-clinics','Healthcare & Clinics','high',true,['healthcare','clinic','doctor','hospital','dentist','dental','medical','physiotherapy','diagnostic','pharmacy','ayurveda','homeopathy'],P_LOC,['Patient appointments','Lead generation','Healthcare content','Telemedicine'],
+  ['local-mkt','content-writing','social-media','va','support','design'],[
+  ['dental-clinic','Dental Care',['dentist','dental','teeth','orthodontist','braces'],[['Patient marketing for dental clinics',['dental marketing','clinic patients']]]],
+  ['clinic-practice','Clinics & Practice Growth',['clinic','doctor','appointments','opd','practice management'],[['Online appointment and reminders for small clinics',['appointment booking','clinic reminders']],['Google Maps reviews for local doctors',['google reviews doctor','local doctor']]]],
+  ['alt-medicine','Ayurveda, Homeopathy & Physiotherapy',['ayurveda','homeopathy','physiotherapy','naturopathy','unani'],[['Ayurveda product and care guides',['ayurvedic products','ayurveda guide']]]],
+]);
+mk('mental-wellbeing','Mental Wellbeing & Self-improvement','medium',true,['mental health','therapy','counselling','counseling','self improvement','motivation','mindset','habits','productivity','life coach','stress','burnout'],['Instagram','YouTube','Blog/SEO'],['Coaching','Courses','Apps/subscriptions','Workshops'],
+  ['content-writing','design','video-editing','social-media','digital-products'],[
+  ['stress-anxiety','Stress & Burnout',['stress','burnout','anxiety','overthinking','sleep'],[['Stress management for working professionals',['stress professionals','work stress']]]],
+  ['habits-productivity','Habits & Productivity',['habits','productivity','time management','discipline','focus','planner'],[['Productivity planners for students',['student planner','productivity students']]]],
+  ['life-coaching','Life & Confidence Coaching',['life coach','confidence','public speaking','personality development','motivation'],[['Public speaking for college students',['public speaking','speaking students']]]],
+]);
+mk('sports-academies','Sports & Academies','medium',false,['sports','sport','cricket','football','academy','coaching camp','badminton','athletics','gym trainer','tennis','kabaddi','swimming'],P_LOC,['Fees and memberships','Camps','Merchandise','Sponsorships'],
+  ['local-mkt','social-media','video-editing','design','va','content-writing'],[
+  ['sports-academy','Sports Academies & Coaching',['academy','sports coaching','training camp','football academy','cricket academy','cricket coaching','football coaching','badminton coaching','sports training'],[['Local academy admissions and parent communication',['academy admissions','parents communication']]]],
+  ['sports-content','Sports Content & Analysis',['sports news','match analysis','sports blog','highlights','fantasy'],[['Local tournament highlights and reels',['tournament highlights','local match']]]],
+  ['sports-gear','Sports Gear & Fitness Equipment',['sports gear','equipment','sports shoes','jersey','racket'],[['Budget equipment guides for beginners',['budget equipment','beginner gear']]]],
+]);
+mk('kids-education','Kids & School Education','medium',false,['kids','school','children','preschool','kindergarten','tuition','tutoring','stem','worksheet','phonics','olympiad'],['YouTube','Instagram','Facebook','WhatsApp'],['Tuition fees','Worksheets/printables','Courses','School partnerships'],
+  ['content-writing','design','digital-products','tutor','social-media','video-editing'],[
+  ['tuition-tutoring','Tuition & Tutoring',['tuition','tutoring','home tuition','online tuition','class 10','class 12'],[['Online maths tuition for class 8 to 10',['maths tuition','math class']],['Spoken English for school kids',['spoken english kids','english kids']]]],
+  ['kids-printables','Worksheets & Learning Printables',['worksheet','printable','flashcards','activity book','phonics'],[['Hindi and English worksheets for preschoolers',['preschool worksheets','nursery worksheets']]]],
+  ['school-solutions','School & Preschool Solutions',['preschool','playschool','school management','school marketing','admissions'],[['Admission marketing for small schools',['school admissions','school marketing']]]],
+]);
+mk('agriculture','Agriculture & Farming','medium',false,['agriculture','farming','farm','farmer','crop','organic','beekeeping','honey','dairy','poultry','fish farming','horticulture','seeds','fertilizer','livestock'],['YouTube','WhatsApp','Facebook'],['Selling produce','Direct-to-consumer brands','Agri content','Consulting'],
+  ['video-editing','content-writing','social-media','research-data','translation','local-mkt'],[
+  ['organic-farming','Organic & Natural Farming',['organic','natural farming','vermicompost','zero budget'],[['Organic vegetable boxes for city homes',['vegetable box','organic vegetables']]]],
+  ['allied-farming','Dairy, Poultry, Bees & Fish',['dairy','poultry','beekeeping','honey','fish farming','goat farming','livestock'],[['Beekeeping for beginners and honey brands',['beekeeping','honey brand']],['Small-scale poultry setup guides',['poultry setup','backyard poultry']]]],
+  ['agri-tech','Agri Tech & Marketing',['agritech','farm app','drone spraying','agri marketplace','mandi'],[['Direct farm-to-customer selling',['farm to customer','farmers market']]]],
+]);
+mk('software-apps','Software & App Development','high',false,['software','app','application','developer','coding','programming','website development','web development','saas','android','ios','api','startup tech'],['LinkedIn','YouTube','GitHub','Reddit/Forums'],['Project fees','Product subscriptions','Maintenance retainers','Courses'],
+  ['web-wp','automation','research-data','support','content-writing','tutor'],[
+  ['web-development','Web Development',['web development','website development','frontend','backend','wordpress','react'],[['Websites for local service businesses',['local business website','service website']]]],
+  ['mobile-apps','Mobile App Development',['mobile app','android app','ios app','flutter','app development'],[['Simple booking apps for small businesses',['booking app','small business app']]]],
+  ['dev-education','Coding Education',['learn coding','coding bootcamp','programming course','dsa','interview prep'],[['Coding basics for non-IT students',['coding beginners','non it coding']]]],
+]);
+mk('events-weddings','Event Planning & Weddings','medium',false,['event','events','wedding','wedding planner','party','decoration','catering','birthday','corporate event','mehendi','banquet'],P_LOC,['Planning fees','Vendor commissions','Package sales','Referrals'],
+  ['social-media','design','video-editing','local-mkt','va','photo-edit'],[
+  ['wedding-planning','Wedding Planning',['wedding planner','wedding planning','destination wedding','sangeet','mehendi'],[['Budget wedding planning for middle-class families',['budget wedding','small wedding']]]],
+  ['party-decor','Party, Birthday & Decor',['birthday party','balloon decoration','theme party','decoration','baby shower'],[['Birthday theme decor packages',['birthday decor','theme decor']]]],
+  ['corporate-events','Corporate Events',['corporate event','conference','team outing','product launch'],[['Team outing and offsite planning',['team outing','offsite']]]],
+]);
+mk('local-services','Local & Home Services','medium',false,['plumber','electrician','carpenter','painter','repair','home service','handyman','pest control','ac repair','cleaning service','packers movers','laundry','mechanic','locksmith','service provider','near me'],P_LOC,['Service bookings','Lead generation','Subscriptions/AMC','Franchise'],
+  ['local-mkt','lead-gen','va','design','social-media','web-wp'],[
+  ['home-repairs','Repairs & Maintenance',['plumber','electrician','carpenter','ac repair','appliance repair','handyman'],[['AC service and AMC plans for apartments',['ac service','amc plan']]]],
+  ['cleaning-pest','Cleaning & Pest Control',['cleaning service','deep cleaning','pest control','sofa cleaning','water tank cleaning'],[['Deep cleaning packages for new flats',['deep cleaning flat','move in cleaning']]]],
+  ['movers-logistics-local','Moving & Delivery',['packers movers','shifting','courier','tempo','delivery'],[['Small-load shifting for students and bachelors',['small shifting','bachelor shifting']]]],
+]);
+mk('salon-spa','Salon, Spa & Grooming','medium',false,['salon','spa','barber','beauty parlour','parlour','massage','nail','bridal makeup','grooming','mehndi','hair salon','unisex salon'],P_LOC,['Service bookings','Memberships','Product sales','Training'],
+  ['social-media','local-mkt','design','video-editing','va'],[
+  ['hair-salon','Hair Salons & Barbers',['salon','barber','hair salon','hair cut','unisex salon'],[['Reels and bookings for neighbourhood salons',['salon reels','salon booking']]]],
+  ['bridal-makeup','Bridal & Party Makeup',['bridal makeup','makeup artist','party makeup','mehndi'],[['Bridal makeup portfolio and enquiry funnel',['bridal portfolio','makeup enquiries']]]],
+  ['spa-wellness','Spa & Massage',['spa','massage','aromatherapy','wellness centre'],[['Spa packages for couples and gifting',['spa couple','spa gift']]]],
+]);
+mk('hospitality-restaurants','Restaurants, Cafes & Hospitality','medium',false,['restaurant','cafe','coffee','hotel','homestay','cloud kitchen','food business','bakery','catering','tiffin','dhaba','hospitality','resort'],P_LOC,['Orders and dine-in','Delivery apps','Catering','Franchise'],
+  ['social-media','design','video-editing','local-mkt','photo-edit','va'],[
+  ['cloud-kitchen','Cloud Kitchens & Tiffin',['cloud kitchen','tiffin','home kitchen','food delivery','ghost kitchen'],[['Home tiffin service for working people',['tiffin service','home tiffin']]]],
+  ['cafes-bakeries','Cafes & Bakeries',['cafe','coffee shop','bakery','cake shop','dessert'],[['Custom cake orders through Instagram',['custom cakes','cake orders']]]],
+  ['hotels-homestays','Hotels & Homestays',['hotel','homestay','guest house','resort','airbnb'],[['Direct bookings for small homestays',['homestay bookings','direct booking']]]],
+]);
+mk('arts-crafts','Art, Crafts & Handmade','medium',false,['art','craft','handmade','painting','drawing','diy craft','candle','resin','pottery','embroidery','calligraphy','crochet','handicraft','sketch','illustration'],['Instagram','Pinterest','YouTube','Etsy'],['Product sales','Commissions','Workshops','Digital downloads'],
+  ['social-media','design','video-editing','photo-edit','digital-products','content-writing'],[
+  ['handmade-products','Handmade Products',['handmade','candle','resin art','handicraft','soap','pottery','gift hamper'],[['Custom resin keepsakes and gifts',['resin keepsake','resin gifts']],['Handmade candles for gifting',['handmade candles','scented candles']]]],
+  ['art-illustration','Painting & Illustration',['painting','drawing','sketch','illustration','portrait','calligraphy'],[['Custom portrait commissions',['portrait commission','custom portrait']]]],
+  ['craft-teaching','Craft Workshops & Tutorials',['craft workshop','crochet','embroidery','knitting','diy tutorial'],[['Beginner crochet kits and videos',['crochet kit','crochet beginners']]]],
+]);
+mk('books-writing','Books, Writing & Publishing','medium',false,['book','books','writing','author','novel','ebook','publishing','self publishing','poetry','story','blog writing','copywriting','ghostwriting','editor','proofreading','content writing'],['Blog/SEO','Instagram','YouTube','Amazon KDP'],['Book sales','Freelance writing','Courses','Newsletters'],
+  ['content-writing','translation','research-data','design','digital-products'],[
+  ['self-publishing','Self-publishing',['self publishing','kdp','ebook','novel','author','book cover'],[['Low-content books (planners, journals) on KDP',['low content','kdp planner']]]],
+  ['freelance-writing','Freelance Writing & Copywriting',['copywriting','content writing','ghostwriting','blog writing','proofreading','editing'],[['Website copy for small businesses',['website copy','business copywriting']]]],
+  ['book-community','Book Reviews & Communities',['book review','bookstagram','reading list','book club'],[['Hindi book summaries and reviews',['hindi book summary','book summary']]]],
+]);
+mk('language-translation','Language Learning & Translation','medium',false,['language','english','hindi','translation','translator','spanish','french','german','japanese','ielts','toefl','spoken english','communication skills','subtitles','interpreter'],['YouTube','Instagram','WhatsApp'],['Classes','Translation projects','Courses','Test prep'],
+  ['translation','tutor','content-writing','video-editing','design','support'],[
+  ['language-classes','Language Classes',['spoken english','learn english','learn spanish','learn german','learn japanese','language class'],[['German for students planning to study abroad',['german study abroad','german students']]]],
+  ['test-prep-lang','IELTS, TOEFL & Test Prep',['ielts','toefl','pte','english test','test prep','ielts coaching','toefl coaching'],[['IELTS speaking practice groups',['ielts speaking','ielts practice']]]],
+  ['translation-services','Translation & Subtitling',['translation','translator','subtitles','localization','transcription'],[['English to Hindi subtitles for YouTubers',['hindi subtitles','youtube subtitles']]]],
+]);
+mk('energy-environment','Solar, Energy & Environment','high',false,['solar','energy','renewable','environment','sustainability','recycling','waste','eco friendly','green','climate','ev charging','water','carbon'],P_B2B,['Installation projects','Lead generation','Consulting','Product sales'],
+  ['lead-gen','content-writing','research-data','design','local-mkt','social-media'],[
+  ['solar-installation','Solar & Rooftop Power',['solar','rooftop solar','solar panel','inverter','net metering'],[['Rooftop solar lead generation for installers',['solar leads','installer leads']],['Solar guides for homeowners in Hindi',['solar hindi','solar guide']]]],
+  ['recycling-waste','Recycling & Waste',['recycling','waste','compost','scrap','upcycling'],[['Scrap pickup and recycling for apartments',['scrap pickup','apartment recycling']]]],
+  ['eco-products','Eco-friendly Products',['eco friendly','sustainable products','bamboo','reusable','zero waste'],[['Zero-waste starter kits',['zero waste kit','starter kit']]]],
+]);
+mk('crypto-trading','Crypto, Trading & Web3','medium',true,['crypto','bitcoin','trading','forex','stock trading','options','nft','web3','blockchain','day trading','technical analysis','intraday','demat'],['YouTube','Telegram','X/Twitter','Blog/SEO'],['Courses','Affiliate/referrals','Signals/communities','Content'],
+  ['content-writing','research-data','video-editing','design','translation'],[
+  ['stock-trading','Stock & Options Trading',['stock trading','intraday','options','technical analysis','swing trading','demat','stock market','share market','stocks','shares'],[['Beginner trading education with risk rules',['trading beginners','risk management']]]],
+  ['crypto-web3','Crypto & Web3',['crypto','bitcoin','blockchain','web3','nft','defi'],[['Crypto safety and scam awareness guides',['crypto scam','crypto safety']]]],
+  ['forex','Forex & Currency Trading',['forex','currency trading','fx'],[['Forex basics for new traders',['forex basics','forex beginners']]]],
+]);
+mk('insurance-banking','Insurance, Loans & Banking','high',true,['insurance','loan','banking','credit','mortgage','policy','mutual fund agent','financial advisor','emi','health insurance','term insurance','fintech'],P_B2B,['Commissions','Lead generation','Advisory fees','Affiliate'],
+  ['content-writing','lead-gen','research-data','design','va','translation'],[
+  ['insurance','Insurance Guides & Sales',['insurance','health insurance','term insurance','car insurance','policy','claim'],[['Health insurance explainers for families',['health insurance family','insurance explained']]]],
+  ['loans','Loans & Credit Products',['loan','personal loan','home loan','business loan','emi','credit'],[['Small business loan guides',['business loan guide','msme loan']]]],
+  ['fintech','Fintech & Payments',['fintech','upi','payments','neobank','wallet'],[['UPI and digital payment tips for shopkeepers',['upi shopkeepers','digital payments']]]],
+]);
+mk('hr-recruitment','HR, Recruitment & Jobs','medium',false,['hr','recruitment','recruiter','hiring','jobs','job portal','staffing','payroll','talent','resume','placement','manpower','interview'],['LinkedIn','WhatsApp','Naukri/Indeed'],['Placement fees','Subscriptions','Resume services','Training'],
+  ['lead-gen','research-data','va','content-writing','support','design'],[
+  ['recruitment-agency','Recruitment & Staffing',['recruitment','staffing','hiring','manpower','placement agency','talent'],[['Hiring support for small companies',['small company hiring','sme recruitment']]]],
+  ['job-search-help','Job Search Help',['resume','cv','linkedin profile','job search','interview coaching'],[['Resume and LinkedIn makeover for freshers',['fresher resume','linkedin makeover']]]],
+  ['hr-ops','HR Operations & Payroll',['hr','payroll','compliance','employee onboarding','attendance'],[['Payroll and compliance help for small teams',['payroll small business','pf esi']]]],
+]);
+mk('govt-exams','Government Jobs & Competitive Exams','medium',false,['government job','sarkari','upsc','ssc','bank exam','railway','ibps','neet','jee','cat','gate','competitive exam','current affairs','civil services','govt'],['YouTube','Telegram','Blog/SEO'],['Courses','Test series','Ads','Coaching'],
+  ['content-writing','design','video-editing','research-data','tutor','translation'],[
+  ['job-alerts','Job Alerts & Exam Updates',['government job','sarkari','job alert','exam notification','vacancy','result'],[['State-wise job alert and form-fill guide',['state job alert','form fill guide']]]],
+  ['exam-coaching','Exam Prep & Coaching',['upsc','ssc','bank exam','railway','neet','jee','gate','cat'],[['Daily current affairs in simple Hindi',['current affairs hindi','daily current affairs']]]],
+  ['study-material','Notes & Test Series',['notes','test series','mock test','previous year papers','pdf'],[['Topic-wise notes and quizzes for SSC',['ssc notes','ssc quiz']]]],
+]);
+mk('media-influencing','Media, News & Influencer Content','medium',false,['news','media','influencer','youtuber','youtube channel','vlog','reels','creator','blogging','personal brand','instagram growth','shorts','newsletter'],['YouTube','Instagram','X/Twitter','Newsletter'],['Sponsorships','Ad revenue','Affiliate','Memberships'],
+  ['video-editing','design','social-media','content-writing','research-data','va'],[
+  ['creator-economy','Creators & Personal Branding',['influencer','youtuber','creator','personal brand','vlog','reels'],[['Faceless YouTube channels in a niche',['faceless youtube','faceless channel']]]],
+  ['news-blogs','News, Blogs & Newsletters',['news','blog','newsletter','local news','explainer'],[['Hyperlocal news and updates',['local news','city updates']]]],
+  ['creator-services','Services for Creators',['video editing creators','thumbnail design','shorts editing','channel management'],[['Shorts editing packages for YouTubers',['shorts editing','youtuber editing']]]],
+]);
+mk('nonprofit-social','Nonprofit & Social Causes','low',false,['ngo','nonprofit','charity','donation','social work','volunteer','fundraising','social cause','csr','foundation'],['Instagram','Facebook','WhatsApp'],['Donations','Grants','CSR partnerships','Events'],
+  ['content-writing','social-media','design','research-data','video-editing','va'],[
+  ['ngo-fundraising','Fundraising & Grants',['fundraising','donation','grant','crowdfunding','csr'],[['Grant research and proposal writing for small NGOs',['grant proposal','ngo grant']]]],
+  ['ngo-communication','NGO Communication',['ngo','nonprofit','awareness campaign','volunteer','storytelling'],[['Social media and impact stories for NGOs',['ngo social media','impact stories']]]],
+  ['community-causes','Community & Cause Projects',['community','social cause','environment drive','education drive'],[['Local community drives and volunteering platforms',['community drive','volunteer platform']]]],
+]);
+mk('electronics-repair','Electronics, Mobile & Hardware','medium',false,['electronics','mobile repair','laptop repair','hardware','computer repair','cctv','printer','networking','gadget repair','iphone repair','spare parts','refurbished'],P_LOC,['Repair fees','Parts and accessories','AMC contracts','Resale'],
+  ['local-mkt','social-media','video-editing','content-writing','support','lead-gen'],[
+  ['mobile-laptop-repair','Mobile & Laptop Repair',['mobile repair','laptop repair','screen replacement','iphone repair','data recovery'],[['Doorstep mobile repair in a city',['doorstep mobile repair','mobile service']]]],
+  ['cctv-networking','CCTV & Networking',['cctv','wifi','networking','security camera','biometric'],[['CCTV installation for shops and homes',['cctv shops','cctv homes']]]],
+  ['refurbished','Refurbished & Accessories',['refurbished','used phones','accessories','spare parts','second hand'],[['Refurbished laptops for students',['refurbished laptops','student laptops']]]],
+]);
+mk('interior-architecture','Interior Design & Architecture','high',false,['interior','interior design','architect','architecture','modular kitchen','furniture','false ceiling','renovation design','wardrobe','home design','construction','civil'],['Instagram','Pinterest','YouTube','Houzz'],['Design fees','Project commissions','Product sales','Consulting'],
+  ['design','social-media','video-editing','photo-edit','content-writing','lead-gen'],[
+  ['interior-design','Interior Design Services',['interior design','interior designer','home interior','modular kitchen','wardrobe','false ceiling'],[['Interiors for 2BHK flats on a fixed budget',['2bhk interior','budget interior']]]],
+  ['architecture-construction','Architecture & Construction',['architect','construction','civil engineer','house plan','vastu plan','contractor'],[['Home plan and 3D elevation services',['house plan','3d elevation']]]],
+  ['furniture-decor','Furniture & Decor',['furniture','home decor','wall art','lighting','curtains'],[['Custom furniture for small apartments',['custom furniture','small space furniture']]]],
+]);
+mk('data-analytics','Data, Analytics & AI Skills','high',false,['data','data science','data analytics','analytics','machine learning','power bi','excel','sql','python','dashboard','business intelligence','statistics','data entry'],P_B2B,['Project fees','Jobs','Courses','Consulting'],
+  ['research-data','va','automation','content-writing','tutor','support'],[
+  ['excel-reporting','Excel & Reporting',['excel','spreadsheet','google sheets','reporting','mis','dashboard'],[['Excel dashboards for small businesses',['excel dashboard','small business reporting']]]],
+  ['data-analytics-bi','Data Analytics & BI',['data analytics','power bi','tableau','sql','business intelligence'],[['Sales and inventory dashboards for retailers',['sales dashboard','inventory report']]]],
+  ['ml-ai-learning','Machine Learning & AI Learning',['machine learning','data science','python','deep learning','ai course'],[['Data science projects for freshers portfolio',['data science projects','fresher portfolio']]]],
+]);
+mk('design-creative','Design & Creative Services','medium',false,['design','graphic design','logo','branding','ui','ux','ui ux','canva','poster','packaging','brand identity','creative agency','animation','motion graphics','3d'],['Instagram','Behance','LinkedIn','YouTube'],['Project fees','Retainers','Templates','Courses'],
+  ['design','social-media','video-editing','content-writing','photo-edit','lead-gen'],[
+  ['branding-logo','Branding & Logo Design',['logo','branding','brand identity','visiting card','packaging'],[['Logo and brand kits for new Instagram businesses',['logo instagram','brand kit']]]],
+  ['ui-ux','UI/UX & Web Design',['ui ux','ui','ux','figma','landing page design','app design'],[['Landing page design for coaches and consultants',['landing page coach','consultant landing']]]],
+  ['animation-motion','Animation & Motion Graphics',['animation','motion graphics','explainer video','3d','after effects'],[['Short explainer animations for startups',['explainer animation','startup explainer']]]],
+]);
+mk('elder-care','Elder Care & Senior Services','medium',true,['senior citizen','elder care','old age','caregiver','nursing','home nurse','retirement home','elderly','geriatric','attendant'],P_LOC,['Service fees','Subscriptions','Referrals','Product sales'],
+  ['content-writing','local-mkt','va','support','research-data','lead-gen'],[
+  ['home-care','Home Nursing & Attendants',['home nurse','caregiver','attendant','nursing','patient care'],[['Trained home attendants for post-surgery care',['post surgery care','home attendant']]]],
+  ['senior-living','Senior Living & Support',['old age home','retirement','senior citizen','assisted living'],[['Daily check-in and errand services for seniors',['senior check in','errand service']]]],
+  ['senior-tech','Digital Help for Seniors',['seniors smartphone','elderly tech','digital literacy'],[['Smartphone and UPI classes for seniors',['smartphone seniors','upi seniors']]]],
+]);
+mk('logistics-manufacturing','Logistics, Manufacturing & B2B Trade','high',false,['logistics','transport','supply chain','manufacturing','factory','export','import','wholesale','b2b','trading business','packaging','warehouse','msme','supplier','distribution'],P_B2B,['Trade margins','Service contracts','Lead generation','Consulting'],
+  ['lead-gen','research-data','va','content-writing','design','web-wp'],[
+  ['export-import','Export & Import',['export','import','international trade','exim','dgft','sourcing'],[['Export guidance for small manufacturers',['export small manufacturer','export guide']]]],
+  ['manufacturing-msme','Manufacturing & MSME',['manufacturing','factory','msme','production','small industry','packaging'],[['Online catalogs and leads for small factories',['factory catalog','manufacturer leads']]]],
+  ['transport-warehouse','Transport & Warehousing',['logistics','transport','warehouse','fleet','courier','supply chain'],[['Fleet and delivery tracking for small operators',['fleet tracking','delivery tracking']]]],
+]);
+// ---------- Occult & dark-arts niches (with a caution note) ----------
+const OCCULT_CAUTION = {
+  en:'Be careful in this niche. Promising to control people, cure illness, win back a lover or remove curses for money is cheating, and it can be illegal (several Indian states have anti-superstition or fraud laws). Safe ground for a fresher: education, folklore, history, storytelling, and clearly labelled beliefs. Never guarantee results and never take money to "remove" a curse.',
+  hi:'Is niche me dhyan rakho. Paise leke logon ko control karne, bimari theek karne, pyaar wapas laane ya shraap hataane ka vaada karna dhokha hai aur illegal ho sakta hai (kai Indian states me andhvishwas ya fraud ke kanoon hain). Fresher ke liye safe raasta: education, folklore, history, kahaniyan, aur saaf likha hua "ye maanyata hai". Result ki guarantee kabhi mat do aur shraap "hataane" ke paise mat lo.'
+};
+mk('occult-dark-arts','Occult, Black Magic & Dark Astrology','medium',false,
+  ['black magic','dark astrology','occult','kala jadu','jadu tona','vashikaran','tantra','tantrik','aghori','witchcraft','evil eye','nazar','nazar dosh','paranormal','haunted','ghost','horror','spirit','curse','shraap','kaal sarp','pitra dosh','shani dosh','rahu ketu','mangal dosh','totka','exorcism','black art'],
+  ['YouTube','Instagram','WhatsApp','Blog/SEO'],['Content/ad revenue','Books and courses','Product sales (amulets, books)','Storytelling/podcasts'],
+  ['content-writing','video-editing','social-media','design','translation','research-data'],[
+  ['dark-astrology','Dark & Karmic Astrology',['dark astrology','kaal sarp','pitra dosh','shani dosh','rahu ketu','mangal dosh','karmic','dosha','dosh'],[
+    ['Rahu-Ketu and Shani explained in simple Hindi',['rahu ketu','shani explained']],
+    ['Dosh in kundli: what it means and common myths',['kundli dosh','dosh myths']]]],
+  ['tantra-black-magic','Tantra, Black Magic & Folklore',['black magic','kala jadu','jadu tona','tantra','tantrik','aghori','witchcraft','totka','black art'],[
+    ['History and folklore of tantra and aghori traditions',['tantra history','aghori folklore']],
+    ['Black magic myths vs facts and scam awareness',['black magic myths','black magic scam']]]],
+  ['protection-nazar','Evil Eye & Protection Beliefs',['evil eye','nazar','nazar dosh','nazar utarna','protection','curse','shraap','exorcism'],[
+    ['Nazar and evil-eye traditions explained',['nazar tradition','evil eye explained']],
+    ['Evil-eye charms and gift items',['nazar charm','nazar battu']]]],
+  ['paranormal-horror','Paranormal, Ghost & Horror Content',['paranormal','haunted','ghost','horror','spirit','haunted places'],[
+    ['Haunted places and true-story narration channel',['haunted places','true ghost stories']],
+    ['Horror audio stories and podcasts in Hindi',['horror stories hindi','horror podcast']]]],
+]);
+TAXONOMY[TAXONOMY.length - 1].caution = OCCULT_CAUTION;
+const astroMain = TAXONOMY.find((m) => m.id === 'astrology-spirituality');
+if (astroMain) astroMain.caution = { en:'Astrology is a belief practice, not a proven science. Do not promise exact results, health cures, or money outcomes, and label advice as guidance only.', hi:'Astrology ek maanyata par based practice hai, proven science nahi. Exact results, bimari ke ilaaj ya paise ke nateeje ka vaada mat karo, aur advice ko sirf guidance likho.' };
+// ---------- Folk spirits & local beliefs (kachcha kalwa type) ----------
+(function(){
+  const occ = TAXONOMY.find((m) => m.id === 'occult-dark-arts');
+  if (!occ) return;
+  ['kachcha kalwa','kachha kalwa','kalwa','kalawa','mauli','bhoot','pret','jinn','chudail','daayan','dayan','ojha','jharphoonk','jhaad phoonk','bhairav','devta','baba','tona'].forEach((k) => occ.keywords.push(k));
+  occ.subNiches.push({
+    id:'folk-spirits', name:'Folk Spirits & Local Beliefs',
+    keywords:['kachcha kalwa','kachha kalwa','kalwa','kalawa','mauli','bhoot','pret','jinn','chudail','daayan','dayan','ojha','jharphoonk','jhaad phoonk','bhairav','devta','folk beliefs','village beliefs','local deity'],
+    micro:[
+      { name:'Kachcha kalwa and other folk spirit stories explained', keywords:['kachcha kalwa','kachha kalwa','kalwa'] },
+      { name:'Bhoot-pret, chudail and jinn beliefs: myths vs facts', keywords:['bhoot','pret','chudail','jinn','daayan'] },
+      { name:'Village deities and folk rituals documentary-style content', keywords:['village deity','folk rituals','devta','bhairav'] },
+      { name:'Kalawa / mauli thread meaning and traditions', keywords:['kalawa','mauli','red thread'] },
+    ]});
+})();
+// ---------- Gap-fill niches (from the 40-category checklist) ----------
+mk('food-beverage-brands','Food & Beverage Products','high',false,['beverage','beverages','tea','coffee','juice','snacks','packaged food','food brand','food processing','spices','pickle','namkeen','sweets','bakery products','cold drink','water bottle','organic food','dairy products','ghee','masala'],P_SOC,['Own brand sales','Wholesale/distribution','Subscription boxes','Private label'],
+  ['design','social-media','photo-edit','video-editing','lead-gen','content-writing'],[
+  ['beverages','Tea, Coffee & Drinks',['tea','coffee','juice','beverage','smoothie','cold drink','kombucha','energy drink'],[['Specialty tea or coffee brand for online selling',['specialty tea','specialty coffee']],['Cold-pressed juice delivery for a city',['cold pressed juice','juice delivery']]]],
+  ['packaged-snacks','Snacks, Sweets & Packaged Food',['snacks','namkeen','sweets','packaged food','pickle','masala','spices','ghee'],[['Homemade pickles and masalas as a small brand',['homemade pickle','masala brand']],['Healthy snack boxes for office workers',['healthy snacks','snack box']]]],
+  ['food-processing','Food Processing & Manufacturing',['food processing','fssai','food manufacturing','private label','cold storage'],[['FSSAI licence and starter guidance for small food makers',['fssai licence','food licence']]]],
+]);
+mk('digital-marketing','Digital Marketing & SEO','high',false,['digital marketing','seo','search engine','social media marketing','smm','ppc','google ads','facebook ads','email marketing','content marketing','lead generation','influencer marketing','affiliate','marketing agency','local seo','performance marketing','whatsapp marketing'],P_B2B,['Retainers','Project fees','Courses','Own sites/affiliate'],
+  ['seo','social-media','content-writing','lead-gen','design','web-wp','local-mkt'],[
+  ['seo-services','SEO & Search Marketing',['seo','search engine','local seo','keyword research','backlinks','google ranking'],[['Local SEO for clinics, salons and coaching centres',['local seo clinics','local seo salon']]]],
+  ['paid-ads','Paid Ads & Performance',['google ads','facebook ads','meta ads','ppc','performance marketing','lead ads'],[['Lead-gen ads for local service businesses',['lead ads local','service business ads']]]],
+  ['social-email','Social, Email & Content Marketing',['social media marketing','email marketing','content marketing','whatsapp marketing','influencer marketing','newsletter'],[['Instagram content packs for small shops',['instagram content pack','shop instagram']]]],
+]);
+mk('advertising-branding','Advertising & Branding','high',false,['advertising','branding','brand strategy','creative agency','campaign','outdoor advertising','hoarding','billboard','pr','public relations','brand identity','copywriting agency','media buying','jingle','ad film'],P_B2B,['Agency retainers','Campaign fees','Consulting','Production fees'],
+  ['design','content-writing','social-media','video-editing','research-data','lead-gen'],[
+  ['brand-building','Brand Strategy & Identity',['brand strategy','branding','brand identity','brand name','positioning','rebranding'],[['Brand identity packages for new small businesses',['brand identity package','new business branding']]]],
+  ['ad-campaigns','Ad Campaigns & Creative',['advertising','campaign','ad film','jingle','creative agency','media buying'],[['Short ad films and reels for local brands',['ad film local','reel ads']]]],
+  ['outdoor-pr','Outdoor Advertising & PR',['outdoor advertising','hoarding','billboard','pr','public relations','press release'],[['Press release and local media coverage service',['press release service','local media']]]],
+]);
+mk('ecommerce-selling','E-commerce & Online Selling','high',false,['ecommerce','e-commerce','online store','online selling','amazon seller','flipkart','meesho','shopify','dropshipping','marketplace','d2c','private label','reselling','online business','instagram selling','amazon fba','etsy'],P_SOC,['Product margins','Seller services','Courses','Affiliate'],
+  ['design','research-data','photo-edit','content-writing','support','va','lead-gen'],[
+  ['marketplace-selling','Marketplace Selling (Amazon, Flipkart, Meesho)',['amazon seller','flipkart','meesho','marketplace','amazon fba','reselling','etsy'],[['Product listing and catalog service for new sellers',['listing service','catalog service']],['Meesho reselling for small-town beginners',['meesho reselling','reselling beginners']]]],
+  ['own-store','Own Store & D2C Brands',['online store','shopify','d2c','private label','instagram selling','woocommerce'],[['Instagram-first D2C brand in one product category',['instagram d2c','single product brand']]]],
+  ['dropship-sourcing','Dropshipping & Sourcing',['dropshipping','sourcing','wholesale supplier','import products','china sourcing'],[['Supplier research and product testing for sellers',['supplier research','product testing']]]],
+]);
+mk('retail-wholesale','Retail & Wholesale','medium',false,['retail','wholesale','shop','store','kirana','supermarket','grocery','showroom','distributor','dealer','franchise store','general store','mart','trading','stockist','pos'],P_LOC,['Product margins','Franchise','Distribution','Online + offline sales'],
+  ['local-mkt','social-media','design','va','lead-gen','research-data'],[
+  ['local-retail','Local Shops & Kirana',['shop','store','kirana','grocery','general store','mart','showroom'],[['WhatsApp ordering and delivery for neighbourhood kirana',['whatsapp ordering','kirana delivery']]]],
+  ['wholesale-dist','Wholesale & Distribution',['wholesale','distributor','dealer','stockist','trading','supplier'],[['Online catalog and order taking for wholesalers',['wholesale catalog','order taking']]]],
+  ['franchise-retail','Franchise & Retail Chains',['franchise','retail chain','outlet','pos','billing software'],[['Franchise lead generation for small retail brands',['franchise leads','retail brand']]]],
+]);
+mk('entrepreneurship','Business & Entrepreneurship','high',false,['entrepreneur','entrepreneurship','startup','business idea','side hustle','small business','msme','business plan','business loan','self employed','home business','business model','scale business','founder','start a business','funding','investor'],P_B2B,['Consulting','Courses','Communities','Own business'],
+  ['research-data','content-writing','va','design','lead-gen','web-wp'],[
+  ['startup-launch','Starting a Business',['startup','business idea','business plan','start a business','founder','home business'],[['Low-investment business ideas for small towns',['low investment business','small town business']]]],
+  ['side-hustle','Side Hustles & Self-employment',['side hustle','self employed','part time income','work from home','freelance business'],[['Side hustles for college students',['student side hustle','college side hustle']]]],
+  ['funding-growth','Funding, Loans & Scaling',['funding','investor','business loan','msme','scale business','pitch deck'],[['MSME scheme and loan guidance for new owners',['msme scheme','loan guidance']]]],
+]);
+mk('professional-services','Professional Services','high',false,['professional services','consultant','consulting','chartered accountant','ca','accounting','accountant','tax consultant','bookkeeping','audit','company secretary','cs','architect','engineer services','advisory','gst filing','itr','virtual cfo'],P_B2B,['Retainers','Project fees','Compliance packages','Consulting'],
+  ['va','research-data','content-writing','design','lead-gen','web-wp'],[
+  ['accounting-tax','Accounting, GST & Tax Filing',['accounting','accountant','bookkeeping','gst filing','itr','tax consultant','chartered accountant','ca','audit'],[['GST and bookkeeping packages for small shops',['gst bookkeeping','shop accounting']]]],
+  ['business-consulting','Business & Management Consulting',['consultant','consulting','advisory','virtual cfo','business consultant','operations consulting'],[['Process and cost-saving audits for small firms',['cost saving audit','process audit']]]],
+  ['compliance-cs','Compliance & Registrations',['company secretary','cs','roc filing','licence','compliance','registration','trademark'],[['Annual compliance reminders and filing service',['annual compliance','roc filing']]]],
+]);
+mk('kids-baby-products','Kids & Baby Products','high',false,['baby products','kids products','baby care','diaper','toys','kids clothes','baby clothes','stroller','kids furniture','school bag','stationery','kids gifts','educational toys','baby food','maternity','newborn products'],P_SOC,['Product sales','Affiliate','Subscription boxes','Gift sets'],
+  ['design','social-media','content-writing','photo-edit','video-editing','affiliate'],[
+  ['baby-care-products','Baby Care & Newborn Products',['baby products','baby care','diaper','baby food','newborn products','maternity','stroller'],[['Newborn gift hampers for new parents',['newborn hamper','baby gift hamper']]]],
+  ['toys-learning','Toys & Educational Products',['toys','educational toys','stationery','learning kits','puzzle','board books'],[['Montessori-style activity kits for toddlers',['montessori kit','toddler activity']]]],
+  ['kids-fashion','Kids Clothing & Accessories',['kids clothes','baby clothes','school bag','kids accessories','kids footwear'],[['Festive outfits for kids and siblings',['festive kids outfit','sibling outfit']]]],
+]);
+mk('manufacturing-industry','Manufacturing & Industry','high',false,['manufacturing','industry','industrial','factory','machinery','machine','plant','production unit','fabrication','cnc','packaging','chemical','plastic','steel','textile','garments','electronics manufacturing','oem','tooling'],P_B2B,['Product sales','Job work','Exports','B2B contracts'],
+  ['lead-gen','research-data','design','content-writing','web-wp','va'],[
+  ['small-manufacturing','Small-scale Manufacturing',['manufacturing','production unit','factory','small industry','msme manufacturing','plant'],[['Starter guides for small production units',['small production unit','starter guide']]]],
+  ['industrial-machinery','Machinery, Fabrication & Tooling',['machinery','machine','fabrication','cnc','tooling','welding','industrial equipment'],[['Online catalogs and lead pages for machine makers',['machine maker catalog','fabrication leads']]]],
+  ['textile-garments','Textile & Garment Manufacturing',['textile','garments','garment manufacturing','knitwear','fabric','stitching unit'],[['Private-label garment manufacturing for startups',['private label garments','garment startup']]]],
+]);
+mk('logistics-transport','Logistics & Transportation','medium',false,['logistics','transportation','transport','trucking','fleet','courier','cargo','freight','delivery service','warehousing','taxi','cab','travels','tempo','supply chain','last mile'],P_B2B,['Freight fees','Subscriptions','Commissions','Contracts'],
+  ['lead-gen','va','research-data','content-writing','local-mkt','design'],[
+  ['freight-trucking','Freight & Trucking',['freight','trucking','cargo','truck','transporter','load','fleet'],[['Load matching and trip planning for small transporters',['load matching','trip planning']]]],
+  ['courier-lastmile','Courier & Last-mile Delivery',['courier','delivery service','last mile','parcel','hyperlocal delivery'],[['Hyperlocal delivery for neighbourhood shops',['hyperlocal delivery','shop delivery']]]],
+  ['cabs-travels','Cabs, Taxi & Travel Operators',['taxi','cab','travels','car rental','tempo traveller','bus service'],[['Outstation cab booking for small operators',['outstation cab','cab booking']]]],
+]);
+mk('entertainment-media','Entertainment & Media','medium',false,['entertainment','movies','film','cinema','ott','web series','tv','television','comedy','stand up','anime','celebrity','bollywood','film making','short film','shows','radio','acting','casting'],['YouTube','Instagram','X/Twitter'],['Ad revenue','Sponsorships','Production fees','Subscriptions'],
+  ['video-editing','content-writing','social-media','design','research-data','translation'],[
+  ['film-video','Films, Series & Reviews',['movies','film','cinema','web series','ott','bollywood','anime','review','short film'],[['Hindi movie and web-series review channel',['hindi movie review','web series review']]]],
+  ['comedy-shows','Comedy, Shows & Stand-up',['comedy','stand up','shows','sketch','memes','roast'],[['Short sketch comedy for Instagram Reels',['sketch comedy','reels comedy']]]],
+  ['acting-casting','Acting, Casting & Production',['acting','casting','film making','production house','audition','assistant director'],[['Audition portfolio and casting leads for newcomers',['audition portfolio','casting leads']]]],
+]);
+mk('hobbies-leisure','Hobbies & Leisure','low',false,['hobby','hobbies','collecting','collection','coins','stamps','model','rc','drone hobby','chess','puzzle','board game','birdwatching','stargazing','fishing','trekking','camping','hiking','cycling','gardening hobby','reading','journaling','scrapbook'],['YouTube','Instagram','Pinterest','Reddit/Forums'],['Affiliate','Product sales','Courses','Communities'],
+  ['content-writing','video-editing','social-media','design','affiliate'],[
+  ['collecting','Collecting & Models',['collecting','coins','stamps','model','rc','antiques','trading cards'],[['Coin and note collecting guides for beginners',['coin collecting','note collecting']]]],
+  ['outdoor-hobbies','Outdoor & Adventure Hobbies',['trekking','camping','hiking','cycling','fishing','birdwatching','stargazing'],[['Weekend trek guides near a city',['weekend trek','trek guide']]]],
+  ['mind-games-hobbies','Games, Puzzles & Creative Hobbies',['chess','puzzle','journaling','scrapbook','reading','board game'],[['Chess coaching for kids and adults',['chess coaching','chess classes']]]],
+]);
+mk('spirituality-lifestyle','Spirituality & Lifestyle','medium',false,['spirituality','spiritual','religion','religious','devotional','bhajan','temple','pooja','puja','meditation','mantra','gita','satsang','minimalism','lifestyle','mindful living','slow living','festivals','rituals','vrat','pilgrimage','yatra'],['YouTube','Instagram','WhatsApp','Blog/SEO'],['Content/ads','Product sales (puja items, books)','Courses','Tours/yatra packages'],
+  ['content-writing','video-editing','social-media','design','translation','digital-products'],[
+  ['devotional-content','Devotional & Festival Content',['devotional','bhajan','temple','pooja','puja','mantra','gita','festivals','vrat','aarti'],[['Daily mantra and aarti videos in Hindi',['daily mantra','aarti video']],['Festival puja vidhi and checklist guides',['puja vidhi','festival checklist']]]],
+  ['meditation-mind','Meditation & Inner Growth',['meditation','mindfulness','satsang','spiritual growth','breathwork','mindful living'],[['Guided meditation audio for sleep and focus',['guided meditation','sleep meditation']]]],
+  ['pilgrimage-lifestyle','Pilgrimage, Rituals & Simple Living',['pilgrimage','yatra','rituals','minimalism','slow living','lifestyle'],[['Char Dham and temple yatra planning guides',['char dham','yatra planning']]]],
+]);
+mk('cybersecurity','Cybersecurity & Online Safety','high',false,['cybersecurity','cyber security','hacking','ethical hacking','penetration testing','infosec','malware','phishing','data protection','privacy','vpn','firewall','online safety','cyber crime','osint','bug bounty','soc'],P_B2B,['Jobs','Consulting','Courses','Bug bounties'],
+  ['content-writing','research-data','support','tutor','automation','video-editing'],[
+  ['ethical-hacking','Ethical Hacking & Pen Testing',['ethical hacking','penetration testing','bug bounty','osint','hacking','ctf'],[['Ethical hacking basics for college students',['ethical hacking students','hacking beginners']]]],
+  ['security-business','Security for Small Businesses',['cybersecurity','data protection','firewall','privacy','compliance','phishing'],[['Phishing awareness training for small teams',['phishing awareness','staff training security']]]],
+  ['personal-safety-online','Online Safety for Everyone',['online safety','cyber crime','scam','fraud','upi fraud','sextortion','vpn'],[['Scam and fraud awareness for families in Hindi',['scam awareness','upi fraud hindi']]]],
+]);
+mk('artificial-intelligence','Artificial Intelligence (Tools & Learning)','high',false,['artificial intelligence','ai','chatgpt','generative ai','gen ai','prompt','prompt engineering','llm','ai tools','ai course','ai art','ai video','ai image','midjourney','machine learning','copilot','claude','gemini'],['YouTube','LinkedIn','X/Twitter','Blog/SEO'],['Courses','Services','Affiliate (AI tools)','Consulting'],
+  ['content-writing','video-editing','research-data','automation','tutor','design'],[
+  ['ai-tools-guides','AI Tools & Prompt Guides',['ai tools','chatgpt','prompt','prompt engineering','copilot','claude','gemini'],[['ChatGPT prompt packs for students and job seekers',['prompt pack','chatgpt students']]]],
+  ['ai-creative','AI Image, Video & Content',['ai art','ai video','ai image','midjourney','generative ai','gen ai'],[['AI product photos and ads for small sellers',['ai product photos','ai ads']]]],
+  ['ai-learning','AI Courses & Upskilling',['ai course','machine learning','llm','learn ai','ai for beginners'],[['AI upskilling workshops for working professionals',['ai workshop','ai upskilling']]]],
+]);
+// extra sub-niches on existing mains
+(function(){
+  const trav = TAXONOMY.find((m) => m.id === 'travel');
+  if (trav) trav.subNiches.push({ id:'tour-operators', name:'Tours, Packages & Tourism Business',
+    keywords:['tourism','tour operator','tour package','travel agency','travel agent','homestay tours','tour guide','pilgrimage tour'],
+    micro:[ { name:'Local day-tour and weekend package for a city', keywords:['day tour','weekend package'] }, { name:'Travel agent lead generation for small agencies', keywords:['travel agent leads','agency leads'] } ] });
+  const gam = TAXONOMY.find((m) => m.id === 'gaming-entertainment');
+  if (gam) { ['esports','e-sports','bgmi','free fire','valorant','tournament'].forEach((k) => gam.keywords.push(k));
+    gam.subNiches.push({ id:'esports', name:'Esports & Tournaments',
+      keywords:['esports','e-sports','bgmi','free fire','valorant','tournament','gaming clan','scrims'],
+      micro:[ { name:'BGMI and Free Fire scrims and small tournaments', keywords:['bgmi scrims','free fire tournament'] }, { name:'Esports team management and content', keywords:['esports team','team management'] } ] }); }
+})();
+const FIT_TXT = {
+  easy:{ en:'Easy for freshers', hi:'Fresher ke liye aasaan', cls:'easy' },
+  med:{ en:'Medium', hi:'Medium', cls:'med' },
+  hard:{ en:'Hard', hi:'Mushkil', cls:'hard' },
+};
+function L(en, hi){ return (typeof lang !== 'undefined' && lang === 'hi') ? hi : en; }
+function fitBadge(k){ const f = FIT_TXT[k]; return `<span class="fit ${f.cls}">${escapeHtml(L(f.en, f.hi))}</span>`; }
+function fresherLevel(main, depth){
+  // depth: 'main' | 'sub' | 'micro'. Rule-based estimate: narrower is easier; health/money topics need more trust.
+  if (depth === 'micro') return (main.isYMYL || main.caution) ? 'med' : 'easy';
+  if (depth === 'sub') return main.isYMYL ? 'hard' : 'med';
+  return 'hard';
+}
+function narrowIdeas(name){
+  return [
+    L(`${name} for beginners`, `${name} beginners ke liye`),
+    L(`${name} in Hindi`, `${name} Hindi me`),
+    L(`${name} for working people`, `${name} job karne walon ke liye`),
+  ];
+}
+function breakdownHtml(result){
+  const main = result.mainRef, subSel = result.subRef, microSel = result.microRef;
+  if (!main) return '';
+  const ordered = main.subNiches.slice().sort((a, b) => (subSel && b.id === subSel.id) - (subSel && a.id === subSel.id));
+  const microLvl = fresherLevel(main, 'micro');
+  const subs = ordered.map((s) => {
+    const isSel = subSel && s.id === subSel.id;
+    const micros = s.micro.map((m) => {
+      const here = isSel && microSel && m.name === microSel.name;
+      return `<li class="${here ? 'here' : ''}">${escapeHtml(m.name)}${here ? ` <span class="narrow">(${escapeHtml(L('your topic', 'aapka topic'))})</span>` : ''}${fitBadge(microLvl)}</li>`;
+    }).join('');
+    return `<div class="subn-block">
+      <h3 class="subn-title">${escapeHtml(s.name)}${isSel ? `<span class="fit easy">${escapeHtml(L('Closest to your topic', 'Aapke topic ke sabse paas'))}</span>` : ''}</h3>
+      <ul class="mylist">${micros}</ul></div>`;
+  }).join('');
+  const pick = (microSel && microSel.name) || (subSel && subSel.name) ||(main.subNiches[0] && main.subNiches[0].micro[0] && main.subNiches[0].micro[0].name) || main.name;
+  const sharpen = `<div class="sharpen"><strong>${escapeHtml(L('Make your pick sharper.', 'Apni pick ko aur sharp banao.'))}</strong>
+    ${escapeHtml(L('Take one micro-niche and add WHO it is for, WHERE, or in which LANGUAGE. For example:', 'Ek micro-niche lo aur usme jodo ki ye KISKE liye hai, KAHAN, ya kis BHASHA me. Jaise:'))}
+    <ul class="mylist"><li>${escapeHtml(pick)} — ${escapeHtml(L('for college students', 'college students ke liye'))}</li>
+    <li>${escapeHtml(pick)} — ${escapeHtml(L('in Hindi', 'Hindi me'))}</li>
+    <li>${escapeHtml(pick)} — ${escapeHtml(L('for people in your city', 'aapke sheher ke logon ke liye'))}</li></ul></div>`;
+  const legend = `<p class="legend"><span class="fit easy">${escapeHtml(L('Easy for freshers', 'Fresher ke liye aasaan'))}</span> ${escapeHtml(L('very specific, less competition, no licence needed.', 'bahut specific, competition kam, licence nahi chahiye.'))}
+    <span class="fit med">${escapeHtml(L('Medium', 'Medium'))}</span> ${escapeHtml(L('specific, but needs real knowledge or trust (health and money topics).', 'specific hai, par asli knowledge ya trust chahiye (health aur paise ke topics).'))}</p>`;  const ymyl = main.isYMYL
+    ? `<p class="warn-box" style="margin-top:12px">${escapeHtml(L('Health and money topics need extra care. Freshers should not give medical or financial advice. Work as a writer, designer or editor with an expert reviewing the content.', 'Health aur paise ke topics me extra dhyan rakho. Fresher ko medical ya financial advice nahi deni chahiye. Writer, designer ya editor ki tarah kaam karo, aur content kisi expert se check karwao.'))}</p>` : '';
+  const ids = ROLE_BY_MAIN[main.id] || ['content-writing','social-media','design','va'];
+  const nm = result.hierarchy.microNiche || result.hierarchy.subNiche || main.name;
+  const roles = ids.map((id) => {
+    const r = ROLES[id];
+    const task = L(r.taskEn, r.taskHi).replace('{n}', nm);
+    return `<div class="role"><h3>${escapeHtml(L(r.en, r.hi))}${fitBadge(r.lvl)}</h3>
+      <div class="meta">${escapeHtml(r.kind)} · ${escapeHtml(L('Skills: ', 'Skills: '))}${escapeHtml(r.skills)}</div>
+      <p>${escapeHtml(task)}</p></div>`;
+  }).join('');
+  return `
+    <div class="card">
+      <p class="rank">${escapeHtml(L('Break it down', 'Tod ke dekho'))}</p>
+      <h2>${escapeHtml(L('Ideas inside ', 'Is niche ke andar ke ideas: '))}${escapeHtml(main.name)}</h2>
+      <p class="fine" style="margin-top:0">${escapeHtml(L('A sub-niche is a smaller area inside the niche. A micro-niche is one very specific topic inside that area. Freshers do better with micro-niches, because the broad niche is too crowded.', 'Sub-niche niche ke andar ka chhota area hai. Micro-niche us area ke andar ek bahut specific topic hai. Freshers ke liye micro-niche behtar hai, kyunki broad niche me bahut bheed hoti hai.'))}</p>
+      ${legend}
+      ${subs}
+      ${sharpen}
+      <p class="fine">${escapeHtml(L('Tags are a rule-based estimate, not market data. Check real demand before you commit.', 'Tags rule-based andaaza hain, market data nahi. Pakka karne se pehle asli demand check karo.'))}</p>
+      ${ymyl}
+      ${main.caution ? `<p class="warn-box" style="margin-top:12px">${escapeHtml(L(main.caution.en, main.caution.hi))}</p>` : ''}
+    </div>
+    <div class="card">
+      <p class="rank">${escapeHtml(L('For freshers', 'Freshers ke liye'))}</p>
+      <h2>${escapeHtml(L('Work you can do in this niche', 'Is niche me aap ye kaam kar sakte ho'))}</h2>
+      ${roles}
+      <p class="fine">${escapeHtml(L('Start with one easy role, build 3 to 5 sample pieces, then pitch. Pay and demand vary by country and client, so test with a few real conversations.', 'Ek aasaan role se shuru karo, 3 se 5 sample banao, phir pitch karo. Pay aur demand country aur client ke hisaab se badalte hain, isliye kuch asli logon se baat karke test karo.'))}</p>
+    </div>`;
+}
+function genericMain(topic){
+  const t = topic.trim();
+  return { id:null, name:t, isYMYL:false, monetization:'medium', platforms:[], monetizationMethods:[],
+    subNiches:[
+      { id:'g-audience', name:L(`${t} for specific people`, `${t}: khaas logon ke liye`), micro:[
+        { name:L(`${t} for beginners`, `${t} beginners ke liye`) },
+        { name:L(`${t} for college students`, `${t} college students ke liye`) },
+        { name:L(`${t} for working professionals`, `${t} job karne walon ke liye`) },
+        { name:L(`${t} for small business owners`, `${t} chhote business owners ke liye`) } ]},
+      { id:'g-learn', name:L(`Learning and training in ${t}`, `${t} me learning aur training`), micro:[
+        { name:L(`${t} online course or workshop`, `${t} online course ya workshop`) },
+        { name:L(`${t} certification or exam prep`, `${t} certification ya exam prep`) },
+        { name:L(`${t} mentoring or coaching`, `${t} mentoring ya coaching`) } ]},
+      { id:'g-tools', name:L(`Tools, templates and guides for ${t}`, `${t} ke tools, templates aur guides`), micro:[
+        { name:L(`Best ${t} tools and software reviews`, `Best ${t} tools aur software reviews`) },
+        { name:L(`${t} templates and checklists`, `${t} templates aur checklists`) },
+        { name:L(`Step-by-step ${t} how-to guides`, `${t} ke step-by-step how-to guides`) } ]},
+      { id:'g-service', name:L(`Done-for-you ${t} services`, `${t} ki done-for-you services`), micro:[
+        { name:L(`${t} setup and implementation service`, `${t} setup aur implementation service`) },
+        { name:L(`${t} content and marketing for businesses`, `${t} ke liye businesses ka content aur marketing`) } ]},
+      { id:'g-local', name:L(`${t} for a place or language`, `${t}: jagah ya bhasha ke hisaab se`), micro:[
+        { name:L(`${t} in India`, `${t} India me`) },
+        { name:L(`${t} in Hindi`, `${t} Hindi me`) },
+        { name:L(`${t} for your city or local area`, `${t} aapke sheher ke liye`) } ]},
+    ]};
+}
+function renderResult(result){
+  if (!result.recognized){
+    const generic = { mainRef:genericMain(result.rawTopic), subRef:null, microRef:null, hierarchy:{ mainNiche:result.rawTopic, subNiche:null, microNiche:null } };
+    return `
+      <div class="card">
+        <p class="rank">${escapeHtml(L('Not in our niche list', 'Hamari niche list me nahi hai'))}</p>
+        <h2>${escapeHtml(L('We could not place this topic exactly', 'Is topic ko exact jagah nahi mil payi'))}</h2>
+        <p class="warn-box">${escapeHtml(L('This topic is not in our built-in niche list, so below is a general breakdown made from your own words. For a sharper answer, use the AI deep analysis above.', 'Ye topic hamari built-in niche list me nahi hai, isliye neeche aapke hi shabdon se ek general breakdown banaya hai. Aur sahi jawab ke liye upar AI analysis use karo.'))}</p>
+      </div>
+      ${breakdownHtml(generic)}
+      ${seasonalityCardHtml(result.seasonality)}`;
+  }
+  const { hierarchy, nicheType, nicheDepthIndex, signals, seasonality, strategy, content } = result;
+  return `
+    <div class="card">
+      <p class="rank">Where your topic sits</p>
+      <h2>Niche levels</h2>
+      ${trailHtml(hierarchy)}
+      ${rulerHtml(nicheDepthIndex, nicheType)}
+    </div>
+
+    ${breakdownHtml(result)}
+
+    ${seasonalityCardHtml(seasonality)}
+
+    <div class="card">
+      <p class="rank">Opportunity check</p>
+      <h2>Business Signals</h2>
+      <div class="signals-grid">
+        <div class="signal"><div class="label">Audience size</div><div class="value">${escapeHtml(signals.audienceSize)}</div></div>
+        <div class="signal"><div class="label">Search intent</div><div class="value">${escapeHtml(signals.searchIntent)}</div></div>
+        <div class="signal"><div class="label">Earning potential</div><div class="value">${escapeHtml(signals.monetizationPotential)}</div>${monetizationMeter(signals.monetizationPotential)}</div>
+        <div class="signal"><div class="label">Competition level</div><div class="value">${escapeHtml(signals.competitionLevel)}</div>${meterSegs(signals.competitionLevel)}</div>
+        <div class="signal wide"><div class="label">How hard to enter</div><div class="value small">${escapeHtml(signals.barrierToEntry)}</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="rank">Where and how to earn</p>
+      <h2>Platforms and earning methods</h2>
+      <div class="tag-group"><div class="label">Best platforms</div>${tagRow(strategy.platforms)}</div>
+      <div class="tag-group"><div class="label">Ways to earn</div>${tagRow(strategy.monetizationMethods)}</div>
+    </div>
+
+    <div class="card">
+      <p class="rank">Ideas</p>
+      <h2>Content Ideas</h2>
+      <ul class="idea-list">${content.ideas.map((i)=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>
+      ${content.relatedMicroNiches.length ? `
+        <p class="rank" style="margin-top:18px;">Similar niches</p>
+        <h2 style="font-size:1.05rem;">Related micro-niches</h2>
+        <ul class="idea-list related">${content.relatedMicroNiches.map((i)=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
+    </div>`;
+}
+
+function renderAILoading(){
+  return `<div class="card ai-card"><p class="rank">Ai deep analysis</p><h2>Consulting Claude…</h2><p class="spinner-note">Analyzing the topic — this takes a few seconds.</p></div>`;
+}
+function renderAIResult(ai){
+  const s = ai.seasonality || {};
+  const sBadgeCls = s.type === 'Seasonal' ? 'seasonal' : 'evergreen';
+  const sBadgeLabel = s.type === 'Seasonal' ? `Seasonal — ${s.occasion || ''}` : 'Evergreen';
+  return `
+    <div class="card ai-card">
+      <p class="rank">AI deep analysis</p>
+      <h2>${escapeHtml(ai.mainNiche || 'Result')}</h2>
+      ${trailHtml({ mainNiche:ai.mainNiche, subNiche:ai.subNiche, microNiche:ai.microNiche })}
+      <p class="niche-type-name" style="margin-top:14px;">${escapeHtml(ai.nicheType || '—')}</p>
+
+      ${s.type ? `<div style="margin-top:16px;"><span class="season-badge ${sBadgeCls}">${escapeHtml(sBadgeLabel)}</span>
+        ${s.peak ? `<p style="margin-top:8px;font-size:.9rem;">Peak window: <strong>${escapeHtml(s.peak)}</strong></p>` : ''}
+        ${s.note ? `<p class="season-note">${escapeHtml(s.note)}</p>` : ''}</div>` : ''}
+
+      <div class="signals-grid" style="margin-top:16px;">
+        <div class="signal"><div class="label">Audience size</div><div class="value">${escapeHtml(ai.audienceSize || '—')}</div></div>
+        <div class="signal"><div class="label">Search intent</div><div class="value">${escapeHtml(ai.searchIntent || '—')}</div></div>
+        <div class="signal"><div class="label">Earning potential</div><div class="value">${escapeHtml(ai.monetizationPotential || '—')}</div></div>
+        <div class="signal"><div class="label">Competition level</div><div class="value">${escapeHtml(ai.competitionLevel || '—')}</div></div>
+        ${ai.barrierToEntry ? `<div class="signal wide"><div class="label">How hard to enter</div><div class="value small">${escapeHtml(ai.barrierToEntry)}</div></div>` : ''}
+      </div>
+
+      ${(ai.platforms||[]).length ? `<div class="tag-group" style="margin-top:16px;"><div class="label">Best platforms</div>${tagRow(ai.platforms)}</div>` : ''}
+      ${(ai.monetizationMethods||[]).length ? `<div class="tag-group"><div class="label">Ways to earn</div>${tagRow(ai.monetizationMethods)}</div>` : ''}
+
+      <p class="rank" style="margin-top:18px;">Ideas</p>
+      <ul class="idea-list">${(ai.contentIdeas||[]).map((i)=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>
+      ${(ai.relatedMicroNiches||[]).length ? `<ul class="idea-list related">${ai.relatedMicroNiches.map((i)=>`<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
+      ${ai.reasoning ? `<p class="season-note" style="margin-top:12px;">${escapeHtml(ai.reasoning)}</p>` : ''}
+    </div>`;
+}
+function renderAIError(message){
+  return `<div class="card ai-card"><p class="rank">AI deep analysis</p><h2>Couldn't complete analysis</h2><p class="warn-box">${escapeHtml(message)}</p></div>`;
+}
+
+// ---------- Wiring ----------
+const topicInput = document.getElementById('topicInput');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const aiToggleBtn = document.getElementById('aiToggleBtn');
+const aiFields = document.getElementById('aiFields');
+const apiKeyInput = document.getElementById('apiKey');
+const modelSelect = document.getElementById('modelSelect');
+const results = document.getElementById('results');
+const exampleFlag = document.getElementById('exampleFlag');
+
+const STORAGE_KEY = 'niche-atlas-anthropic-key';
+try { apiKeyInput.value = localStorage.getItem(STORAGE_KEY) || ''; } catch(e) {}
+
+aiToggleBtn.addEventListener('click', () => {
+  const expanded = aiToggleBtn.getAttribute('aria-expanded') === 'true';
+  aiToggleBtn.setAttribute('aria-expanded', String(!expanded));
+  aiFields.classList.toggle('visible', !expanded);
+});
+apiKeyInput.addEventListener('change', () => {
+  try { localStorage.setItem(STORAGE_KEY, apiKeyInput.value.trim()); } catch(e) {}
+});
+
+async function handleAnalyze(isExample){
+  const topic = topicInput.value.trim();
+  if (!topic) return;
+  exampleFlag.style.display = isExample ? '' : 'none';
+
+  const ruleResult = classifyTopic(topic);
+  window.__lastRule = ruleResult;
+  let html = renderResult(ruleResult);
+
+  const useAI = aiToggleBtn.getAttribute('aria-expanded') === 'true';
+  const apiKey = apiKeyInput.value.trim();
+
+  if (useAI && apiKey && !isExample){
+    results.innerHTML = html + renderAILoading();
+    try {
+      const aiResult = await classifyWithAI(topic, apiKey, modelSelect.value);
+      results.innerHTML = html + renderAIResult(aiResult);
+    } catch (err) {
+      results.innerHTML = html + renderAIError(err.message || String(err));
+    }
+    return;
+  }
+
+  results.innerHTML = html;
+}
+
+analyzeBtn.addEventListener('click', () => handleAnalyze(false));
+topicInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleAnalyze(false); });
+topicInput.addEventListener('input', () => { exampleFlag.style.display = 'none'; });
+
+// ---------- Language (English / Hinglish) ----------
+const HI = [
+  ['Niche classification tool','Niche classification tool'],
+  ['Type a topic and see where it sits: broad niche, sub-niche or micro-niche, whether demand is seasonal or all-year, and how good the business opportunity looks.','Ek topic likho aur dekho wo kahan aata hai: broad niche, sub-niche ya micro-niche, demand seasonal hai ya saal bhar, aur business opportunity kitni achhi hai.'],
+  ['Your topic','Aapka topic'],
+  ['Analyze','Check karo'],
+  ['This is an example. Type your own topic above and click Analyze.','Ye ek example hai. Upar apna topic likho aur "Check karo" dabao.'],
+  ['Add AI deep analysis (optional, needs your own Anthropic API key)','AI se gehri analysis jodo (optional, apni Anthropic API key chahiye)'],
+  ['Your key is saved only in this browser and sent only to api.anthropic.com.','Aapki key sirf is browser me save hoti hai aur sirf api.anthropic.com ko jaati hai.'],
+  ['The basic classification runs fully offline in your browser using a built-in list of niches. AI mode is optional and uses the key you provide.','Basic classification poori tarah aapke browser me offline chalti hai, built-in niche list se. AI mode optional hai aur aapki di hui key use karta hai.'],
+  ['Where your topic sits','Aapka topic kahan aata hai'],
+  ['Niche levels','Niche ke levels'],
+  ['Main niche','Main niche'],
+  ['Demand through the year','Saal bhar ka demand'],
+  ['Seasonality','Seasonality'],
+  ['Seasonal — ','Seasonal — '],
+  ['Evergreen','Evergreen (saal bhar)'],
+  ['Demand goes up in these months. Publish your content 6 to 8 weeks before, and expect less traffic after.','In mahino me demand badhta hai. Content 6 se 8 hafte pehle publish karo, aur baad me traffic kam hoga.'],
+  ['No seasonal pattern found. Demand should stay fairly steady all year, which is safer for long-term content.','Koi seasonal pattern nahi mila. Demand saal bhar lagbhag same rahega, jo long-term content ke liye safe hai.'],
+  ['Opportunity check','Opportunity check'],
+  ['Business signals','Business signals'],
+  ['Business Signals','Business signals'],
+  ['Audience size','Audience ka size'],
+  ['Search intent','Log kyun search karte hain'],
+  ['Earning potential','Kamaane ki potential'],
+  ['Competition level','Competition kitna hai'],
+  ['How hard to enter','Enter karna kitna mushkil'],
+  ['Where and how to earn','Kahan aur kaise kamaayein'],
+  ['Platforms and earning methods','Platforms aur kamaane ke tareeke'],
+  ['Best platforms','Best platforms'],
+  ['Ways to earn','Kamaane ke tareeke'],
+  ['Ideas','Ideas'],
+  ['Content Ideas','Content ideas'],
+  ['Similar niches','Milte-julte niches'],
+  ['Related micro-niches','Related micro-niches'],
+  ['No match found','Match nahi mila'],
+  ['We could not match this topic','Ye topic match nahi hua'],
+  ['This topic does not match our built-in niche list well enough. Try the AI deep analysis above, or rewrite the topic with more specific words.','Ye topic hamari niche list se theek se match nahi hua. Upar AI analysis try karo, ya topic ko aur specific shabdon me likho.'],
+  ['Very Large (Millions)','Bahut bada (millions)'],
+  ['Large (100K–1M+)','Bada (1 lakh se 10 lakh+)'],
+  ['Medium (10K–100K)','Medium (10 hazaar se 1 lakh)'],
+  ['Small (1K–10K)','Chhota (1 hazaar se 10 hazaar)'],
+  ['Very Small / Hyper-targeted (<1K, high-intent)','Bahut chhota / seedha target (1 hazaar se kam, kharidne wale log)'],
+  ['Mixed (Informational + Commercial)','Mixed (jaankari + kharidna)'],
+  ['Commercial / Transactional','Kharidne ke liye'],
+  ['Informational (default)','Jaankari ke liye (default)'],
+  ['Informational','Jaankari ke liye'],
+  ['Very High','Bahut zyada'],
+  ['Low-Medium','Kam se medium'],
+  ['Low (good starting point for beginners)','Kam (beginners ke liye achha start)'],
+  ['YMYL topic (health or money): Google checks quality more strictly, so trust and expert authorship matter more.','YMYL topic (health ya paisa): Google quality zyada strict check karta hai, isliye trust aur expert author zyada zaroori hai.'],
+  ['Medium','Medium'], ['High','Zyada'], ['Low','Kam'],
+  ['Broad Niche','Broad niche'], ['Sub-niche','Sub-niche'], ['Micro-niche','Micro-niche'], ['Nano-niche','Nano-niche'],
+  ['Consulting Claude…','Claude se pooch rahe hain…'],
+  ['AI deep analysis','AI gehri analysis'],
+  [/^Beginner's Guide to (.+)$/, "$1: Beginners ke liye guide"],
+  [/^(.+): Common Mistakes to Avoid$/, '$1: Aam galtiyan jinse bachna hai'],
+  [/^(.+) on a Budget$/, '$1 kam budget me'],
+  [/^Is (.+) Worth It in 2026\?$/, '$1: 2026 me kya ye sahi hai?'],
+];
+let lang = 'en';
+try { lang = localStorage.getItem('niche-atlas-lang') === 'hi' ? 'hi' : 'en'; } catch (e) {}
+const origText = new WeakMap();
+function translateNode(node){
+  if (!origText.has(node)) origText.set(node, node.nodeValue);
+  const orig = origText.get(node);
+  if (lang === 'en') { node.nodeValue = orig; return; }
+  const trimmed = orig.trim();
+  if (!trimmed) return;
+  let out = trimmed, matched = false;
+  for (const [en, hi] of HI){
+    if (en instanceof RegExp){
+      if (en.test(trimmed)) { out = trimmed.replace(en, hi); matched = true; break; }
+    } else if (trimmed === en){ out = hi; matched = true; break; }
+  }
+  if (!matched){
+    for (const [en, hi] of HI){
+      if (typeof en === 'string' && en.length > 8 && out.includes(en)) { out = out.split(en).join(hi); matched = true; }
+    }
+  }
+  node.nodeValue = matched ? orig.replace(trimmed, out) : orig;
+}
+function translateTree(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: (n) => (n.parentElement && /^(SCRIPT|STYLE|TITLE)$/.test(n.parentElement.tagName)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+  });
+  const nodes = []; let n;
+  while ((n = w.nextNode())) nodes.push(n);
+  nodes.forEach(translateNode);
+}
+const langBtn = document.getElementById('langBtn');
+function applyLang(){
+  document.documentElement.lang = lang === 'hi' ? 'hi-Latn' : 'en';
+  langBtn.textContent = lang === 'hi' ? 'English' : 'हिंग्लिश';
+  topicInput.placeholder = lang === 'hi' ? 'jaise: diabetes walon ke liye vegan keto recipes' : 'e.g. vegan keto recipes for diabetics';
+  apiKeyInput.placeholder = lang === 'hi' ? 'Anthropic API key (sk-ant-...)' : 'Anthropic API key (sk-ant-...)';
+  translateTree(document.querySelector('.page'));
+}
+new MutationObserver(() => { if (lang === 'hi') translateTree(results); }).observe(results, { childList:true, subtree:true });
+langBtn.addEventListener('click', () => {
+  lang = lang === 'en' ? 'hi' : 'en';
+  try { localStorage.setItem('niche-atlas-lang', lang); } catch (e) {}
+  applyLang();
+  if (window.__lastRule) {
+    const ai = results.querySelector('.ai-card');
+    const aiHtml = ai ? ai.outerHTML : '';
+    results.innerHTML = renderResult(window.__lastRule) + aiHtml;
+    if (lang === 'hi') translateTree(results);
+  }
+});
+// Load with a worked example so the page shows real output at rest.
+topicInput.value = 'vegan keto recipes for diabetics';
+handleAnalyze(true);
+applyLang();
+</script>
+
+</body></html>
