@@ -24,6 +24,7 @@ details.subn[open] summary::before{transform:rotate(90deg)}
 .sharpen{border:1px dashed var(--border-strong);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:.9rem;line-height:1.5}
 .sharpen .mylist{margin:8px 0 0}
 </style></head><body>
+<div class="floaters" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><span class="chip" style="left:6%;top:8%;animation-delay:-0s">Micro-niche</span><span class="chip" style="left:82%;top:12%;animation-delay:-6s">Evergreen</span><span class="chip" style="left:4%;top:38%;animation-delay:-12s">Seasonal</span><span class="chip" style="left:90%;top:45%;animation-delay:-3s">Demand</span><span class="chip" style="left:8%;top:68%;animation-delay:-9s">Sub-niche</span><span class="chip" style="left:78%;top:78%;animation-delay:-15s">Opportunity</span><span class="chip" style="left:14%;top:90%;animation-delay:-6s">Low competition</span><span class="chip" style="left:92%;top:24%;animation-delay:-18s">Intent</span><b class="dot" style="left:11%;top:7%;animation-delay:-0.0s"></b><b class="dot" style="left:48%;top:60%;animation-delay:-1.3s"></b><b class="dot" style="left:85%;top:20%;animation-delay:-2.6s"></b><b class="dot" style="left:25%;top:73%;animation-delay:-3.9s"></b><b class="dot" style="left:62%;top:33%;animation-delay:-5.2s"></b><b class="dot" style="left:2%;top:86%;animation-delay:-6.5s"></b><b class="dot" style="left:39%;top:46%;animation-delay:-7.8s"></b><b class="dot" style="left:76%;top:6%;animation-delay:-9.1s"></b><b class="dot" style="left:16%;top:59%;animation-delay:-10.4s"></b><b class="dot" style="left:53%;top:19%;animation-delay:-11.7s"></b><b class="dot" style="left:90%;top:72%;animation-delay:-13.0s"></b><b class="dot" style="left:30%;top:32%;animation-delay:-14.3s"></b><b class="dot" style="left:67%;top:85%;animation-delay:-15.6s"></b><b class="dot" style="left:7%;top:45%;animation-delay:-16.9s"></b></div>
 <title>Niche Atlas</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -557,6 +558,33 @@ input:focus-visible, select:focus-visible{ border-color:var(--accent); box-shado
 .ai-card{ border-color:var(--warm); background:linear-gradient(180deg, color-mix(in srgb, var(--warm) 8%, var(--surface)), var(--surface)); }
 footer{ border-top:1px solid color-mix(in srgb, var(--accent) 25%, var(--border)); }
 @media (prefers-reduced-motion:reduce){ .card, button.primary{ transition:none; } .card:hover{ transform:none; } }
+
+/* ---- Floating / motion layer ---- */
+.page::before{ display:none !important; }
+.page{ z-index:1; }
+.floaters{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:0; }
+.orb{ position:absolute; border-radius:50%; filter:blur(70px); opacity:.55; animation:drift 22s ease-in-out infinite alternate; }
+.o1{ width:380px; height:380px; left:-120px; top:8%; background:color-mix(in srgb, var(--accent) 55%, transparent); }
+.o2{ width:320px; height:320px; right:-90px; top:45%; background:color-mix(in srgb, var(--warm) 45%, transparent); animation-duration:28s; animation-delay:-6s; }
+.o3{ width:260px; height:260px; left:40%; bottom:-100px; background:color-mix(in srgb, #5b6cff 35%, transparent); animation-duration:32s; animation-delay:-12s; }
+.chip{
+  position:absolute; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+  padding:6px 13px; border-radius:999px; color:var(--accent);
+  border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  background:color-mix(in srgb, var(--accent) 8%, transparent);
+  backdrop-filter:blur(4px); opacity:.55; animation:floaty 14s ease-in-out infinite;
+}
+.dot{ position:absolute; width:4px; height:4px; border-radius:50%; background:var(--accent); opacity:.5; animation:twinkle 5s ease-in-out infinite; }
+@keyframes drift{ from{ transform:translate(0,0) scale(1); } to{ transform:translate(60px,-50px) scale(1.15); } }
+@keyframes floaty{ 0%,100%{ transform:translateY(0) rotate(-2deg); } 50%{ transform:translateY(-26px) rotate(2deg); } }
+@keyframes twinkle{ 0%,100%{ opacity:.1; transform:scale(.6); } 50%{ opacity:.8; transform:scale(1.4); } }
+@keyframes rise{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
+@keyframes shine{ to{ background-position:200% center; } }
+.card, .log-card{ animation:rise .6s cubic-bezier(.2,.7,.2,1) both; }
+h1{ background-size:200% auto; background-image:linear-gradient(100deg, var(--ink) 0%, var(--accent) 40%, var(--ink) 60%, var(--accent) 100%); animation:shine 7s linear infinite; }
+.eyebrow::before{ content:"✦ "; color:var(--accent); }
+@media (max-width:700px){ .chip{ display:none; } .orb{ opacity:.4; } }
+@media (prefers-reduced-motion:reduce){ .orb,.chip,.dot,.card,.log-card,h1{ animation:none !important; } }
 </style>
 
 <div class="page">
