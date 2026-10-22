@@ -1,0 +1,9 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+body { font-family: "DejaVu Sans", Arial, sans-serif; color: #fff; overflow: hidden; }
+.gold { background: linear-gradient(90deg, #ffd86b, #ffb300 55%, #ffe9a8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pill { display: inline-block; border-radius: 999px; padding: 14px 34px; font-weight: 700; letter-spacing: 2px; }
+.glow { position: absolute; border-radius: 50%; filter: blur(60px); }
+.spark { position: absolute; border-radius: 50%; background: radial-gradient(circle, #fff 0%, rgba(255,216,107,.9) 35%, rgba(255,216,107,0) 70%); }
+.diya { position: absolute; }
+.tc { font-size: 24px; opacity: .85; }
