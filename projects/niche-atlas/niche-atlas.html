@@ -24,7 +24,7 @@ details.subn[open] summary::before{transform:rotate(90deg)}
 .sharpen{border:1px dashed var(--border-strong);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:.9rem;line-height:1.5}
 .sharpen .mylist{margin:8px 0 0}
 </style></head><body>
-<div class="floaters" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><span class="chip" style="left:6%;top:8%;animation-delay:-0s">Micro-niche</span><span class="chip" style="left:82%;top:12%;animation-delay:-6s">Evergreen</span><span class="chip" style="left:4%;top:38%;animation-delay:-12s">Seasonal</span><span class="chip" style="left:90%;top:45%;animation-delay:-3s">Demand</span><span class="chip" style="left:8%;top:68%;animation-delay:-9s">Sub-niche</span><span class="chip" style="left:78%;top:78%;animation-delay:-15s">Opportunity</span><span class="chip" style="left:14%;top:90%;animation-delay:-6s">Low competition</span><span class="chip" style="left:92%;top:24%;animation-delay:-18s">Intent</span><b class="dot" style="left:11%;top:7%;animation-delay:-0.0s"></b><b class="dot" style="left:48%;top:60%;animation-delay:-1.3s"></b><b class="dot" style="left:85%;top:20%;animation-delay:-2.6s"></b><b class="dot" style="left:25%;top:73%;animation-delay:-3.9s"></b><b class="dot" style="left:62%;top:33%;animation-delay:-5.2s"></b><b class="dot" style="left:2%;top:86%;animation-delay:-6.5s"></b><b class="dot" style="left:39%;top:46%;animation-delay:-7.8s"></b><b class="dot" style="left:76%;top:6%;animation-delay:-9.1s"></b><b class="dot" style="left:16%;top:59%;animation-delay:-10.4s"></b><b class="dot" style="left:53%;top:19%;animation-delay:-11.7s"></b><b class="dot" style="left:90%;top:72%;animation-delay:-13.0s"></b><b class="dot" style="left:30%;top:32%;animation-delay:-14.3s"></b><b class="dot" style="left:67%;top:85%;animation-delay:-15.6s"></b><b class="dot" style="left:7%;top:45%;animation-delay:-16.9s"></b></div>
+<div class="floaters" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><svg class="rings r1" viewBox="0 0 400 400"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="100"/><circle cx="200" cy="200" r="140"/><circle cx="200" cy="200" r="180"/><path d="M200 8v384M8 200h384" stroke-dasharray="3 7"/><path d="M200 8l10 26h-20z" fill="currentColor"/></g></svg><svg class="rings r2" viewBox="0 0 400 400"><g fill="none" stroke="currentColor" stroke-width="1"><circle cx="200" cy="200" r="70"/><circle cx="200" cy="200" r="120"/><circle cx="200" cy="200" r="170"/><path d="M60 60L340 340M340 60L60 340" stroke-dasharray="3 7"/></g></svg><b class="dot" style="left:11%;top:7%;animation-delay:-0.0s"></b><b class="dot" style="left:48%;top:60%;animation-delay:-1.3s"></b><b class="dot" style="left:85%;top:20%;animation-delay:-2.6s"></b><b class="dot" style="left:25%;top:73%;animation-delay:-3.9s"></b><b class="dot" style="left:62%;top:33%;animation-delay:-5.2s"></b><b class="dot" style="left:2%;top:86%;animation-delay:-6.5s"></b><b class="dot" style="left:39%;top:46%;animation-delay:-7.8s"></b><b class="dot" style="left:76%;top:6%;animation-delay:-9.1s"></b><b class="dot" style="left:16%;top:59%;animation-delay:-10.4s"></b><b class="dot" style="left:53%;top:19%;animation-delay:-11.7s"></b><b class="dot" style="left:90%;top:72%;animation-delay:-13.0s"></b><b class="dot" style="left:30%;top:32%;animation-delay:-14.3s"></b><b class="dot" style="left:67%;top:85%;animation-delay:-15.6s"></b><b class="dot" style="left:7%;top:45%;animation-delay:-16.9s"></b></div>
 <title>Niche Atlas</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -585,6 +585,24 @@ h1{ background-size:200% auto; background-image:linear-gradient(100deg, var(--in
 .eyebrow::before{ content:"✦ "; color:var(--accent); }
 @media (max-width:700px){ .chip{ display:none; } .orb{ opacity:.4; } }
 @media (prefers-reduced-motion:reduce){ .orb,.chip,.dot,.card,.log-card,h1{ animation:none !important; } }
+
+/* ---- Static content, ambient background only ---- */
+.chip{ display:none !important; }
+.card, .log-card{ animation:none !important; transform:none !important; }
+.card:hover{ transform:none !important; }
+.floaters::before{
+  content:""; position:absolute; inset:0; opacity:.5;
+  background-image:radial-gradient(color-mix(in srgb, var(--accent) 40%, transparent) 1px, transparent 1.4px);
+  background-size:30px 30px;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 30%, transparent 25%, #000 85%);
+  mask-image:radial-gradient(ellipse at 50% 30%, transparent 25%, #000 85%);
+}
+.rings{ position:absolute; color:var(--accent); opacity:.22; animation:spin 120s linear infinite; }
+.r1{ width:520px; height:520px; right:-200px; top:-120px; }
+.r2{ width:460px; height:460px; left:-190px; bottom:-120px; animation-direction:reverse; animation-duration:160s; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+@media (max-width:700px){ .rings{ opacity:.14; } }
+@media (prefers-reduced-motion:reduce){ .rings{ animation:none !important; } }
 </style>
 
 <div class="page">
