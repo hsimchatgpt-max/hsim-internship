@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aman Travels | Demo Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Images: replace any url(...) below with a real photo, e.g. url("goa.jpg") */
+  --img-beach: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffd29d%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ff8f70%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22140%22%20fill=%22url%28%23s%29%22/%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22%23ff8f70%22/%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffd29d%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ff8f70%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22140%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22290%22%20cy=%22108%22%20r=%2236%22%20fill=%22%23fff6cf%22%20opacity=%220.95%22/%3E%3Cdefs%3E%3ClinearGradient%20id=%22w%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%2335bfcb%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%231b8aa6%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20y=%22132%22%20width=%22400%22%20height=%2270%22%20fill=%22url%28%23w%29%22/%3E%3Cg%20stroke=%22%23fff%22%20stroke-width=%222%22%20opacity=%22.45%22%20fill=%22none%22%3E%3Cpath%20d=%22M20%20150q20-6%2040%200t40%200%22/%3E%3Cpath%20d=%22M180%20168q20-6%2040%200t40%200%22/%3E%3Cpath%20d=%22M290%20146q20-6%2040%200t40%200%22/%3E%3C/g%3E%3Cpath%20d=%22M0%20196q120-26%20250-6t150-8v58H0z%22%20fill=%22%23f6dca4%22/%3E%3Cpath%20d=%22M70%20215%20q13.799999999999999%20-46.0%20-4.6%20-96.6%22%20stroke=%22%237a4a21%22%20stroke-width=%225.75%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%28-70%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%28-30%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%2810%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%2850%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%28130%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%28170%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2865.4%20118.4%29%20rotate%28-110%29%20translate%2830%200%29%20scale%281.15%29%22/%3E%3Cpath%20d=%22M330%20205%20q-10.2%20-34.0%203.4%20-71.39999999999999%22%20stroke=%22%237a4a21%22%20stroke-width=%224.25%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%28-70%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%28-30%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%2810%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%2850%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%28130%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%28170%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28333.4%20133.60000000000002%29%20rotate%28-110%29%20translate%2830%200%29%20scale%280.85%29%22/%3E%3C/svg%3E");
+  --img-mountain: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23b9e0fa%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23f0f8ff%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Cpolygon%20points=%22-10%2C170%2090%2C60%20180%2C170%22%20fill=%22%238fb0cf%22/%3E%3Cpolygon%20points=%2290%2C60%2070%2C88%2090%2C80%20104%2C92%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22120%2C175%20250%2C40%20380%2C175%22%20fill=%22%237a9cbf%22/%3E%3Cpolygon%20points=%22250%2C40%20224%2C76%20246%2C68%20262%2C84%20276%2C70%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22300%2C180%20390%2C90%20420%2C180%22%20fill=%22%238fb0cf%22/%3E%3Cpath%20d=%22M0%20185q100-30%20200-8t200-6v69H0z%22%20fill=%22%23e9f1f6%22/%3E%3Cpolygon%20points=%2240%2C149.8%2023.2%2C193.0%2056.8%2C193.0%22%20fill=%22%231f5a3a%22/%3E%3Cpolygon%20points=%2240%2C169.0%2018.400000000000002%2C212.2%2061.599999999999994%2C212.2%22%20fill=%22%231f5a3a%22/%3E%3Crect%20x=%2238%22%20y=%22212.2%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3Cpolygon%20points=%2275%2C173.6%2062.4%2C206.0%2087.6%2C206.0%22%20fill=%22%231f5a3a%22/%3E%3Cpolygon%20points=%2275%2C188.0%2058.8%2C220.4%2091.2%2C220.4%22%20fill=%22%231f5a3a%22/%3E%3Crect%20x=%2273%22%20y=%22220.4%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3Cpolygon%20points=%22330%2C157.4%20314.6%2C197.0%20345.4%2C197.0%22%20fill=%22%231f5a3a%22/%3E%3Cpolygon%20points=%22330%2C175.0%20310.2%2C214.6%20349.8%2C214.6%22%20fill=%22%231f5a3a%22/%3E%3Crect%20x=%22328%22%20y=%22214.6%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3Cpolygon%20points=%22365%2C178.9%20353.1%2C209.5%20376.9%2C209.5%22%20fill=%22%231f5a3a%22/%3E%3Cpolygon%20points=%22365%2C192.5%20349.7%2C223.1%20380.3%2C223.1%22%20fill=%22%231f5a3a%22/%3E%3Crect%20x=%22363%22%20y=%22223.1%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3Cpolygon%20points=%22300%2C189.8%20290.2%2C215.0%20309.8%2C215.0%22%20fill=%22%231f5a3a%22/%3E%3Cpolygon%20points=%22300%2C201.0%20287.4%2C226.2%20312.6%2C226.2%22%20fill=%22%231f5a3a%22/%3E%3Crect%20x=%22298%22%20y=%22226.2%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3C/svg%3E");
+  --img-kashmir: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23cfeaff%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23fff6e6%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22320%22%20cy=%2256%22%20r=%2226%22%20fill=%22%23fff3c4%22%20opacity=%220.95%22/%3E%3Cpolygon%20points=%22-10%2C150%2080%2C70%20170%2C150%22%20fill=%22%237d9d8b%22/%3E%3Cpolygon%20points=%22130%2C150%20240%2C50%20360%2C150%22%20fill=%22%236b8f7a%22/%3E%3Cpolygon%20points=%22240%2C50%20222%2C78%20240%2C72%20256%2C84%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22300%2C150%20400%2C80%20420%2C150%22%20fill=%22%237d9d8b%22/%3E%3Cdefs%3E%3ClinearGradient%20id=%22l%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%236fc0d6%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%233f94b3%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20y=%22140%22%20width=%22400%22%20height=%2270%22%20fill=%22url%28%23l%29%22/%3E%3Cg%20stroke=%22%23fff%22%20opacity=%22.4%22%20stroke-width=%222%22%3E%3Cpath%20d=%22M40%20160h60M200%20175h80M300%20155h50%22/%3E%3C/g%3E%3Cpath%20d=%22M150%20178q40%2014%20100%200l-10%208q-40%208-80%200z%22%20fill=%22%238a4b2a%22/%3E%3Cpath%20d=%22M175%20178l6-16h38l6%2016z%22%20fill=%22%23e86a8c%22/%3E%3Cpath%20d=%22M0%20205q100-20%20210-4t190-10v49H0z%22%20fill=%22%234c8c4a%22/%3E%3Cpolygon%20points=%2240%2C176%2026%2C212%2054%2C212%22%20fill=%22%232e6b3a%22/%3E%3Cpolygon%20points=%2240%2C192%2022%2C228%2058%2C228%22%20fill=%22%232e6b3a%22/%3E%3Crect%20x=%2238%22%20y=%22228%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3Cpolygon%20points=%22360%2C171.4%20344.6%2C211.0%20375.4%2C211.0%22%20fill=%22%232e6b3a%22/%3E%3Cpolygon%20points=%22360%2C189.0%20340.2%2C228.6%20379.8%2C228.6%22%20fill=%22%232e6b3a%22/%3E%3Crect%20x=%22358%22%20y=%22228.6%22%20width=%224%22%20height=%228%22%20fill=%22%235a3a1f%22/%3E%3C/svg%3E");
+  --img-dubai: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffb26b%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23b86aa0%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%2280%22%20cy=%22150%22%20r=%2240%22%20fill=%22%23ffe9b8%22%20opacity=%220.9%22/%3E%3Cg%20fill=%22%233a2a4d%22%3E%3Crect%20x=%2220%22%20y=%22150%22%20width=%2226%22%20height=%2290%22/%3E%3Crect%20x=%2252%22%20y=%22130%22%20width=%2222%22%20height=%22110%22/%3E%3Crect%20x=%22100%22%20y=%22160%22%20width=%2230%22%20height=%2280%22/%3E%3Cpolygon%20points=%22205%2C240%20198%2C150%20205%2C30%20212%2C150%20220%2C240%22/%3E%3Crect%20x=%22190%22%20y=%22130%22%20width=%2230%22%20height=%22110%22%20opacity=%22.9%22/%3E%3Crect%20x=%22240%22%20y=%22120%22%20width=%2226%22%20height=%22120%22/%3E%3Crect%20x=%22272%22%20y=%22150%22%20width=%2234%22%20height=%2290%22/%3E%3Crect%20x=%22312%22%20y=%22105%22%20width=%2222%22%20height=%22135%22/%3E%3Crect%20x=%22340%22%20y=%22140%22%20width=%2240%22%20height=%22100%22/%3E%3Crect%20x=%22140%22%20y=%22170%22%20width=%2238%22%20height=%2270%22/%3E%3C/g%3E%3Cg%20fill=%22%23ffd98a%22%20opacity=%22.85%22%3E%3Crect%20x=%2225%22%20y=%22165%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%2235%22%20y=%22185%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%2258%22%20y=%22150%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%22245%22%20y=%22140%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%22318%22%20y=%22125%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%22346%22%20y=%22165%22%20width=%224%22%20height=%224%22/%3E%3Crect%20x=%22278%22%20y=%22170%22%20width=%224%22%20height=%224%22/%3E%3C/g%3E%3C/svg%3E");
+  --img-thailand: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23c2f3ea%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23fff4d2%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22330%22%20cy=%2250%22%20r=%2224%22%20fill=%22%23fff%22%20opacity=%220.95%22/%3E%3Cpath%20d=%22M40%20150q-6-70%2024-90q26%2020%2020%2090z%22%20fill=%22%234f8a63%22/%3E%3Cpath%20d=%22M120%20150q-4-90%2034-110q34%2024%2030%20110z%22%20fill=%22%233f7d58%22/%3E%3Cpath%20d=%22M250%20150q-4-60%2022-80q24%2018%2022%2080z%22%20fill=%22%234f8a63%22/%3E%3Cdefs%3E%3ClinearGradient%20id=%22w%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%2326b9ae%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23128a8f%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20y=%22148%22%20width=%22400%22%20height=%2292%22%20fill=%22url%28%23w%29%22/%3E%3Cg%20stroke=%22%23fff%22%20opacity=%22.4%22%20stroke-width=%222%22%20fill=%22none%22%3E%3Cpath%20d=%22M20%20190q20-6%2040%200t40%200%22/%3E%3Cpath%20d=%22M250%20205q20-6%2040%200t40%200%22/%3E%3C/g%3E%3Cpath%20d=%22M140%20190q55%2016%20130%200l-14%2014q-50%2010-102%200z%22%20fill=%22%23e8742c%22/%3E%3Crect%20x=%22200%22%20y=%22172%22%20width=%226%22%20height=%2218%22%20fill=%22%237a4a21%22/%3E%3Cpath%20d=%22M200%20172l40%206-40%206z%22%20fill=%22%23ffd54f%22/%3E%3Cpath%20d=%22M270%20188l50%204%22%20stroke=%22%237a4a21%22%20stroke-width=%223%22/%3E%3Cpath%20d=%22M360%20230%20q-10.8%20-36.0%203.6%20-75.60000000000001%22%20stroke=%22%237a4a21%22%20stroke-width=%224.5%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%28-70%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%28-30%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%2810%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%2850%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%28130%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%28170%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28363.6%20154.39999999999998%29%20rotate%28-110%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3C/svg%3E");
+  --img-bali: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffd4a0%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ff9a76%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22200%22%20cy=%2292%22%20r=%2234%22%20fill=%22%23fff0c4%22%20opacity=%220.95%22/%3E%3Cpath%20d=%22M0%20130q100-20%20200-6t200-14v130H0z%22%20fill=%22%239cd06b%22/%3E%3Cpath%20d=%22M0%20160q100-18%20200-4t200-12v96H0z%22%20fill=%22%236fb953%22/%3E%3Cpath%20d=%22M0%20190q100-16%20200-2t200-10v62H0z%22%20fill=%22%234a9a44%22/%3E%3Cpath%20d=%22M0%20218q100-14%20200-2t200-8v32H0z%22%20fill=%22%23357c3a%22/%3E%3Cg%20fill=%22%2344434a%22%3E%3Cpolygon%20points=%22150%2C150%20162%2C90%20176%2C90%20178%2C150%22/%3E%3Cpolygon%20points=%22250%2C150%20238%2C90%20224%2C90%20222%2C150%22/%3E%3Crect%20x=%22146%22%20y=%22150%22%20width=%2236%22%20height=%228%22/%3E%3Crect%20x=%22218%22%20y=%22150%22%20width=%2236%22%20height=%228%22/%3E%3C/g%3E%3Cpath%20d=%22M50%20215%20q13.200000000000001%20-44.0%20-4.4%20-92.4%22%20stroke=%22%237a4a21%22%20stroke-width=%225.5%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%28-70%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%28-30%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%2810%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%2850%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%28130%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%28170%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2845.6%20122.6%29%20rotate%28-110%29%20translate%2830%200%29%20scale%281.1%29%22/%3E%3Cpath%20d=%22M350%20222%20q-12%20-40%204%20-84%22%20stroke=%22%237a4a21%22%20stroke-width=%225%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%28-70%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%28-30%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%2810%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%2850%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%28130%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%28170%29%20translate%2830%200%29%20scale%281%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28354%20138%29%20rotate%28-110%29%20translate%2830%200%29%20scale%281%29%22/%3E%3C/svg%3E");
+  --img-plane: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%2358b0ea%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23dff3ff%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.9%22%20transform=%22translate%2860%20170%29%20scale%281.5%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.9%22%20transform=%22translate%28300%20190%29%20scale%281.8%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.7%22%20transform=%22translate%28330%2070%29%20scale%281%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20transform=%22translate%28200%20105%29%20rotate%28-12%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2286%22%20ry=%2214%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C-58%2040%2C-58%2022%2C0%22%20fill=%22%23e8eef2%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C58%2040%2C58%2022%2C0%22%20fill=%22%23d8e2e8%22/%3E%3Cpolygon%20points=%22-70%2C0%20-88%2C-30%20-74%2C-30%20-50%2C0%22%20fill=%22%23e8eef2%22/%3E%3Cellipse%20cx=%2262%22%20cy=%22-2%22%20rx=%2216%22%20ry=%226%22%20fill=%22%239ed0ee%22/%3E%3Crect%20x=%22-40%22%20y=%22-4%22%20width=%2260%22%20height=%223%22%20fill=%22%23b8892b%22/%3E%3C/g%3E%3C/svg%3E");
+  --img-plane2: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ff9a76%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ffe0b5%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%2290%22%20cy=%22170%22%20r=%2234%22%20fill=%22%23fff4cf%22%20opacity=%220.95%22/%3E%3Cg%20fill=%22%23ffe9e0%22%20opacity=%220.9%22%20transform=%22translate%2870%20205%29%20scale%281.4%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20fill=%22%23ffe9e0%22%20opacity=%220.9%22%20transform=%22translate%28320%20200%29%20scale%281.6%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20transform=%22translate%28240%2090%29%20rotate%28-8%29%20scale%28.9%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2286%22%20ry=%2214%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C-58%2040%2C-58%2022%2C0%22%20fill=%22%23eee%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C58%2040%2C58%2022%2C0%22%20fill=%22%23ddd%22/%3E%3Cpolygon%20points=%22-70%2C0%20-88%2C-30%20-74%2C-30%20-50%2C0%22%20fill=%22%23eee%22/%3E%3Cellipse%20cx=%2262%22%20cy=%22-2%22%20rx=%2216%22%20ry=%226%22%20fill=%22%239ed0ee%22/%3E%3C/g%3E%3C/svg%3E");
+  --img-train: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23d8edf7%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23fff8e8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Cpath%20d=%22M0%20150q100-40%20200-12t200-20v122H0z%22%20fill=%22%238cc275%22/%3E%3Cpath%20d=%22M0%20175q100-22%20200-6t200-10v80H0z%22%20fill=%22%236aaa5c%22/%3E%3Crect%20y=%22190%22%20width=%22400%22%20height=%2250%22%20fill=%22%235b5148%22/%3E%3Cg%20stroke=%22%23d9d0c4%22%20stroke-width=%223%22%3E%3Cpath%20d=%22M0%20202h400M0%20224h400%22/%3E%3C/g%3E%3Cg%20stroke=%22%233b342e%22%20stroke-width=%223%22%3E%3Cpath%20d=%22M30%20190v50M90%20190v50M150%20190v50M210%20190v50M270%20190v50M330%20190v50M390%20190v50%22/%3E%3C/g%3E%3Cg%3E%3Crect%20x=%2230%22%20y=%22140%22%20width=%22300%22%20height=%2252%22%20rx=%228%22%20fill=%22%23c0392b%22/%3E%3Crect%20x=%2230%22%20y=%22170%22%20width=%22300%22%20height=%226%22%20fill=%22%23f3c969%22/%3E%3Cg%20fill=%22%23fff6e0%22%3E%3Crect%20x=%2248%22%20y=%22150%22%20width=%2230%22%20height=%2216%22%20rx=%223%22/%3E%3Crect%20x=%2292%22%20y=%22150%22%20width=%2230%22%20height=%2216%22%20rx=%223%22/%3E%3Crect%20x=%22136%22%20y=%22150%22%20width=%2230%22%20height=%2216%22%20rx=%223%22/%3E%3Crect%20x=%22180%22%20y=%22150%22%20width=%2230%22%20height=%2216%22%20rx=%223%22/%3E%3Crect%20x=%22224%22%20y=%22150%22%20width=%2230%22%20height=%2216%22%20rx=%223%22/%3E%3C/g%3E%3Cpath%20d=%22M330%20140h28q18%200%2022%2022v30h-50z%22%20fill=%22%23a52f23%22/%3E%3Crect%20x=%22350%22%20y=%22150%22%20width=%2222%22%20height=%2216%22%20rx=%223%22%20fill=%22%23fff6e0%22/%3E%3C/g%3E%3C/svg%3E");
+  --img-bus: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffe3b0%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23fff7e2%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22320%22%20cy=%2260%22%20r=%2228%22%20fill=%22%23fff%22%20opacity=%220.95%22/%3E%3Cpolygon%20points=%22-10%2C160%2090%2C80%20190%2C160%22%20fill=%22%239bc29a%22/%3E%3Cpolygon%20points=%22140%2C160%20250%2C60%20370%2C160%22%20fill=%22%2380ae82%22/%3E%3Cpolygon%20points=%22250%2C60%20232%2C86%20250%2C80%20266%2C92%22%20fill=%22%23fff%22/%3E%3Crect%20y=%22170%22%20width=%22400%22%20height=%2270%22%20fill=%22%234a4a50%22/%3E%3Cg%20stroke=%22%23fff%22%20stroke-width=%223%22%20stroke-dasharray=%2222%2016%22%3E%3Cpath%20d=%22M0%20208h400%22/%3E%3C/g%3E%3Cg%3E%3Crect%20x=%2270%22%20y=%22118%22%20width=%22250%22%20height=%2268%22%20rx=%2214%22%20fill=%22%23e9a23b%22/%3E%3Crect%20x=%2270%22%20y=%22160%22%20width=%22250%22%20height=%228%22%20fill=%22%23c97f1a%22/%3E%3Cg%20fill=%22%23fffaf0%22%3E%3Crect%20x=%2288%22%20y=%22130%22%20width=%2240%22%20height=%2224%22%20rx=%224%22/%3E%3Crect%20x=%22136%22%20y=%22130%22%20width=%2240%22%20height=%2224%22%20rx=%224%22/%3E%3Crect%20x=%22184%22%20y=%22130%22%20width=%2240%22%20height=%2224%22%20rx=%224%22/%3E%3Crect%20x=%22232%22%20y=%22130%22%20width=%2240%22%20height=%2224%22%20rx=%224%22/%3E%3Crect%20x=%22282%22%20y=%22128%22%20width=%2230%22%20height=%2234%22%20rx=%224%22/%3E%3C/g%3E%3Ccircle%20cx=%22120%22%20cy=%22188%22%20r=%2214%22%20fill=%22%23222%22/%3E%3Ccircle%20cx=%22120%22%20cy=%22188%22%20r=%226%22%20fill=%22%23bbb%22/%3E%3Ccircle%20cx=%22268%22%20cy=%22188%22%20r=%2214%22%20fill=%22%23222%22/%3E%3Ccircle%20cx=%22268%22%20cy=%22188%22%20r=%226%22%20fill=%22%23bbb%22/%3E%3C/g%3E%3C/svg%3E");
+  --img-wedding: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ff9aa2%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23ffd9a8%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Cg%20fill=%22%23ffe9b0%22%3E%3Ccircle%20cx=%2220%22%20cy=%2230%22%20r=%223%22/%3E%3Ccircle%20cx=%2270%22%20cy=%2222%22%20r=%223%22/%3E%3Ccircle%20cx=%22120%22%20cy=%2230%22%20r=%223%22/%3E%3Ccircle%20cx=%22170%22%20cy=%2222%22%20r=%223%22/%3E%3Ccircle%20cx=%22230%22%20cy=%2230%22%20r=%223%22/%3E%3Ccircle%20cx=%22280%22%20cy=%2222%22%20r=%223%22/%3E%3Ccircle%20cx=%22330%22%20cy=%2230%22%20r=%223%22/%3E%3Ccircle%20cx=%22380%22%20cy=%2222%22%20r=%223%22/%3E%3C/g%3E%3Cpath%20d=%22M0%2024q50%2014%20100%200t100%200t100%200t100%200%22%20stroke=%22%23ffe9b0%22%20fill=%22none%22%20opacity=%22.6%22/%3E%3Crect%20y=%22190%22%20width=%22400%22%20height=%2250%22%20fill=%22%237a2e3a%22/%3E%3Crect%20x=%2260%22%20y=%22150%22%20width=%22280%22%20height=%2244%22%20fill=%22%23a63d4b%22/%3E%3Cg%20fill=%22%23d9a441%22%3E%3Crect%20x=%2290%22%20y=%2270%22%20width=%2212%22%20height=%22125%22/%3E%3Crect%20x=%22298%22%20y=%2270%22%20width=%2212%22%20height=%22125%22/%3E%3C/g%3E%3Cpath%20d=%22M78%2074q122-52%20244%200l-14%2018q-108-34-216%200z%22%20fill=%22%23e0475b%22/%3E%3Cpath%20d=%22M96%2092q104-26%20208%200%22%20stroke=%22%23ffd36e%22%20stroke-width=%224%22%20fill=%22none%22/%3E%3Cg%20fill=%22%23ff9f1c%22%3E%3Ccircle%20cx=%22102%22%20cy=%22100%22%20r=%227%22/%3E%3Ccircle%20cx=%22102%22%20cy=%22120%22%20r=%227%22/%3E%3Ccircle%20cx=%22102%22%20cy=%22140%22%20r=%227%22/%3E%3Ccircle%20cx=%22298%22%20cy=%22100%22%20r=%227%22/%3E%3Ccircle%20cx=%22298%22%20cy=%22120%22%20r=%227%22/%3E%3Ccircle%20cx=%22298%22%20cy=%22140%22%20r=%227%22/%3E%3C/g%3E%3Cg%20fill=%22%23ffd36e%22%3E%3Ccircle%20cx=%22200%22%20cy=%22112%22%20r=%2210%22/%3E%3Ccircle%20cx=%22180%22%20cy=%22125%22%20r=%228%22/%3E%3Ccircle%20cx=%22220%22%20cy=%22125%22%20r=%228%22/%3E%3C/g%3E%3Cpath%20d=%22M200%20130q-4%2024%200%2050%22%20stroke=%22%23ffd36e%22%20stroke-width=%224%22/%3E%3C/svg%3E");
+  --img-cruise: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%238fd3f4%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23eaf7ff%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22320%22%20cy=%2264%22%20r=%2228%22%20fill=%22%23fff7d6%22%20opacity=%220.95%22/%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.9%22%20transform=%22translate%2870%2060%29%20scale%281.2%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cdefs%3E%3ClinearGradient%20id=%22w%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%232a93bd%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%230f5f86%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20y=%22150%22%20width=%22400%22%20height=%2290%22%20fill=%22url%28%23w%29%22/%3E%3Cg%20stroke=%22%23fff%22%20opacity=%22.4%22%20stroke-width=%222%22%20fill=%22none%22%3E%3Cpath%20d=%22M10%20190q20-6%2040%200t40%200%22/%3E%3Cpath%20d=%22M270%20205q20-6%2040%200t40%200%22/%3E%3C/g%3E%3Cg%3E%3Cpath%20d=%22M60%20140h250l-26%2038H88z%22%20fill=%22%23fff%22/%3E%3Cpath%20d=%22M88%20178h196l-8%208H96z%22%20fill=%22%230f3d3e%22/%3E%3Crect%20x=%22100%22%20y=%22112%22%20width=%22170%22%20height=%2228%22%20fill=%22%23f4f4f4%22/%3E%3Crect%20x=%22120%22%20y=%2290%22%20width=%22110%22%20height=%2222%22%20fill=%22%23fff%22/%3E%3Crect%20x=%22176%22%20y=%2262%22%20width=%2222%22%20height=%2230%22%20fill=%22%23e0475b%22/%3E%3Cg%20fill=%22%238fd3f4%22%3E%3Crect%20x=%22110%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22132%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22154%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22176%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22198%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22220%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22242%22%20y=%22120%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22132%22%20y=%2296%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22156%22%20y=%2296%22%20width=%2212%22%20height=%229%22/%3E%3Crect%20x=%22204%22%20y=%2296%22%20width=%2212%22%20height=%229%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  --img-hotel: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20400%20240%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%23ffcf9a%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23c9879e%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22400%22%20height=%22240%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22310%22%20cy=%22110%22%20r=%2232%22%20fill=%22%23fff0c4%22%20opacity=%220.9%22/%3E%3Crect%20x=%22110%22%20y=%2250%22%20width=%22150%22%20height=%22190%22%20fill=%22%233a2f4a%22/%3E%3Crect%20x=%2295%22%20y=%2290%22%20width=%2240%22%20height=%22150%22%20fill=%22%234a3d5c%22/%3E%3Crect%20x=%22240%22%20y=%2280%22%20width=%2250%22%20height=%22160%22%20fill=%22%234a3d5c%22/%3E%3Crect%20x=%22126%22%20y=%2266%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22150%22%20y=%2266%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22174%22%20y=%2266%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22198%22%20y=%2266%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22222%22%20y=%2266%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22126%22%20y=%2296%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22150%22%20y=%2296%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22174%22%20y=%2296%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22198%22%20y=%2296%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22222%22%20y=%2296%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22126%22%20y=%22126%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22150%22%20y=%22126%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22174%22%20y=%22126%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22198%22%20y=%22126%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22222%22%20y=%22126%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22126%22%20y=%22156%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22150%22%20y=%22156%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22198%22%20y=%22156%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%221%22/%3E%3Crect%20x=%22222%22%20y=%22156%22%20width=%2212%22%20height=%2214%22%20fill=%22%23ffd98a%22%20opacity=%220.4%22/%3E%3Crect%20x=%22166%22%20y=%22190%22%20width=%2230%22%20height=%2250%22%20fill=%22%23ffd98a%22/%3E%3Crect%20y=%22226%22%20width=%22400%22%20height=%2214%22%20fill=%22%232c2438%22/%3E%3Cpath%20d=%22M60%20235%20q10.8%20-36.0%20-3.6%20-75.60000000000001%22%20stroke=%22%237a4a21%22%20stroke-width=%224.5%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%28-70%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%28-30%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%2810%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%2850%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%28130%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%28170%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%2856.4%20159.39999999999998%29%20rotate%28-110%29%20translate%2830%200%29%20scale%280.9%29%22/%3E%3Cpath%20d=%22M340%20235%20q-9.600000000000001%20-32.0%203.2%20-67.2%22%20stroke=%22%237a4a21%22%20stroke-width=%224.0%22%20fill=%22none%22%20stroke-linecap=%22round%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%28-70%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%28-30%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%2810%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%2850%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%28130%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%28170%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%226%22%20fill=%22%232f8f4e%22%20transform=%22translate%28343.2%20167.8%29%20rotate%28-110%29%20translate%2830%200%29%20scale%280.8%29%22/%3E%3C/svg%3E");
+  --img-hero: url("data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20800%20300%22%20preserveAspectRatio=%22xMidYMid%20slice%22%3E%3Cdefs%3E%3ClinearGradient%20id=%22s%22%20x1=%220%22%20y1=%220%22%20x2=%220%22%20y2=%221%22%3E%3Cstop%20offset=%220%22%20stop-color=%22%230b3b3c%22/%3E%3Cstop%20offset=%221%22%20stop-color=%22%23f0a35e%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width=%22800%22%20height=%22300%22%20fill=%22url%28%23s%29%22/%3E%3Ccircle%20cx=%22640%22%20cy=%22230%22%20r=%2260%22%20fill=%22%23ffe3a8%22%20opacity=%220.9%22/%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.25%22%20transform=%22translate%28120%20100%29%20scale%282%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.2%22%20transform=%22translate%28520%2070%29%20scale%282.4%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cg%20fill=%22%23fff%22%20opacity=%220.18%22%20transform=%22translate%28300%20170%29%20scale%281.6%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2234%22%20ry=%2211%22/%3E%3Cellipse%20cx=%22-16%22%20cy=%22-8%22%20rx=%2218%22%20ry=%2211%22/%3E%3Cellipse%20cx=%2212%22%20cy=%22-11%22%20rx=%2220%22%20ry=%2213%22/%3E%3C/g%3E%3Cpath%20d=%22M0%20250q120-60%20240-20t240-30t200%2010v100H0z%22%20fill=%22%230a2b2c%22%20opacity=%22.85%22/%3E%3Cg%20transform=%22translate%28560%2090%29%20rotate%28-10%29%20scale%28.7%29%22%3E%3Cellipse%20cx=%220%22%20cy=%220%22%20rx=%2286%22%20ry=%2214%22%20fill=%22%23fff%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C-58%2040%2C-58%2022%2C0%22%20fill=%22%23eee%22/%3E%3Cpolygon%20points=%22-10%2C0%2020%2C58%2040%2C58%2022%2C0%22%20fill=%22%23ddd%22/%3E%3Cpolygon%20points=%22-70%2C0%20-88%2C-30%20-74%2C-30%20-50%2C0%22%20fill=%22%23eee%22/%3E%3C/g%3E%3C/svg%3E");
+
+  --ink: #0f3d3e;
+  --ink-soft: #3d5654;
+  --gold: #b8892b;
+  --gold-light: #e9c46a;
+  --cream: #faf6ee;
+  --white: #ffffff;
+  --line: #e7dfcf;
+  --green: #1f8a4c;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(15, 61, 62, .10);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: "Poppins", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  line-height: 1.65;
+}
+img, svg { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { font-family: "Playfair Display", Georgia, serif; line-height: 1.2; margin: 0 0 .5em; }
+h1 { font-size: clamp(2rem, 5vw, 3.4rem); }
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.3rem); }
+h3 { font-size: 1.2rem; }
+p { margin: 0 0 1em; }
+
+.container { width: min(1120px, 100% - 32px); margin-inline: auto; }
+.section { padding: 72px 0; }
+.section.alt { background: var(--white); }
+.eyebrow { color: var(--gold); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: .78rem; }
+.lead { color: var(--ink-soft); font-size: 1.08rem; max-width: 62ch; }
+.center { text-align: center; }
+.center .lead { margin-inline: auto; }
+.divider { width: 64px; height: 3px; background: var(--gold); border-radius: 3px; margin: 14px 0 22px; }
+.center .divider { margin-inline: auto; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 999px; border: 2px solid transparent;
+  font: 600 .95rem "Poppins", sans-serif; cursor: pointer; transition: .2s;
+}
+.btn-gold { background: var(--gold); color: var(--white); }
+.btn-gold:hover { background: #9d731f; }
+.btn-outline { border-color: var(--white); color: var(--white); }
+.btn-outline:hover { background: var(--white); color: var(--ink); }
+.btn-dark { background: var(--ink); color: var(--white); }
+.btn-dark:hover { background: #0a2b2c; }
+.btn-wa { background: #25d366; color: #fff; }
+.btn-wa:hover { background: #1ebe5a; }
+
+/* Top bar + header */
+.topbar { background: var(--ink); color: #d6e4e2; font-size: .82rem; }
+.topbar .container { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; flex-wrap: wrap; }
+.topbar a:hover { color: var(--gold-light); }
+
+.site-header { background: var(--white); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); }
+.site-header .container { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.logo { font-family: "Playfair Display", serif; font-weight: 700; font-size: 1.5rem; letter-spacing: .04em; }
+.logo small { display: block; font: 500 .62rem "Poppins", sans-serif; letter-spacing: .14em; color: var(--gold); text-transform: uppercase; margin-top: -2px; }
+.nav { display: flex; align-items: center; gap: 28px; }
+.nav a { font-weight: 500; font-size: .95rem; padding: 6px 0; border-bottom: 2px solid transparent; }
+.nav a:hover, .nav a.active { border-color: var(--gold); }
+.nav .btn { padding: 9px 20px; border-bottom: 2px solid transparent; color: #fff; }
+.menu-toggle { display: none; background: none; border: 0; font-size: 1.7rem; cursor: pointer; color: var(--ink); }
+
+/* Hero */
+.hero {
+  background:
+    linear-gradient(120deg, rgba(15,61,62,.94) 0%, rgba(15,61,62,.78) 55%, rgba(15,61,62,.55) 100%),
+    radial-gradient(circle at 85% 20%, #2f8f86 0, transparent 55%),
+    var(--ink);
+  color: var(--white); padding: 88px 0 96px; position: relative; overflow: hidden;
+}
+.hero::after {
+  content: "✈"; position: absolute; right: 6%; top: 10%; font-size: 14rem; color: rgba(233,196,106,.09); transform: rotate(-12deg);
+}
+.hero .container { display: grid; grid-template-columns: 1.15fr .85fr; gap: 48px; align-items: center; position: relative; z-index: 1; }
+.hero h1 span { color: var(--gold-light); }
+.hero p { color: #d6e4e2; max-width: 52ch; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.trust-row { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 32px; font-size: .88rem; color: #d6e4e2; }
+.trust-row span::before { content: "✓ "; color: var(--gold-light); font-weight: 700; }
+
+/* Enquiry card */
+.card-form { background: var(--white); color: var(--ink); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); }
+.card-form h3 { margin-bottom: 4px; }
+.card-form .sub { color: var(--ink-soft); font-size: .88rem; margin-bottom: 16px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid .full { grid-column: 1 / -1; }
+label { display: block; font-size: .78rem; font-weight: 600; margin-bottom: 4px; color: var(--ink-soft); }
+input, select, textarea {
+  width: 100%; padding: 11px 12px; border: 1.5px solid var(--line); border-radius: 10px;
+  font: 400 .93rem "Poppins", sans-serif; background: #fff; color: var(--ink);
+}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); }
+textarea { resize: vertical; min-height: 90px; }
+.card-form .btn { width: 100%; justify-content: center; margin-top: 14px; }
+.form-note { font-size: .76rem; color: var(--ink-soft); margin: 10px 0 0; text-align: center; }
+
+/* Cards */
+.grid { display: grid; gap: 22px; margin-top: 40px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+.card {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 26px; transition: .25s;
+}
+.section.alt .card { background: var(--cream); }
+.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--gold-light); }
+.icon {
+  width: 54px; height: 54px; border-radius: 14px; background: var(--ink); color: var(--gold-light);
+  display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 16px;
+}
+.card p { color: var(--ink-soft); font-size: .93rem; margin: 0; }
+.card .more { display: inline-block; margin-top: 14px; color: var(--gold); font-weight: 600; font-size: .9rem; }
+
+/* Why us */
+.why { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.why-list { display: grid; gap: 18px; }
+.why-item { display: flex; gap: 16px; }
+.why-item .num {
+  flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--gold); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.why-item h3 { font-size: 1.05rem; margin-bottom: 2px; font-family: "Poppins", sans-serif; font-weight: 600; }
+.why-item p { margin: 0; color: var(--ink-soft); font-size: .92rem; }
+
+/* Steps */
+.steps { counter-reset: s; }
+.step { text-align: center; padding: 10px; }
+.step::before {
+  counter-increment: s; content: counter(s);
+  display: grid; place-items: center; width: 52px; height: 52px; margin: 0 auto 14px;
+  border-radius: 50%; border: 2px solid var(--gold); color: var(--gold); font: 700 1.2rem "Playfair Display", serif;
+}
+.step p { color: var(--ink-soft); font-size: .9rem; }
+
+/* CTA band */
+.cta-band { background: var(--ink); color: #fff; text-align: center; padding: 64px 0; }
+.cta-band p { color: #d6e4e2; }
+.cta-band .hero-actions { justify-content: center; }
+
+/* Page banner */
+.page-banner { background: var(--ink); color: #fff; padding: 60px 0; }
+.page-banner p { color: #d6e4e2; max-width: 60ch; margin: 0; }
+.crumbs { font-size: .82rem; color: var(--gold-light); margin-bottom: 10px; }
+
+/* Services page */
+.svc-nav { background: var(--white); border-bottom: 1px solid var(--line); position: sticky; top: 72px; z-index: 40; }
+.svc-nav .container { display: flex; gap: 8px; overflow-x: auto; padding: 10px 0; }
+.svc-nav a { white-space: nowrap; padding: 7px 16px; border-radius: 999px; font-size: .85rem; font-weight: 500; border: 1px solid var(--line); }
+.svc-nav a:hover { background: var(--ink); color: #fff; }
+.svc-group { scroll-margin-top: 130px; }
+.svc-block { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 26px; }
+.svc-card { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; scroll-margin-top: 130px; }
+.svc-card .icon { margin-bottom: 12px; }
+.svc-card ul { padding-left: 0; list-style: none; margin: 14px 0 18px; }
+.svc-card li { padding-left: 24px; position: relative; font-size: .92rem; color: var(--ink-soft); margin-bottom: 6px; }
+.svc-card li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-weight: 700; }
+.svc-card .btn { padding: 9px 20px; font-size: .88rem; }
+
+/* Contact */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.info-item { display: flex; gap: 14px; margin-bottom: 20px; }
+.info-item .icon { width: 46px; height: 46px; font-size: 1.2rem; margin: 0; flex: none; }
+.info-item h3 { font-family: "Poppins", sans-serif; font-size: 1rem; margin: 0; }
+.info-item p, .info-item a { color: var(--ink-soft); margin: 0; font-size: .93rem; }
+.info-item a:hover { color: var(--gold); }
+.map { border: 0; width: 100%; height: 300px; border-radius: var(--radius); margin-top: 8px; }
+.values { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 24px; }
+
+/* Blog */
+.post { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+.post .thumb { height: 150px; background: linear-gradient(135deg, var(--ink), #2f8f86); display: grid; place-items: center; font-size: 3rem; }
+.post .body { padding: 22px; display: flex; flex-direction: column; flex: 1; }
+.post .tag { font-size: .72rem; color: var(--gold); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.post p { color: var(--ink-soft); font-size: .9rem; }
+.article { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 34px; margin-top: 28px; scroll-margin-top: 100px; }
+.article ul { color: var(--ink-soft); padding-left: 20px; }
+.article li { margin-bottom: 6px; }
+
+/* Footer */
+.site-footer { background: #0a2b2c; color: #bcd0cd; padding: 56px 0 0; font-size: .92rem; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1.2fr; gap: 36px; }
+.site-footer h4 { color: #fff; font-family: "Poppins", sans-serif; font-size: 1rem; margin: 0 0 14px; }
+.site-footer a:hover { color: var(--gold-light); }
+.site-footer ul { list-style: none; padding: 0; margin: 0; }
+.site-footer li { margin-bottom: 8px; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 40px; padding: 18px 0; text-align: center; font-size: .82rem; }
+
+/* Floating buttons */
+.float-btns { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 10px; z-index: 60; }
+.float-btns a {
+  width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 1.5rem; color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25);
+}
+.float-btns .wa { background: #25d366; }
+.float-btns .call { background: var(--gold); }
+
+@media (max-width: 900px) {
+  .hero .container, .why, .contact-grid, .svc-block { grid-template-columns: 1fr; }
+  .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero::after { display: none; }
+}
+@media (max-width: 720px) {
+  .menu-toggle { display: block; }
+  .nav {
+    position: absolute; left: 0; right: 0; top: 72px; background: var(--white);
+    flex-direction: column; align-items: flex-start; padding: 18px 24px 24px; gap: 14px;
+    border-bottom: 1px solid var(--line); display: none;
+  }
+  .nav.open { display: flex; }
+  .svc-nav { top: 72px; }
+  .grid-3, .grid-4, .values { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .section { padding: 52px 0; }
+  .topbar .container { justify-content: center; }
+}
+
+.hero .card-form p { color: var(--ink-soft); }
+
+
+/* ---- v2 ---- */
+.demo-ribbon{background:var(--gold);color:#fff;text-align:center;font-size:.78rem;font-weight:600;padding:6px 12px}
+.hero2{background:linear-gradient(160deg,#0f3d3e 0%,#1c5f5a 60%,#2f8f86 100%);color:#fff;padding:64px 0 150px;position:relative;overflow:hidden}
+.hero2::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 10%,rgba(233,196,106,.22),transparent 45%),radial-gradient(circle at 10% 90%,rgba(255,255,255,.08),transparent 40%)}
+.hero2 .container{position:relative;text-align:center}
+.hero2 p{color:#d6e4e2;max-width:60ch;margin:0 auto}
+.hero2 h1 span{color:var(--gold-light)}
+.search{background:#fff;color:var(--ink);border-radius:20px;box-shadow:var(--shadow);margin:-110px auto 0;position:relative;z-index:5;max-width:1060px;padding:0 0 24px;overflow:hidden}
+.stabs{display:flex;overflow-x:auto;background:#f3ede0;border-bottom:1px solid var(--line)}
+.stab{flex:1;min-width:92px;padding:14px 8px;border:0;background:none;font:600 .8rem Poppins,sans-serif;color:var(--ink-soft);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.stab span{display:block;font-size:1.3rem}
+.stab.on{background:#fff;color:var(--ink);border-bottom-color:var(--gold)}
+.sbody{padding:22px 24px 0}
+.trip{display:flex;gap:18px;margin-bottom:14px;font-size:.85rem}
+.trip label{display:inline-flex;align-items:center;gap:6px;margin:0;cursor:pointer;font-weight:500}
+.trip input{width:auto}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.sgo{margin-top:16px;display:flex;justify-content:center}
+.sgo .btn{padding:14px 44px;font-size:1rem}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;font-size:.8rem;color:var(--ink-soft);justify-content:center}
+.chips b{color:var(--ink)}
+.chip{border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:#fff;cursor:pointer}
+.chip:hover{border-color:var(--gold)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:34px;text-align:center}
+.quick div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;font-size:.88rem}
+.quick b{display:block;font-family:"Playfair Display",serif;font-size:1.5rem;color:var(--gold)}
+.offers{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:34px}
+.offer{border-radius:var(--radius);padding:26px;color:#fff;position:relative;overflow:hidden;min-height:170px;display:flex;flex-direction:column;justify-content:flex-end}
+.offer::after{content:attr(data-e);position:absolute;right:14px;top:6px;font-size:4.5rem;opacity:.25}
+.offer h3{margin:0 0 4px;color:#fff}.offer p{margin:0 0 10px;font-size:.88rem;opacity:.9}
+.offer .code{align-self:flex-start;border:1.5px dashed rgba(255,255,255,.7);padding:3px 12px;border-radius:8px;font-size:.78rem;letter-spacing:.08em}
+.o1{background:linear-gradient(135deg,#0f3d3e,#2f8f86)}.o2{background:linear-gradient(135deg,#b8892b,#e08a3c)}.o3{background:linear-gradient(135deg,#1f6f5c,#2fa37f)}
+.dest{border-radius:var(--radius);overflow:hidden;background:#fff;border:1px solid var(--line);transition:.25s;text-align:left}
+.dest:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.dest .pic{height:150px;display:grid;place-items:center;font-size:3.6rem;position:relative}
+.dest .tag{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.92);color:var(--ink);font-size:.7rem;font-weight:600;padding:3px 10px;border-radius:999px}
+.dest .info{padding:16px 18px 18px}
+.dest h3{margin:0 0 2px;font-size:1.1rem}
+.dest .meta{color:var(--ink-soft);font-size:.82rem;margin:0 0 10px}
+.dest .price{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--ink-soft)}
+.dest .price b{font-size:1.15rem;color:var(--ink)}
+.dest .price a{color:var(--gold);font-weight:600}
+.band{background:linear-gradient(120deg,#0f3d3e,#1c5f5a);color:#fff;border-radius:22px;padding:44px;display:grid;grid-template-columns:1.2fr .8fr;gap:30px;align-items:center}
+.band p{color:#d6e4e2}.band ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.band li::before{content:"✓ ";color:var(--gold-light);font-weight:700}
+.review{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;text-align:left}
+.review .stars{color:#e0a82e;letter-spacing:2px}
+.review p{font-size:.92rem;color:var(--ink-soft)}
+.review b{font-size:.88rem}.review small{color:var(--ink-soft);display:block}
+.faq{max-width:800px;margin:34px auto 0;text-align:left}
+.faq details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px}
+.faq summary{font-weight:600;cursor:pointer}
+.faq p{margin:10px 0 0;color:var(--ink-soft);font-size:.92rem}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;font-size:.88rem;opacity:0;pointer-events:none;transition:.3s;z-index:100;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.lock::after{content:"FULL VERSION";font-size:.55rem;background:var(--gold);color:#fff;border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+@media(max-width:900px){.offers,.band{grid-template-columns:1fr}.quick{grid-template-columns:1fr 1fr}.band{padding:28px}}
+@media(max-width:720px){.hero2{padding-bottom:130px}.sbody{padding:18px 16px 0}.search{margin-inline:16px}}
+
+/* ---- v3: images + teal theme ---- */
+.hero2{background:linear-gradient(160deg,rgba(10,43,44,.82),rgba(15,61,62,.55) 60%,rgba(28,95,90,.45)),var(--img-hero) center/cover no-repeat}
+.hero2::before{background:radial-gradient(circle at 80% 10%,rgba(233,196,106,.18),transparent 45%)}
+.dest .pic{background-size:cover!important;background-position:center;height:160px;display:block}
+.offer{background-size:cover!important;background-position:center;min-height:200px}
+.offer::after{display:none}
+.o1{background:linear-gradient(to top,rgba(10,43,44,.96) 15%,rgba(10,43,44,.7) 55%,rgba(10,43,44,.2)),var(--img-plane)}
+.o2{background:linear-gradient(to top,rgba(10,43,44,.96) 15%,rgba(10,43,44,.7) 55%,rgba(10,43,44,.2)),var(--img-beach)}
+.o3{background:linear-gradient(to top,rgba(10,43,44,.96) 15%,rgba(10,43,44,.7) 55%,rgba(10,43,44,.2)),var(--img-wedding)}
+.band{background:linear-gradient(110deg,rgba(10,43,44,.94) 35%,rgba(15,61,62,.6)),var(--img-wedding) center/cover}
+.cta-band{background:linear-gradient(rgba(10,43,44,.9),rgba(10,43,44,.9)),var(--img-hero) center/cover}
+.scard{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.25s}
+.scard:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--gold-light)}
+.simg{height:140px;background-size:cover;background-position:center;position:relative}
+.sbadge{position:absolute;left:18px;bottom:-24px;width:48px;height:48px;border-radius:14px;background:var(--ink);color:var(--gold-light);display:grid;place-items:center;font-size:1.4rem;border:3px solid #fff}
+.sc-body{padding:34px 20px 22px}
+.sc-body h3{margin-bottom:4px}.sc-body p{margin:0;color:var(--ink-soft);font-size:.9rem}
+.who{display:flex;gap:12px;align-items:center;margin-top:14px}
+.who i{flex:none;width:42px;height:42px;border-radius:50%;background:var(--gold);color:#fff;display:grid;place-items:center;font:700 1rem Poppins,sans-serif;font-style:normal}
+.who small{display:block}
+
+</style>
+</head>
+<body>
+<div class="demo-ribbon">DEMO PREVIEW &mdash; Prices, offers and reviews shown here are sample content. Final website will have your real data.</div>
+<div class="topbar"><div class="container">
+  <span>Karnal's Most Trusted Travel Partner</span>
+  <span><a href="tel:+919253030998">📞 +91 92530 30998</a> &nbsp;|&nbsp; <a href="mailto:amantravels14@gmail.com">✉ amantravels14@gmail.com</a></span>
+</div></div>
+<header class="site-header"><div class="container">
+  <a href="#top" class="logo">AMAN TRAVELS<small>Karnal</small></a>
+  <button class="menu-toggle" aria-label="Menu" aria-expanded="false">☰</button>
+  <nav class="nav">
+    <a href="#search">Book</a>
+    <a href="#packages">Holidays</a>
+    <a href="#services">Services</a>
+    <a href="#events">Weddings &amp; Events</a>
+    <a href="#contact">Contact</a>
+    <a href="#" class="lock" data-locked>Blog</a>
+    <a href="#search" class="btn btn-gold">Get a Quote</a>
+  </nav>
+</div></header>
+
+<section class="hero2" id="top"><div class="container">
+  <span class="eyebrow" style="color:var(--gold-light)">Air · Rail · Bus · Hotels · Holidays · Weddings</span>
+  <h1>Karnal's most trusted <span>travel partner.</span></h1>
+  <p>Search, compare and book with a local team that gives you clear prices and picks up the phone when plans change.</p>
+</div></section>
+
+<div class="container">
+  <form class="search" id="search">
+    <div class="stabs" id="stabs"></div>
+    <div class="sbody">
+      <div id="trip"></div>
+      <div class="sgrid" id="sfields"></div>
+      <div class="sgo"><button class="btn btn-gold" type="submit">Search &amp; Get Best Price</button></div>
+      <div class="chips"><b>Popular:</b>
+        <span class="chip" data-q="Delhi|Mumbai">Delhi–Mumbai</span>
+        <span class="chip" data-q="Delhi|Goa">Delhi–Goa</span>
+        <span class="chip" data-q="Karnal|Manali">Karnal–Manali</span>
+        <span class="chip" data-q="Delhi|Dubai">Delhi–Dubai</span>
+      </div>
+      <p class="form-note">We reply on WhatsApp with fully-priced options. No hidden charges.</p>
+    </div>
+  </form>
+  <div class="quick">
+    <div><b>9</b>Travel services</div><div><b>0</b>Hidden charges</div><div><b>1</b>Point of contact</div><div><b>24×7</b>Support on call</div>
+  </div>
+</div>
+
+<section class="section"><div class="container">
+  <div class="center"><span class="eyebrow">Offers</span><h2>Deals for you</h2><div class="divider"></div></div>
+  <div class="offers">
+    <div class="offer o1" data-e="✈"><h3>Group booking offer</h3><p>Special group fares on flights & trains for 10+ travellers.</p><span class="code">GROUP10</span></div>
+    <div class="offer o2" data-e="🏝"><h3>Early-bird holidays</h3><p>Book your holiday package early and save on peak-season stays.</p><span class="code">EARLYBIRD</span></div>
+    <div class="offer o3" data-e="💍"><h3>Wedding guest travel</h3><p>Room blocking and group transfers for destination weddings.</p><span class="code">WEDDING</span></div>
+  </div>
+</div></section>
+
+<section class="section alt" id="packages"><div class="container center">
+  <span class="eyebrow">Holiday packages</span><h2>Popular holiday packages</h2><div class="divider"></div>
+  <p class="lead">Hotels, transfers and sightseeing included. Every package can be customised.</p>
+  <div class="grid grid-3">
+<div class="dest"><div class="pic" style="background-image:var(--img-beach)"><span class="tag">Domestic</span></div>
+<div class="info"><h3>Goa</h3><p class="meta">4 Nights / 5 Days · Hotel + Transfers</p>
+<div class="price"><span>from<br><b>₹14,999</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-mountain)"><span class="tag">Domestic</span></div>
+<div class="info"><h3>Manali & Shimla</h3><p class="meta">5 Nights / 6 Days · Hotel + Sightseeing</p>
+<div class="price"><span>from<br><b>₹16,499</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-kashmir)"><span class="tag">Domestic</span></div>
+<div class="info"><h3>Kashmir</h3><p class="meta">6 Nights / 7 Days · Hotel + Shikara</p>
+<div class="price"><span>from<br><b>₹24,999</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-dubai)"><span class="tag">International</span></div>
+<div class="info"><h3>Dubai</h3><p class="meta">5 Nights / 6 Days · Visa + Hotel</p>
+<div class="price"><span>from<br><b>₹44,999</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-thailand)"><span class="tag">International</span></div>
+<div class="info"><h3>Thailand</h3><p class="meta">5 Nights / 6 Days · Hotel + Tours</p>
+<div class="price"><span>from<br><b>₹32,999</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-bali)"><span class="tag">International</span></div>
+<div class="info"><h3>Bali</h3><p class="meta">5 Nights / 6 Days · Villa + Transfers</p>
+<div class="price"><span>from<br><b>₹39,999</b></span><a href="#search" data-go="Holidays">Enquire →</a></div></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container center">
+  <span class="eyebrow">Tickets</span><h2>Popular routes</h2><div class="divider"></div>
+  <div class="grid grid-4">
+<div class="dest"><div class="pic" style="background-image:var(--img-plane)"><span class="tag">Flight</span></div>
+<div class="info"><h3>Delhi → Mumbai</h3><p class="meta">Daily flights · Domestic</p>
+<div class="price"><span>from<br><b>₹4,299</b></span><a href="#search" data-go="Flights">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-plane2)"><span class="tag">Flight</span></div>
+<div class="info"><h3>Delhi → Goa</h3><p class="meta">Daily flights · Domestic</p>
+<div class="price"><span>from<br><b>₹5,499</b></span><a href="#search" data-go="Flights">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-train)"><span class="tag">Train</span></div>
+<div class="info"><h3>Karnal → Delhi</h3><p class="meta">Multiple trains daily</p>
+<div class="price"><span>from<br><b>₹95</b></span><a href="#search" data-go="Trains">Enquire →</a></div></div></div>
+<div class="dest"><div class="pic" style="background-image:var(--img-bus)"><span class="tag">Bus</span></div>
+<div class="info"><h3>Karnal → Manali</h3><p class="meta">AC Volvo · Overnight</p>
+<div class="price"><span>from<br><b>₹1,199</b></span><a href="#search" data-go="Buses">Enquire →</a></div></div></div>
+  </div>
+</div></section>
+
+<section class="section alt" id="services"><div class="container center">
+  <span class="eyebrow">What we do</span><h2>Our services</h2><div class="divider"></div>
+  <p class="lead">From a single ticket to a destination wedding, all handled under one roof.</p>
+  <div class="grid grid-3" style="text-align:left">
+<div class="scard"><div class="simg" style="background-image:var(--img-plane)"><div class="sbadge">✈</div></div><div class="sc-body"><h3>Air Tickets</h3><p>Domestic & international flights at honest fares.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-train)"><div class="sbadge">🚆</div></div><div class="sc-body"><h3>Rail Tickets</h3><p>IRCTC bookings incl. Tatkal, handled for you.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-bus)"><div class="sbadge">🚌</div></div><div class="sc-body"><h3>Bus Tickets</h3><p>AC, sleeper & Volvo seats across India.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-thailand)"><div class="sbadge">🏝</div></div><div class="sc-body"><h3>Tour Packages</h3><p>Holidays built around your budget & family.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-mountain)"><div class="sbadge">👥</div></div><div class="sc-body"><h3>Group Tours</h3><p>One coordinator for the whole group.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-dubai)"><div class="sbadge">💼</div></div><div class="sc-body"><h3>Corporate Events</h3><p>Offsites, conferences & team trips.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-wedding)"><div class="sbadge">💍</div></div><div class="sc-body"><h3>Destination Wedding</h3><p>Venue, guests, stay & logistics managed.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-hotel)"><div class="sbadge">🏨</div></div><div class="sc-body"><h3>Hotel Booking</h3><p>Budget to luxury stays, clear inclusions.</p></div></div>
+<div class="scard"><div class="simg" style="background-image:var(--img-cruise)"><div class="sbadge">🚢</div></div><div class="sc-body"><h3>Cruise Trips</h3><p>Domestic & international cruise holidays.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section" id="events"><div class="container">
+  <div class="band">
+    <div>
+      <span class="eyebrow" style="color:var(--gold-light)">Weddings · Corporate · Groups</span>
+      <h2>Planning for many people? We'll handle it.</h2>
+      <p>Coordinating guests, hotels and dates is stressful. One coordinator, one plan and one clear invoice.</p>
+      <a class="btn btn-gold" href="#search" data-go="Holidays">Plan my event</a>
+    </div>
+    <ul><li>Destination weddings</li><li>Corporate offsites &amp; conferences</li><li>Group &amp; society tours</li><li>School &amp; family trips</li></ul>
+  </div>
+</div></section>
+
+<section class="section alt"><div class="container why">
+  <div>
+    <span class="eyebrow">Why Aman Travels</span><h2>Travel without the worry</h2><div class="divider"></div>
+    <p class="lead">Surprise charges, confusing refund rules, nobody to call. We built Aman Travels to fix exactly that.</p>
+  </div>
+  <div class="why-list">
+    <div class="why-item"><div class="num">1</div><div><h3>Clear, honest pricing</h3><p>Full price and inclusions before you pay.</p></div></div>
+    <div class="why-item"><div class="num">2</div><div><h3>A trusted local office</h3><p>Visit us in Karnal or call anytime.</p></div></div>
+    <div class="why-item"><div class="num">3</div><div><h3>Everything in one place</h3><p>Flights, trains, hotels, packages and events.</p></div></div>
+    <div class="why-item"><div class="num">4</div><div><h3>Support when plans change</h3><p>One call and we sort it out with you.</p></div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container center">
+  <span class="eyebrow">Reviews</span><h2>What travellers say</h2><div class="divider"></div>
+  <div class="grid grid-3">
+<div class="review"><div class="stars">★★★★★</div><p>Booked our whole family trip in one call. Price was exactly what they quoted, nothing extra at the end.</p><div class="who"><i>R</i><div><b>Rohit S.</b><small>Family trip · Manali</small></div></div></div>
+<div class="review"><div class="stars">★★★★★</div><p>They handled rooms and travel for all our guests. We could actually enjoy our own wedding.</p><div class="who"><i>N</i><div><b>Neha & Karan</b><small>Destination wedding</small></div></div></div>
+<div class="review"><div class="stars">★★★★★</div><p>Smooth planning for 40 people, one invoice and a coordinator who picked up every call.</p><div class="who"><i>V</i><div><b>Vikas Enterprises</b><small>Corporate offsite</small></div></div></div>
+  </div>
+</div></section>
+
+<section class="section alt"><div class="container center">
+  <span class="eyebrow">FAQ</span><h2>Common questions</h2><div class="divider"></div>
+  <div class="faq">
+<details><summary>Are there any hidden charges?</summary><p>No. You get the full price and what's included before you pay anything.</p></details>
+<details><summary>Can I visit your office?</summary><p>Yes. We're at Opposite Purani Sabzi Mandi, Hotel Akashdeep Building, Karnal.</p></details>
+<details><summary>What if my plans change after booking?</summary><p>Call us. We help with date changes and cancellations as per the airline, railway or hotel policy.</p></details>
+<details><summary>Do you arrange visas and international packages?</summary><p>Yes, we can guide you through visa documents and plan complete international holidays.</p></details>
+<details><summary>Can you plan a group tour or wedding for many people?</summary><p>Yes. A single coordinator manages travel, hotels and the schedule for your group.</p></details>
+  </div>
+</div></section>
+
+<section class="section" id="contact"><div class="container contact-grid">
+  <div>
+    <span class="eyebrow">Contact</span><h2>Visit or reach us</h2><div class="divider"></div>
+    <div class="info-item"><div class="icon">📍</div><div><h3>Address</h3><p>Opposite Purani Sabzi Mandi,<br>Hotel Akashdeep Building, Karnal</p></div></div>
+    <div class="info-item"><div class="icon">📞</div><div><h3>Phone / WhatsApp</h3><a href="tel:+919253030998">+91 92530 30998</a></div></div>
+    <div class="info-item"><div class="icon">✉</div><div><h3>Email</h3><a href="mailto:amantravels14@gmail.com">amantravels14@gmail.com</a></div></div>
+  </div>
+  <iframe class="map" style="height:100%;min-height:280px;margin:0" loading="lazy" title="Aman Travels location"
+    src="https://www.google.com/maps?q=Hotel+Akashdeep+Purani+Sabzi+Mandi+Karnal&amp;output=embed"></iframe>
+</div></section>
+
+<section class="cta-band"><div class="container">
+  <h2>Like what you see?</h2>
+  <p>This is a preview of the Home page. The full website adds Services pages, About &amp; Contact, Blog, SEO, hosting and backups.</p>
+  <div class="hero-actions">
+    <a class="btn btn-gold" href="tel:+919253030998">📞 Call +91 92530 30998</a>
+    <a class="btn btn-wa" href="https://wa.me/919253030998" target="_blank" rel="noopener">💬 WhatsApp Us</a>
+  </div>
+</div></section>
+
+<footer class="site-footer"><div class="container">
+  <div class="footer-grid">
+    <div><a href="#top" class="logo" style="color:#fff">AMAN TRAVELS<small>Karnal</small></a>
+      <p style="margin-top:14px">Karnal's most trusted travel partner for tickets, tour packages, group tours, corporate events and destination weddings.</p></div>
+    <div><h4>Book</h4><ul><li>Air Tickets</li><li>Rail Tickets</li><li>Bus Tickets</li><li>Hotels</li></ul></div>
+    <div><h4>Holidays</h4><ul><li>Tour Packages</li><li>Group Tours</li><li>Cruise Trips</li><li>Destination Wedding</li></ul></div>
+    <div><h4>Visit Us</h4><ul><li>Opposite Purani Sabzi Mandi,<br>Hotel Akashdeep Building, Karnal</li><li>+91 92530 30998</li><li>amantravels14@gmail.com</li></ul></div>
+  </div>
+  <div class="footer-bottom">© Aman Travels, Karnal &nbsp;|&nbsp; Demo preview &mdash; not the final website.</div>
+</div></footer>
+
+<div class="float-btns">
+  <a class="wa" href="https://wa.me/919253030998" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+  <a class="call" href="tel:+919253030998" aria-label="Call">📞</a>
+</div>
+<div class="toast" id="toast">Available in the full website</div>
+
+<script>
+(function () {
+  var T = {
+    "Flights":  ["✈", [["From","Karnal / Delhi"],["To","Destination"],["Depart","","date"],["Return","","date"],["Travellers","1","number"],["Class","Economy"]], ["One way","Round trip"]],
+    "Trains":   ["🚆", [["From","Karnal"],["To","Destination"],["Date","","date"],["Class","Sleeper / 3AC / 2AC"],["Passengers","1","number"]]],
+    "Buses":    ["🚌", [["From","Karnal"],["To","Destination"],["Date","","date"],["Seats","1","number"],["Bus type","AC / Sleeper / Volvo"]]],
+    "Hotels":   ["🏨", [["City","Where to stay?"],["Check-in","","date"],["Check-out","","date"],["Rooms","1","number"],["Guests","2","number"]]],
+    "Holidays": ["🏝", [["Destination","Goa, Dubai, Manali..."],["Month","","month"],["Travellers","2","number"],["Budget","Approx. per person"]]],
+    "Cruise":   ["🚢", [["Route","Domestic / International"],["Month","","month"],["Travellers","2","number"],["Budget","Approx. per person"]]],
+    "Weddings & Events": ["💍", [["Event type","Wedding / Corporate / Group"],["Location","Preferred destination"],["Month","","month"],["Guests","50","number"],["Budget","Approx. total"]]]
+  };
+  var cur = "Flights", trip = "One way";
+  var stabs = document.getElementById("stabs"), sf = document.getElementById("sfields"), tr = document.getElementById("trip");
+
+  function inp(f, i) {
+    var t = f[2] || "text";
+    return '<div><label>' + f[0] + '</label><input name="' + f[0] + '" type="' + t + '" ' + (f[2] && f[2] !== "date" && f[2] !== "month" ? 'min="1" value="' + f[1] + '"' : (f[2] ? "" : 'placeholder="' + f[1] + '"')) + '></div>';
+  }
+  function render() {
+    stabs.innerHTML = Object.keys(T).map(function (k) {
+      return '<button type="button" class="stab' + (k === cur ? " on" : "") + '" data-t="' + k + '"><span>' + T[k][0] + "</span>" + k + "</button>";
+    }).join("");
+    tr.innerHTML = T[cur][2] ? '<div class="trip">' + T[cur][2].map(function (o) {
+      return '<label><input type="radio" name="trip" value="' + o + '"' + (o === trip ? " checked" : "") + "> " + o + "</label>";
+    }).join("") + "</div>" : "";
+    sf.innerHTML = '<div><label>Your name</label><input name="Name" required placeholder="Full name"></div>' +
+      T[cur][1].filter(function (f) { return !(cur === "Flights" && f[0] === "Return" && trip === "One way"); }).map(inp).join("") +
+      '<div><label>Phone number</label><input name="Phone" type="tel" required placeholder="10-digit mobile"></div>';
+    stabs.querySelectorAll(".stab").forEach(function (b) { b.onclick = function () { cur = b.dataset.t; render(); }; });
+    tr.querySelectorAll("input").forEach(function (r) { r.onchange = function () { trip = r.value; render(); }; });
+  }
+  render();
+
+  document.querySelectorAll("[data-go]").forEach(function (a) {
+    a.addEventListener("click", function () { cur = a.dataset.go; render(); });
+  });
+  document.querySelectorAll(".chip").forEach(function (c) {
+    c.onclick = function () {
+      var p = c.dataset.q.split("|"); cur = "Flights"; render();
+      var f = sf.querySelector('[name="From"]'), t = sf.querySelector('[name="To"]');
+      if (f) f.value = p[0]; if (t) t.value = p[1];
+    };
+  });
+
+  document.getElementById("search").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var lines = ["Hello Aman Travels, I'd like to enquire about " + cur + ":"];
+    new FormData(e.target).forEach(function (v, k) { if (String(v).trim()) lines.push(k + ": " + v); });
+    window.open("https://wa.me/919253030998?text=" + encodeURIComponent(lines.join("\n")), "_blank", "noopener");
+  });
+
+  var toast = document.getElementById("toast"), timer;
+  document.querySelectorAll("[data-locked]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault(); toast.classList.add("show"); clearTimeout(timer);
+      timer = setTimeout(function () { toast.classList.remove("show"); }, 2200);
+    });
+  });
+  var m = document.querySelector(".menu-toggle"), n = document.querySelector(".nav");
+  m.onclick = function () { m.setAttribute("aria-expanded", n.classList.toggle("open")); };
+  n.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", function () { n.classList.remove("open"); }); });
+})();
+</script>
+</body>
+</html>
