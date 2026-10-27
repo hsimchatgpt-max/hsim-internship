@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,97 +65,99 @@
 <header>
   <h1>Social Studio</h1>
   <nav>
-    <button data-tab="calendar" class="active">Calendar</button>
-    <button data-tab="brand">Brand Profile</button>
-    <button data-tab="settings">Settings</button>
+    <button data-tab="calendar" class="active" data-i18n="tab.calendar">Calendar</button>
+    <button data-tab="brand" data-i18n="tab.brand">Brand Profile</button>
+    <button data-tab="settings" data-i18n="tab.settings">Settings</button>
   </nav>
+  <div class="spacer"></div>
+  <select id="uiLang" style="width:auto" aria-label="Language"><option value="en">English</option><option value="hi">हिंदी</option></select>
 </header>
 
 <main>
   <!-- Calendar -->
   <section id="tab-calendar">
-    <div id="keyBanner" class="banner" hidden>AI chalane ke liye pehle <b>Settings</b> me Gemini API key daalo.</div>
+    <div id="keyBanner" class="banner" hidden data-i18n="banner.key">To use AI, first add your Gemini API key in Settings.</div>
     <div class="toolbar">
       <button class="ghost" id="prev">&larr;</button>
       <h2 id="monthTitle"></h2>
       <button class="ghost" id="next">&rarr;</button>
-      <button class="ghost" id="todayBtn">Aaj</button>
+      <button class="ghost" id="todayBtn" data-i18n="btn.today">Today</button>
       <div class="spacer"></div>
-      <button class="primary" id="planBtn">AI se mahine ka plan banao</button>
+      <button class="primary" id="planBtn" data-i18n="btn.plan">Plan the month with AI</button>
     </div>
     <div class="legend" id="legend"></div>
     <div class="grid" id="dows"></div>
     <div class="grid" id="grid"></div>
-    <p class="hint">Tip: post ko pakad kar kisi doosre din par chhodo to wo date badal jayegi. Post par click karke edit karo.</p>
+    <p class="hint" data-i18n="tip.drag">Tip: drag a post onto another day to change its date. Click a post to edit it.</p>
   </section>
 
   <!-- Brand -->
   <section id="tab-brand" hidden>
     <div class="card" style="max-width:640px">
-      <h2 style="margin-top:0">Brand Profile</h2>
-      <p class="hint">Ye ek baar bharo. AI isi se aapke jaisa content likhta hai.</p>
-      <label>Brand / Aapka naam</label><input id="b_name">
-      <label>Business kya karta hai?</label><textarea id="b_business" placeholder="Jaise: Main online yoga classes sikhati hu"></textarea>
-      <label>Audience kaun hai?</label><textarea id="b_audience" placeholder="Jaise: 25-40 saal ki working women jo fit rehna chahti hain"></textarea>
+      <h2 style="margin-top:0" data-i18n="tab.brand">Brand Profile</h2>
+      <p class="hint" data-i18n="brand.hint">Fill this once. The AI uses it to write content that sounds like you.</p>
+      <label data-i18n="brand.name">Brand / Your name</label><input id="b_name">
+      <label data-i18n="brand.business">What does your business do?</label><textarea id="b_business" data-i18n-ph="brand.business.ph" placeholder="e.g. I teach online yoga classes"></textarea>
+      <label data-i18n="brand.audience">Who is your audience?</label><textarea id="b_audience" data-i18n-ph="brand.audience.ph" placeholder="e.g. Working women aged 25-40 who want to stay fit"></textarea>
       <div class="row">
-        <div><label>Tone</label>
-          <select id="b_tone"><option value="friendly">Friendly</option><option value="professional">Professional</option><option value="funny">Funny</option><option value="inspiring">Inspiring</option><option value="bold">Bold</option></select></div>
-        <div><label>Language</label>
-          <select id="b_language"><option value="hinglish">Hinglish</option><option value="hindi">Hindi</option><option value="english">English</option></select></div>
+        <div><label data-i18n="brand.tone">Tone</label>
+          <select id="b_tone"></select></div>
+        <div><label data-i18n="brand.language">Content language</label>
+          <select id="b_language"></select></div>
       </div>
-      <label>Default platforms (naye posts par ye lagenge)</label>
+      <label data-i18n="brand.platforms">Default platforms (used for new posts)</label>
       <div class="checks" id="b_platforms"></div>
-      <div class="actions"><button class="primary" id="saveBrand">Save</button></div>
+      <div class="actions"><button class="primary" id="saveBrand" data-i18n="btn.save">Save</button></div>
     </div>
   </section>
 
   <!-- Settings -->
   <section id="tab-settings" hidden>
     <div class="card" style="max-width:640px">
-      <h2 style="margin-top:0">Settings</h2>
+      <h2 style="margin-top:0" data-i18n="tab.settings">Settings</h2>
       <label>Gemini API key</label>
       <input id="s_key" type="password" placeholder="AIza..." autocomplete="off">
       <p class="hint" id="keyState"></p>
-      <p class="hint">Key sirf aapke computer ke <code>data/</code> folder me save hoti hai, kahin upload nahi hoti.</p>
-      <div class="actions"><button class="primary" id="saveKey">Key save karo</button></div>
+      <p class="hint" data-i18n="key.privacy">Your key is stored only in the <code>data/</code> folder on your computer and is never uploaded.</p>
+      <div class="actions"><button class="primary" id="saveKey" data-i18n="btn.saveKey">Save key</button></div>
     </div>
   </section>
 </main>
 
 <!-- Plan modal -->
 <div class="overlay" id="planOverlay"><div class="modal">
-  <h3>AI se mahine ka plan</h3>
-  <p class="hint">AI poore mahine ke liye din, format aur topic suggest karega. Baad me aap sab edit kar sakte ho.</p>
-  <label>Is mahine ka theme</label><input id="p_theme" placeholder="Jaise: Beginners ke liye yoga">
-  <label>Hafte me kitni posts?</label>
+  <h3 data-i18n="plan.title">Plan the month with AI</h3>
+  <p class="hint" data-i18n="plan.hint">The AI will suggest days, formats and topics for the whole month. You can edit everything afterwards.</p>
+  <label data-i18n="plan.theme">Theme for this month</label><input id="p_theme" data-i18n-ph="plan.theme.ph" placeholder="e.g. Yoga for beginners">
+  <label data-i18n="plan.per">Posts per week</label>
   <select id="p_per"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>7</option></select>
-  <div class="actions"><button class="primary" id="planGo">Plan banao</button><button class="ghost" data-close>Cancel</button></div>
+  <div class="actions"><button class="primary" id="planGo" data-i18n="btn.makePlan">Create plan</button><button class="ghost" data-close data-i18n="btn.cancel">Cancel</button></div>
 </div></div>
 
 <!-- Post modal -->
 <div class="overlay" id="postOverlay"><div class="modal">
-  <h3 id="postTitle">Post</h3>
+  <h3 id="postTitle"></h3>
   <div class="row">
-    <div><label>Date</label><input type="date" id="f_date"></div>
-    <div><label>Time</label><input type="time" id="f_time"></div>
-    <div><label>Format</label><select id="f_format"></select></div>
-    <div><label>Content type</label><select id="f_content_type"></select></div>
+    <div><label data-i18n="f.date">Date</label><input type="date" id="f_date"></div>
+    <div><label data-i18n="f.time">Time</label><input type="time" id="f_time"></div>
+    <div><label data-i18n="f.format">Format</label><select id="f_format"></select></div>
+    <div><label data-i18n="f.type">Content type</label><select id="f_content_type"></select></div>
   </div>
-  <label>Topic</label><input id="f_topic">
-  <label>Platforms</label><div class="checks" id="f_platforms"></div>
-  <label>Status</label><select id="f_status"></select>
-  <div class="actions"><button class="primary" id="genBtn">AI se content likho</button></div>
-  <label>Hook</label><input id="f_hook">
-  <label>Caption</label><textarea id="f_caption"></textarea>
-  <label>Hashtags</label><input id="f_hashtags">
-  <label>CTA</label><input id="f_cta">
-  <label id="scriptLabel">Video script</label><textarea id="f_script"></textarea>
-  <label>Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
+  <label data-i18n="f.topic">Topic</label><input id="f_topic">
+  <label data-i18n="f.platforms">Platforms</label><div class="checks" id="f_platforms"></div>
+  <label data-i18n="f.status">Status</label><select id="f_status"></select>
+  <div class="actions"><button class="primary" id="genBtn" data-i18n="btn.gen">Write content with AI</button></div>
+  <label data-i18n="f.hook">Hook</label><input id="f_hook">
+  <label data-i18n="f.caption">Caption</label><textarea id="f_caption"></textarea>
+  <label data-i18n="f.hashtags">Hashtags</label><input id="f_hashtags">
+  <label data-i18n="f.cta">Call to action</label><input id="f_cta">
+  <label id="scriptLabel" data-i18n="f.script">Video script</label><textarea id="f_script"></textarea>
+  <label data-i18n="f.image">Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
   <div class="actions">
-    <button class="primary" id="postSave">Save</button>
-    <button class="ghost" data-close>Band karo</button>
+    <button class="primary" id="postSave" data-i18n="btn.save">Save</button>
+    <button class="ghost" data-close data-i18n="btn.close">Close</button>
     <div class="spacer"></div>
-    <button class="ghost danger" id="postDelete">Delete</button>
+    <button class="ghost danger" id="postDelete" data-i18n="btn.delete">Delete</button>
   </div>
 </div></div>
 
@@ -163,8 +165,80 @@
 
 <script>
 const $ = (id) => document.getElementById(id);
-const DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const I18N = {
+  en: {},
+  hi: {
+    "tab.calendar": "कैलेंडर", "tab.brand": "ब्रांड प्रोफ़ाइल", "tab.settings": "सेटिंग्स",
+    "banner.key": "AI चलाने के लिए पहले Settings में Gemini API key डालें।",
+    "btn.today": "आज", "btn.plan": "AI से महीने का प्लान बनाएं", "btn.save": "सेव करें", "btn.saveKey": "Key सेव करें",
+    "btn.cancel": "रद्द करें", "btn.close": "बंद करें", "btn.delete": "डिलीट करें", "btn.makePlan": "प्लान बनाएं",
+    "btn.gen": "AI से कंटेंट लिखवाएं",
+    "tip.drag": "टिप: पोस्ट को दूसरे दिन पर खींचकर छोड़ें तो उसकी तारीख बदल जाएगी। एडिट करने के लिए पोस्ट पर क्लिक करें।",
+    "brand.hint": "इसे एक बार भरें। AI इसी से आपके जैसा कंटेंट लिखता है।",
+    "brand.name": "ब्रांड / आपका नाम", "brand.business": "आपका बिज़नेस क्या करता है?",
+    "brand.business.ph": "जैसे: मैं ऑनलाइन योगा क्लास सिखाती हूँ",
+    "brand.audience": "आपकी ऑडियंस कौन है?", "brand.audience.ph": "जैसे: 25-40 साल की वर्किंग महिलाएं जो फिट रहना चाहती हैं",
+    "brand.tone": "टोन", "brand.language": "कंटेंट की भाषा", "brand.platforms": "डिफ़ॉल्ट प्लेटफ़ॉर्म (नए पोस्ट पर लगेंगे)",
+    "key.privacy": "आपकी key सिर्फ़ आपके कंप्यूटर के <code>data/</code> फ़ोल्डर में सेव होती है, कहीं अपलोड नहीं होती।",
+    "key.saved": "Key सेव है।", "key.none": "अभी कोई key नहीं है।",
+    "plan.title": "AI से महीने का प्लान", "plan.hint": "AI पूरे महीने के लिए दिन, फ़ॉर्मेट और टॉपिक सुझाएगा। बाद में आप सब एडिट कर सकते हैं।",
+    "plan.theme": "इस महीने की थीम", "plan.theme.ph": "जैसे: बिगिनर्स के लिए योगा", "plan.per": "हफ़्ते में कितनी पोस्ट?",
+    "f.date": "तारीख", "f.time": "समय", "f.format": "फ़ॉर्मेट", "f.type": "कंटेंट टाइप", "f.topic": "टॉपिक",
+    "f.platforms": "प्लेटफ़ॉर्म", "f.status": "स्टेटस", "f.hook": "हुक", "f.caption": "कैप्शन", "f.hashtags": "हैशटैग",
+    "f.cta": "कॉल टू एक्शन", "f.script": "वीडियो स्क्रिप्ट", "f.image": "इमेज / विज़ुअल आइडिया",
+    "post.new": "नया पोस्ट", "post.edit": "पोस्ट एडिट करें", "post.addTip": "पोस्ट जोड़ें",
+    "post.genTip": "पहले Save करें, फिर AI से कंटेंट लिखवाएं",
+    "busy.save": "सेव हो रहा है...", "busy.gen": "AI लिख रहा है...", "busy.plan": "प्लान बन रहा है...",
+    "toast.saved": "सेव हो गया", "toast.generated": "कंटेंट तैयार!", "toast.brand": "ब्रांड प्रोफ़ाइल सेव हो गई",
+    "toast.key": "Key सेव हो गई", "toast.plan": "{n} पोस्ट का प्लान बन गया",
+    "confirm.delete": "यह पोस्ट डिलीट कर दूँ?", "err.generic": "कुछ गलत हो गया",
+    "No Gemini API key found. Add your key on the Settings page.": "Gemini API key नहीं मिली। Settings पेज पर key डालें।",
+    "The API key is invalid or not working. Check it again in Settings.": "API key गलत है या काम नहीं कर रही। Settings में दोबारा जाँचें।",
+    "Free limit reached. Please try again in a while (or tomorrow).": "फ़्री लिमिट पूरी हो गई। थोड़ी देर बाद (या कल) फिर कोशिश करें।",
+    "Could not connect to Gemini. Check your internet connection.": "Gemini से कनेक्ट नहीं हो पाया। इंटरनेट जाँचें।",
+    "Could not understand the AI response. Please try again.": "AI का जवाब समझ नहीं आया। फिर कोशिश करें।",
+    "The AI response had the wrong format. Please try again.": "AI का जवाब गलत फ़ॉर्मेट में था। फिर कोशिश करें।",
+    "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
+    "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
+    "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
+    "opt.educational": "ज्ञानवर्धक", "opt.motivational": "प्रेरणादायक", "opt.promotional": "प्रमोशनल", "opt.meme": "मीम",
+    "opt.tips": "टिप्स", "opt.behind-the-scenes": "पर्दे के पीछे", "opt.testimonial": "रिव्यू", "opt.news": "समाचार", "opt.question": "सवाल",
+    "opt.idea": "आइडिया", "opt.draft": "ड्राफ़्ट", "opt.ready": "तैयार", "opt.scheduled": "शेड्यूल्ड", "opt.posted": "पोस्ट हो गया",
+    "opt.friendly": "दोस्ताना", "opt.professional": "प्रोफ़ेशनल", "opt.funny": "मज़ेदार", "opt.inspiring": "प्रेरक", "opt.bold": "बोल्ड",
+    "opt.hinglish": "हिंग्लिश", "opt.hindi": "हिंदी", "opt.english": "अंग्रेज़ी",
+  },
+};
+const EN_DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const EN_TEXT = {
+  "post.new": "New post", "post.edit": "Edit post", "post.addTip": "Add post",
+  "post.genTip": "Save first, then write content with AI",
+  "busy.save": "Saving...", "busy.gen": "AI is writing...", "busy.plan": "Planning...",
+  "toast.saved": "Saved", "toast.generated": "Content ready!", "toast.brand": "Brand profile saved",
+  "toast.key": "Key saved", "toast.plan": "Plan created with {n} posts",
+  "confirm.delete": "Delete this post?", "err.generic": "Something went wrong",
+  "key.saved": "Key is saved.", "key.none": "No key yet.",
+};
+let uiLang = "en";
+try { uiLang = localStorage.getItem("uiLang") || "en"; } catch (e) {}
+function t(key, vars) {
+  let v = (uiLang === "hi" && I18N.hi[key]) || EN_TEXT[key] || key;
+  if (vars) for (const k in vars) v = v.replace("{" + k + "}", vars[k]);
+  return v;
+}
+const PLATFORM_NAMES = { youtube: "YouTube", linkedin: "LinkedIn", instagram: "Instagram", facebook: "Facebook", x: "X" };
+function opt(v) { if (PLATFORM_NAMES[v]) return PLATFORM_NAMES[v]; return uiLang === "hi" && I18N.hi["opt." + v] || v.charAt(0).toUpperCase() + v.slice(1).replace(/-/g, " "); }
+function applyStatic() {
+  document.documentElement.lang = uiLang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    if (el.dataset.en === undefined) el.dataset.en = el.innerHTML;
+    el.innerHTML = uiLang === "hi" && I18N.hi[el.dataset.i18n] ? I18N.hi[el.dataset.i18n] : el.dataset.en;
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => {
+    if (el.dataset.enPh === undefined) el.dataset.enPh = el.placeholder;
+    el.placeholder = uiLang === "hi" && I18N.hi[el.dataset.i18nPh] ? I18N.hi[el.dataset.i18nPh] : el.dataset.enPh;
+  });
+}
 let cfg = null, posts = [], cur = new Date(), editing = null, dragId = null;
 cur.setDate(1);
 
@@ -173,6 +247,7 @@ function pad(n) { return String(n).padStart(2, "0"); }
 function monthKey() { return `${cur.getFullYear()}-${pad(cur.getMonth() + 1)}`; }
 
 function toast(msg, isErr) {
+  msg = I18N.hi[msg] && uiLang === "hi" ? I18N.hi[msg] : msg;
   const t = $("toast"); t.textContent = msg; t.className = isErr ? "err" : ""; t.style.display = "block";
   clearTimeout(toast.t); toast.t = setTimeout(() => (t.style.display = "none"), isErr ? 6000 : 2500);
 }
@@ -180,13 +255,13 @@ function toast(msg, isErr) {
 async function api(method, path, body) {
   const res = await fetch(path, { method, headers: { "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || "Kuch galat ho gaya");
+  if (!res.ok) throw new Error(data.error || t("err.generic"));
   return data;
 }
 
-async function busy(btn, label, fn) {
-  const old = btn.textContent; btn.disabled = true; btn.textContent = label;
-  try { await fn(); } catch (e) { toast(e.message, true); } finally { btn.disabled = false; btn.textContent = old; }
+async function busy(btn, labelKey, fn) {
+  const label = t(labelKey); const old = btn.innerHTML; btn.disabled = true; btn.textContent = label;
+  try { await fn(); } catch (e) { toast(e.message, true); } finally { btn.disabled = false; btn.innerHTML = old; }
 }
 
 // ----- tabs -----
@@ -202,7 +277,7 @@ async function loadPosts() {
 }
 
 function renderCalendar() {
-  $("monthTitle").textContent = `${MONTHS[cur.getMonth()]} ${cur.getFullYear()}`;
+  $("monthTitle").textContent = `${(uiLang === "hi" ? I18N.hi.months : EN_MONTHS)[cur.getMonth()]} ${cur.getFullYear()}`;
   const first = (new Date(cur.getFullYear(), cur.getMonth(), 1).getDay() + 6) % 7; // Monday = 0
   const days = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate();
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -212,7 +287,7 @@ function renderCalendar() {
     const dateStr = `${monthKey()}-${pad(d)}`;
     const cell = document.createElement("div");
     cell.className = "day" + (dateStr === todayStr ? " today" : "");
-    cell.innerHTML = `<span class="num">${d}</span><button class="add" title="Post jodo">+</button>`;
+    cell.innerHTML = `<span class="num">${d}</span><button class="add" title="${t("post.addTip")}">+</button>`;
     cell.querySelector(".add").onclick = () => openPost({ date: dateStr });
     cell.ondragover = (e) => { e.preventDefault(); cell.classList.add("over"); };
     cell.ondragleave = () => cell.classList.remove("over");
@@ -224,8 +299,8 @@ function renderCalendar() {
     posts.filter((p) => p.date === dateStr).forEach((p) => {
       const chip = document.createElement("div");
       chip.className = "chip " + p.status; chip.draggable = true;
-      chip.innerHTML = `<b>${esc(p.format)}</b> <small>${esc(p.topic || p.content_type)}</small>`;
-      chip.title = `${p.content_type} | ${p.status} | ${p.time}`;
+      chip.innerHTML = `<b>${esc(opt(p.format))}</b> <small>${esc(p.topic || opt(p.content_type))}</small>`;
+      chip.title = `${opt(p.content_type)} | ${opt(p.status)} | ${p.time}`;
       chip.ondragstart = () => (dragId = p.id);
       chip.ondragend = () => (dragId = null);
       chip.onclick = () => openPost(p);
@@ -235,15 +310,15 @@ function renderCalendar() {
   }
 }
 
-$("dows").innerHTML = DOW.map((d) => `<div class="dow">${d}</div>`).join("");
+function renderDows() { $("dows").innerHTML = (uiLang === "hi" ? I18N.hi.dow : EN_DOW).map((d) => `<div class="dow">${d}</div>`).join(""); }
 $("prev").onclick = () => { cur.setMonth(cur.getMonth() - 1); loadPosts(); };
 $("next").onclick = () => { cur.setMonth(cur.getMonth() + 1); loadPosts(); };
 $("todayBtn").onclick = () => { cur = new Date(); cur.setDate(1); loadPosts(); };
 
 // ----- post modal -----
-function fillSelect(id, values) { $(id).innerHTML = values.map((v) => `<option value="${v}">${v}</option>`).join(""); }
+function fillSelect(id, values) { const old = $(id).value; $(id).innerHTML = values.map((v) => `<option value="${v}">${esc(opt(v))}</option>`).join(""); if (old) $(id).value = old; }
 function checks(id, name, selected) {
-  $(id).innerHTML = cfg.platforms.map((p) => `<label><input type="checkbox" name="${name}" value="${p}" ${selected.includes(p) ? "checked" : ""}>${p}</label>`).join("");
+  $(id).innerHTML = cfg.platforms.map((p) => `<label><input type="checkbox" name="${name}" value="${p}" ${selected.includes(p) ? "checked" : ""}>${esc(opt(p))}</label>`).join("");
 }
 function checked(name) { return [...document.querySelectorAll(`input[name=${name}]:checked`)].map((x) => x.value); }
 
@@ -251,12 +326,12 @@ function openPost(p) {
   editing = p.id ? p : null;
   const post = { format: "image", content_type: "educational", topic: "", platforms: cfg.brand.platforms, status: "idea", time: "10:00",
     hook: "", caption: "", hashtags: "", cta: "", script: "", image_idea: "", ...p };
-  $("postTitle").textContent = p.id ? "Post edit karo" : "Naya post";
+  $("postTitle").textContent = p.id ? t("post.edit") : t("post.new");
   ["date", "time", "format", "content_type", "topic", "status", "hook", "caption", "hashtags", "cta", "script", "image_idea"]
     .forEach((k) => ($("f_" + k).value = post[k]));
   checks("f_platforms", "pf", post.platforms);
   $("postDelete").hidden = !p.id; $("genBtn").disabled = !p.id;
-  $("genBtn").title = p.id ? "" : "Pehle Save karo, phir AI se content likhwao";
+  $("genBtn").title = p.id ? "" : t("post.genTip");
   toggleScript(); $("postOverlay").classList.add("show");
 }
 function toggleScript() {
@@ -273,58 +348,73 @@ function readForm() {
 }
 function showPost(p) { editing = p; openPost(p); }
 
-$("postSave").onclick = (e) => busy(e.target, "Saving...", async () => {
+$("postSave").onclick = (e) => busy(e.target, "busy.save", async () => {
   const data = readForm();
   const saved = editing ? await api("PUT", "/api/posts/" + editing.id, data) : await api("POST", "/api/posts", data);
-  toast("Save ho gaya");
+  toast(t("toast.saved"));
   const monthOfPost = saved.date.slice(0, 7);
   if (monthOfPost !== monthKey()) { cur = new Date(saved.date + "T00:00"); cur.setDate(1); }
   await loadPosts();
   if (!editing) showPost(saved); // ab AI button chal sakta hai
 });
-$("genBtn").onclick = (e) => busy(e.target, "AI likh raha hai...", async () => {
+$("genBtn").onclick = (e) => busy(e.target, "busy.gen", async () => {
   await api("PUT", "/api/posts/" + editing.id, readForm());
   const p = await api("POST", `/api/posts/${editing.id}/generate`);
-  showPost(p); await loadPosts(); toast("Content tayyar!");
+  showPost(p); await loadPosts(); toast(t("toast.generated"));
 });
 $("postDelete").onclick = async () => {
-  if (!confirm("Ye post delete kar du?")) return;
+  if (!confirm(t("confirm.delete"))) return;
   await api("DELETE", "/api/posts/" + editing.id); $("postOverlay").classList.remove("show"); loadPosts();
 };
 document.querySelectorAll("[data-close]").forEach((b) => (b.onclick = () => b.closest(".overlay").classList.remove("show")));
 
 // ----- AI plan -----
 $("planBtn").onclick = () => $("planOverlay").classList.add("show");
-$("planGo").onclick = (e) => busy(e.target, "Plan ban raha hai...", async () => {
+$("planGo").onclick = (e) => busy(e.target, "busy.plan", async () => {
   const made = await api("POST", "/api/ai/plan", { month: monthKey(), theme: $("p_theme").value, posts_per_week: +$("p_per").value });
-  $("planOverlay").classList.remove("show"); await loadPosts(); toast(`${made.length} posts ka plan ban gaya`);
+  $("planOverlay").classList.remove("show"); await loadPosts(); toast(t("toast.plan", { n: made.length }));
 });
 
 // ----- brand + settings -----
-$("saveBrand").onclick = (e) => busy(e.target, "Saving...", async () => {
+$("saveBrand").onclick = (e) => busy(e.target, "busy.save", async () => {
   cfg.brand = await api("PUT", "/api/brand", {
     name: $("b_name").value, business: $("b_business").value, audience: $("b_audience").value,
     tone: $("b_tone").value, language: $("b_language").value, platforms: checked("bp"),
   });
-  toast("Brand profile save ho gayi");
+  toast(t("toast.brand"));
 });
-$("saveKey").onclick = (e) => busy(e.target, "Saving...", async () => {
+$("saveKey").onclick = (e) => busy(e.target, "busy.save", async () => {
   const r = await api("POST", "/api/settings/key", { key: $("s_key").value });
-  $("s_key").value = ""; cfg.has_key = r.has_key; renderKeyState(); toast("Key save ho gayi");
+  $("s_key").value = ""; cfg.has_key = r.has_key; renderKeyState(); toast(t("toast.key"));
 });
 function renderKeyState() {
-  $("keyState").textContent = cfg.has_key ? "Key saved hai." : "Abhi koi key nahi hai.";
+  $("keyState").textContent = cfg.has_key ? t("key.saved") : t("key.none");
   $("keyBanner").hidden = cfg.has_key;
 }
+
+// ----- language -----
+function buildOptions() {
+  applyStatic(); renderDows();
+  fillSelect("f_format", cfg.formats); fillSelect("f_content_type", cfg.content_types); fillSelect("f_status", cfg.statuses);
+  fillSelect("b_tone", ["friendly", "professional", "funny", "inspiring", "bold"]); fillSelect("b_language", ["hinglish", "hindi", "english"]);
+  const bp = cfg.brand.platforms; checks("b_platforms", "bp", bp);
+  $("legend").innerHTML = cfg.statuses.map((s) => `<span><i class="dot" style="background:var(--s-${s})"></i>${esc(opt(s))}</span>`).join("");
+  renderKeyState();
+}
+$("uiLang").onchange = () => {
+  uiLang = $("uiLang").value;
+  try { localStorage.setItem("uiLang", uiLang); } catch (e) {}
+  const keep = checked("bp"); if (keep.length) cfg.brand.platforms = keep;
+  buildOptions(); renderCalendar();
+};
 
 // ----- start -----
 (async function init() {
   cfg = await api("GET", "/api/config");
-  fillSelect("f_format", cfg.formats); fillSelect("f_content_type", cfg.content_types); fillSelect("f_status", cfg.statuses);
-  ["name", "business", "audience", "tone", "language"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
-  checks("b_platforms", "bp", cfg.brand.platforms);
-  $("legend").innerHTML = cfg.statuses.map((s) => `<span><i class="dot" style="background:var(--s-${s})"></i>${s}</span>`).join("");
-  renderKeyState(); await loadPosts();
+  ["name", "business", "audience"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
+  $("uiLang").value = uiLang;
+  buildOptions(); $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
+  await loadPosts();
 })();
 </script>
 </body>

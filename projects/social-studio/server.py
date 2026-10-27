@@ -125,7 +125,7 @@ def clean_post_fields(data, partial):
             val = str(val)
         out[key] = val
     if not partial and "date" not in out:
-        raise ValueError("date zaroori hai")
+        raise ValueError("date is required")
     return out
 
 
@@ -210,7 +210,7 @@ def call_gemini(prompt):
         return mock_ai(prompt)
     key = get_api_key()
     if not key:
-        raise AIError("Gemini API key nahi mili. Settings page par key daalo.")
+        raise AIError("No Gemini API key found. Add your key on the Settings page.")
     last_error = "unknown error"
     for model in MODELS:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -229,15 +229,15 @@ def call_gemini(prompt):
             return json.loads(text)
         except urllib.error.HTTPError as e:
             if e.code in (400, 401, 403):
-                raise AIError("API key galat hai ya kaam nahi kar rahi. Settings me dobara check karo.")
+                raise AIError("The API key is invalid or not working. Check it again in Settings.")
             if e.code == 429:
-                last_error = "Free limit poori ho gayi. Thodi der baad (ya kal) try karo."
+                last_error = "Free limit reached. Please try again in a while (or tomorrow)."
                 continue  # doosra model try karo
             last_error = f"Gemini error {e.code}"
         except (urllib.error.URLError, TimeoutError):
-            raise AIError("Internet ya Gemini se connect nahi ho paya. Internet check karo.")
+            raise AIError("Could not connect to Gemini. Check your internet connection.")
         except (KeyError, IndexError, ValueError):
-            last_error = "AI ka jawab samajh nahi aaya. Dobara try karo."
+            last_error = "Could not understand the AI response. Please try again."
     raise AIError(last_error)
 
 
@@ -251,7 +251,7 @@ def mock_ai(prompt):
         ]
     return {
         "hook": "Mock hook", "caption": "Mock caption", "hashtags": ["#mock", "#test"],
-        "cta": "Follow karo!", "script": "Scene 1: ...", "image_idea": "Mock image idea",
+        "cta": "Follow us!", "script": "Scene 1: ...", "image_idea": "Mock image idea",
     }
 
 
@@ -279,7 +279,7 @@ Return ONLY a JSON array. Each item: {{"day": <1-{days}>, "format": <one of form
 Spread days evenly across the whole month. No duplicate days."""
     items = call_gemini(prompt)
     if not isinstance(items, list):
-        raise AIError("AI ka jawab galat format me tha. Dobara try karo.")
+        raise AIError("The AI response had the wrong format. Please try again.")
     created, seen = [], set()
     platforms = [p for p in brand["platforms"] if p in PLATFORMS]
     for item in items:
@@ -313,7 +313,7 @@ Write in the brand language and tone. Return ONLY a JSON object with keys:
 "image_idea" (a short visual idea / description of the image or video thumbnail)."""
     data = call_gemini(prompt)
     if not isinstance(data, dict):
-        raise AIError("AI ka jawab galat format me tha. Dobara try karo.")
+        raise AIError("The AI response had the wrong format. Please try again.")
     tags = data.get("hashtags", [])
     if isinstance(tags, list):
         tags = " ".join(str(t) for t in tags)
@@ -366,7 +366,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and path == "/api/posts":
                 m = re.search(r"month=(\d{4}-\d{2})", query)
                 if not m:
-                    return self.send_json({"error": "month chahiye (YYYY-MM)"}, 400)
+                    return self.send_json({"error": "month is required (YYYY-MM)"}, 400)
                 return self.send_json(list_posts(m.group(1)))
             if method == "POST" and path == "/api/posts":
                 return self.send_json(create_post(self.read_json()), 201)
@@ -374,7 +374,7 @@ class Handler(BaseHTTPRequestHandler):
                 body = self.read_json()
                 month = str(body.get("month", ""))
                 if not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", month):
-                    return self.send_json({"error": "month galat hai"}, 400)
+                    return self.send_json({"error": "invalid month"}, 400)
                 per_week = max(1, min(7, int(body.get("posts_per_week", 4))))
                 return self.send_json(ai_plan_month(month, str(body.get("theme", ""))[:200], per_week))
             m = re.fullmatch(r"/api/posts/(\d+)(/generate)?", path)
@@ -382,10 +382,10 @@ class Handler(BaseHTTPRequestHandler):
                 post_id = int(m.group(1))
                 if m.group(2) and method == "POST":
                     post = get_post(post_id)
-                    return self.send_json(ai_generate_post(post)) if post else self.send_json({"error": "post nahi mila"}, 404)
+                    return self.send_json(ai_generate_post(post)) if post else self.send_json({"error": "post not found"}, 404)
                 if method == "PUT":
                     post = update_post(post_id, self.read_json())
-                    return self.send_json(post) if post else self.send_json({"error": "post nahi mila"}, 404)
+                    return self.send_json(post) if post else self.send_json({"error": "post not found"}, 404)
                 if method == "DELETE":
                     delete_post(post_id)
                     return self.send_json({"ok": True})
@@ -393,7 +393,7 @@ class Handler(BaseHTTPRequestHandler):
         except AIError as e:
             return self.send_json({"error": str(e)}, 502)
         except (ValueError, KeyError, TypeError) as e:
-            return self.send_json({"error": f"galat data: {e}"}, 400)
+            return self.send_json({"error": f"invalid data: {e}"}, 400)
 
     def serve_static(self):
         rel = self.path.split("?")[0].lstrip("/") or "index.html"
@@ -427,13 +427,13 @@ def main():
     # 127.0.0.1: tool sirf aapke apne computer par khulega, bahar se koi nahi dekh sakta.
     server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
     url = f"http://localhost:{PORT}"
-    print(f"Social Studio chalu hai: {url}\nBand karne ke liye Ctrl+C dabao.")
+    print(f"Social Studio is running: {url}\nPress Ctrl+C to stop.")
     if "--no-browser" not in sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nBand ho gaya.")
+        print("\nStopped.")
 
 
 if __name__ == "__main__":

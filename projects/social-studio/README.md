@@ -5,6 +5,7 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
 ## Kya kar sakte ho (Phase 1)
 - Brand profile set karo (business, audience, tone, language)
+- Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi kar sakte ho
 - Month ka calendar: har din ke liye format (image/video/carousel/text/story) aur content type chuno
 - "AI se mahine ka plan banao": poore mahine ke topics apne aap
 - Post ko drag karke doosre din par rakho
