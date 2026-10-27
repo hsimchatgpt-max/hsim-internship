@@ -17,7 +17,7 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
 }
 .aur *{box-sizing:border-box;margin:0;padding:0}
-.aur{scroll-behavior:smooth;scroll-padding-top:80px}
+.aur{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .aur{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 .aur img{max-width:100%;display:block}
 .aur a{color:inherit;text-decoration:none}
@@ -27,8 +27,8 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 .aur .alt{background:var(--bg2)}
 .aur .eyebrow{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-d);font-weight:600;margin-bottom:12px}
 .aur h1,.aur h2,.aur h3{font-family:var(--serif);font-weight:600;line-height:1.12}
-.aur h1{font-size:clamp(2.4rem,5vw,3.9rem)}
-.aur h2{font-size:clamp(1.9rem,3.6vw,2.8rem);margin-bottom:14px}
+.aur h1{font-size:clamp(2rem,5.2vw,3.9rem)}
+.aur h2{font-size:clamp(1.7rem,3.6vw,2.8rem);margin-bottom:14px}
 .aur h3{font-size:1.45rem;margin-bottom:6px}
 .aur .lead{color:var(--muted);max-width:620px;font-size:1.05rem}
 .aur .center{text-align:center}.aur .center .lead{margin:0 auto}
@@ -218,7 +218,7 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
 .aur .cb .btn{margin-top:10px}
 .aur .cbok{display:none;color:#8fe0ac;font-weight:600;margin-top:10px}
 
-.aur footer{background:#1d1916;color:#bdb3a8;padding:44px 0 90px;font-size:.88rem}
+.aur footer{background:#1d1916;color:#bdb3a8;padding:44px 0 96px;font-size:.88rem}
 .aur .fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:32px;margin-bottom:26px}
 .aur footer h4{color:#fff;margin-bottom:10px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase}
 .aur .copy{border-top:1px solid #38312b;padding-top:18px;text-align:center;font-size:.8rem}
@@ -237,9 +237,11 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   .aur .hero-grid #quote,.aur .hero-grid .hcopy,.aur .hero-grid .hextra{grid-column:1;grid-row:auto}
   .aur .cta-grid,.aur .price-grid,.aur .cities,.aur .case,.aur .expect{grid-template-columns:1fr;gap:32px}
   .aur .hero-bg::after{background:rgba(250,247,242,.93)}
-  .aur .pillars,.aur .cards,.aur .gallery,.aur .guar{grid-template-columns:1fr}
+  .aur .pillars,.aur .cards,.aur .gallery,.aur .guar{grid-template-columns:repeat(2,1fr)}
+  .aur .pillars .pillar:last-child,.aur .guar .box:last-child{grid-column:1 / -1}
+  .aur .hero-grid #quote{max-width:640px;width:100%;margin:0 auto}
+  .aur .steps{grid-template-columns:repeat(3,1fr)}
   .aur .proof-grid,.aur .stats{grid-template-columns:repeat(2,1fr)}
-  .aur .steps{grid-template-columns:1fr 1fr}
   .aur .fgrid{grid-template-columns:1fr}
   .aur .nav-cta .tel{display:none}
   /* mobile: call + quote bar is always visible */
@@ -249,7 +251,40 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
   .aur .sbar .acts .btn{flex:1;padding:14px 8px}
   .aur .case .ph{min-height:240px}
 }
-@media(max-width:520px){.aur .row{grid-template-columns:1fr}.aur .fcard{padding:22px 18px}.aur .slide{padding:26px 18px}.aur .slide p{font-size:1.2rem}}
+@media(max-width:600px){
+  .aur .wrap{padding:0 16px}
+  .aur section{padding:48px 0}
+  .aur .pillars,.aur .cards,.aur .gallery,.aur .guar,.aur .steps{grid-template-columns:1fr}
+  .aur .steps{gap:26px}
+  .aur .topbar{font-size:.78rem;padding:8px 10px}
+  .aur .nav{height:58px}.aur .logo{font-size:1.5rem}
+  .aur .nav-cta .btn{padding:10px 14px;font-size:.85rem}
+  .aur .hero{padding:28px 0 40px}
+  .aur .hero .sub{font-size:1rem}
+  .aur .chip{font-size:.74rem}
+  .aur .row{grid-template-columns:1fr}
+  .aur .fcard{padding:22px 16px}
+  .aur .choices{gap:10px}.aur .choice{padding:18px 6px}
+  .aur .slide{padding:26px 16px}.aur .slide p{font-size:1.2rem}
+  .aur .topq p{font-size:1.3rem}
+  .aur .tabs{flex-wrap:wrap}.aur .tab{flex:1;padding:12px 10px}
+  .aur .anchor,.aur .calc,.aur .case .txt,.aur .box{padding:22px 18px}
+  .aur .anchor .row2{flex-wrap:wrap;gap:4px}
+  .aur .proof strong{font-size:1.8rem}
+  .aur .stats b{font-size:1.6rem}
+  .aur .gallery .ph{height:220px}
+  .aur .card .ph{height:200px}
+  .aur .sbar .btn{font-size:.85rem}
+}
+@media(max-width:360px){.aur .proof-grid,.aur .stats{gap:10px}.aur .topq p{font-size:1.15rem}.aur h3{font-size:1.3rem}}
+/* touch-friendly controls and notch-safe bar */
+.aur .tab,.aur .back,.aur .choice,.aur summary,.aur .btn,.aur select,.aur input:not([type=range]){min-height:46px}
+.aur .back{padding:10px 4px}
+.aur summary{padding:2px 0;align-items:center}
+.aur .dots button{position:relative}.aur .dots button::after{content:"";position:absolute;inset:-12px}
+.aur input[type=range]{height:32px;cursor:pointer}
+.aur .sbar{padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:960px) and (orientation:landscape) and (max-height:500px){.aur .sbar{position:static;transform:none}.aur footer{padding-bottom:44px}}
 @media(prefers-reduced-motion:reduce){.aur *{animation:none!important;transition:none!important}.aur{scroll-behavior:auto}}
 
 </style>
@@ -399,7 +434,7 @@ html{scroll-behavior:smooth;scroll-padding-top:80px}
       </div>
       <div class="calc">
         <h3 style="color:#fff">Instant budget estimator</h3>
-        <label style="margin-top:12px">Carpet area: <span id="areaOut">1200</span> sq ft
+        <label style="margin-top:12px"><span>Carpet area: <b id="areaOut">1200</b> sq ft</span>
           <input type="range" id="area" min="300" max="5000" step="50" value="1200"></label>
         <label style="margin-top:14px">Package
           <select id="pkg"><option value="1100">Essential (basic finish)</option><option value="1600" selected>Premium (popular)</option><option value="2400">Luxe (custom &amp; imported)</option></select></label>

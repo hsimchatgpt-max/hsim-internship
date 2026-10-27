@@ -17,7 +17,7 @@
   --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
+html{scroll-behavior:smooth;scroll-padding-top:80px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
@@ -27,8 +27,8 @@ section{padding:80px 0}
 .alt{background:var(--bg2)}
 .eyebrow{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-d);font-weight:600;margin-bottom:12px}
 h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12}
-h1{font-size:clamp(2.4rem,5vw,3.9rem)}
-h2{font-size:clamp(1.9rem,3.6vw,2.8rem);margin-bottom:14px}
+h1{font-size:clamp(2rem,5.2vw,3.9rem)}
+h2{font-size:clamp(1.7rem,3.6vw,2.8rem);margin-bottom:14px}
 h3{font-size:1.45rem;margin-bottom:6px}
 .lead{color:var(--muted);max-width:620px;font-size:1.05rem}
 .center{text-align:center}.center .lead{margin:0 auto}
@@ -218,7 +218,7 @@ details p{margin-top:10px;color:var(--muted);font-size:.95rem}
 .cb .btn{margin-top:10px}
 .cbok{display:none;color:#8fe0ac;font-weight:600;margin-top:10px}
 
-footer{background:#1d1916;color:#bdb3a8;padding:44px 0 90px;font-size:.88rem}
+footer{background:#1d1916;color:#bdb3a8;padding:44px 0 96px;font-size:.88rem}
 .fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:32px;margin-bottom:26px}
 footer h4{color:#fff;margin-bottom:10px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase}
 .copy{border-top:1px solid #38312b;padding-top:18px;text-align:center;font-size:.8rem}
@@ -237,9 +237,11 @@ footer h4{color:#fff;margin-bottom:10px;font-size:.8rem;letter-spacing:.14em;tex
   .hero-grid #quote,.hero-grid .hcopy,.hero-grid .hextra{grid-column:1;grid-row:auto}
   .cta-grid,.price-grid,.cities,.case,.expect{grid-template-columns:1fr;gap:32px}
   .hero-bg::after{background:rgba(250,247,242,.93)}
-  .pillars,.cards,.gallery,.guar{grid-template-columns:1fr}
+  .pillars,.cards,.gallery,.guar{grid-template-columns:repeat(2,1fr)}
+  .pillars .pillar:last-child,.guar .box:last-child{grid-column:1 / -1}
+  .hero-grid #quote{max-width:640px;width:100%;margin:0 auto}
+  .steps{grid-template-columns:repeat(3,1fr)}
   .proof-grid,.stats{grid-template-columns:repeat(2,1fr)}
-  .steps{grid-template-columns:1fr 1fr}
   .fgrid{grid-template-columns:1fr}
   .nav-cta .tel{display:none}
   /* mobile: call + quote bar is always visible */
@@ -249,7 +251,40 @@ footer h4{color:#fff;margin-bottom:10px;font-size:.8rem;letter-spacing:.14em;tex
   .sbar .acts .btn{flex:1;padding:14px 8px}
   .case .ph{min-height:240px}
 }
-@media(max-width:520px){.row{grid-template-columns:1fr}.fcard{padding:22px 18px}.slide{padding:26px 18px}.slide p{font-size:1.2rem}}
+@media(max-width:600px){
+  .wrap{padding:0 16px}
+  section{padding:48px 0}
+  .pillars,.cards,.gallery,.guar,.steps{grid-template-columns:1fr}
+  .steps{gap:26px}
+  .topbar{font-size:.78rem;padding:8px 10px}
+  .nav{height:58px}.logo{font-size:1.5rem}
+  .nav-cta .btn{padding:10px 14px;font-size:.85rem}
+  .hero{padding:28px 0 40px}
+  .hero .sub{font-size:1rem}
+  .chip{font-size:.74rem}
+  .row{grid-template-columns:1fr}
+  .fcard{padding:22px 16px}
+  .choices{gap:10px}.choice{padding:18px 6px}
+  .slide{padding:26px 16px}.slide p{font-size:1.2rem}
+  .topq p{font-size:1.3rem}
+  .tabs{flex-wrap:wrap}.tab{flex:1;padding:12px 10px}
+  .anchor,.calc,.case .txt,.box{padding:22px 18px}
+  .anchor .row2{flex-wrap:wrap;gap:4px}
+  .proof strong{font-size:1.8rem}
+  .stats b{font-size:1.6rem}
+  .gallery .ph{height:220px}
+  .card .ph{height:200px}
+  .sbar .btn{font-size:.85rem}
+}
+@media(max-width:360px){.proof-grid,.stats{gap:10px}.topq p{font-size:1.15rem}h3{font-size:1.3rem}}
+/* touch-friendly controls and notch-safe bar */
+.tab,.back,.choice,summary,.btn,select,input:not([type=range]){min-height:46px}
+.back{padding:10px 4px}
+summary{padding:2px 0;align-items:center}
+.dots button{position:relative}.dots button::after{content:"";position:absolute;inset:-12px}
+input[type=range]{height:32px;cursor:pointer}
+.sbar{padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:960px) and (orientation:landscape) and (max-height:500px){.sbar{position:static;transform:none}footer{padding-bottom:44px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
@@ -399,7 +434,7 @@ footer h4{color:#fff;margin-bottom:10px;font-size:.8rem;letter-spacing:.14em;tex
       </div>
       <div class="calc">
         <h3 style="color:#fff">Instant budget estimator</h3>
-        <label style="margin-top:12px">Carpet area: <span id="areaOut">1200</span> sq ft
+        <label style="margin-top:12px"><span>Carpet area: <b id="areaOut">1200</b> sq ft</span>
           <input type="range" id="area" min="300" max="5000" step="50" value="1200"></label>
         <label style="margin-top:14px">Package
           <select id="pkg"><option value="1100">Essential (basic finish)</option><option value="1600" selected>Premium (popular)</option><option value="2400">Luxe (custom &amp; imported)</option></select></label>
