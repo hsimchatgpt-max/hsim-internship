@@ -3,13 +3,14 @@
 Social media content ka planner: **Brand Profile + Monthly Calendar + AI content writer**.
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
-## Kya kar sakte ho (Phase 1)
-- Brand profile set karo (business, audience, tone, language)
-- Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi kar sakte ho
-- Month ka calendar: har din ke liye format (image/video/carousel/text/story) aur content type chuno
-- "AI se mahine ka plan banao": poore mahine ke topics apne aap
-- Post ko drag karke doosre din par rakho
-- "AI se content likho": hook, caption, hashtags, CTA, video script, image idea
+## Kya kar sakte ho
+- **Create tab (simple):** calendar ke bina, abhi ek content banao. Topic likho (ya khali chhodo, AI chunega), format aur type chuno.
+  - **Step by step:** pehle script, dekho/edit karo, phir caption + hashtags, phir editing plan. Har step ke baad aage jao.
+  - **Fully automatic:** script, caption, hashtags, editing plan sab ek saath. Phir "Download content pack".
+- **Calendar tab (optional):** jise aage ka plan chahiye. "Plan the month with AI" poore mahine ke posts banata hai **aur har post ka poora content bhi** (script, caption, editing plan). Calendar ya List view me sab dikhta hai, kisi par click karke edit karo.
+- Kaam **background me** chalta hai: AI likh raha ho tab tab badal sakte ho. Google busy ho to tool khud dobara try karta hai.
+- Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi.
+- Brand profile (business, audience, tone, language) se AI aapke jaisa likhta hai.
 
 ## Chalane ke steps (Windows)
 1. Python install hona chahiye (`python --version` check karo).
@@ -17,7 +18,7 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 3. `start.bat` par **double-click** karo. Browser me tool khul jayega (`http://localhost:8000`).
    - Na khule to Command Prompt me is folder me jaakar `python server.py` likho.
 4. **Settings** tab me Gemini API key daalo (aistudio.google.com/apikey se free me milti hai).
-5. **Brand Profile** bharo, phir Calendar me kaam shuru.
+5. **Brand Profile** bharo, phir **Create** tab me content banao.
 
 ## Mac
 Terminal me folder me jaakar: `python3 server.py`

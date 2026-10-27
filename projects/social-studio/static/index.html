@@ -7,7 +7,7 @@
 <style>
   :root {
     --bg: #f6f7fb; --card: #fff; --text: #1d2433; --muted: #6b7385; --line: #e3e6ee;
-    --accent: #5b4bdb; --accent-soft: #ecebff; --danger: #d64545;
+    --accent: #5b4bdb; --accent-soft: #ecebff; --danger: #d64545; --ok: #2a9d6b;
     --s-idea: #9aa1b2; --s-draft: #e0a21b; --s-ready: #2a9d6b; --s-scheduled: #3b82f6; --s-posted: #7c5cff;
   }
   @media (prefers-color-scheme: dark) {
@@ -21,8 +21,9 @@
   nav button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
   main { padding: 20px; max-width: 1200px; margin: 0 auto; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .narrow { max-width: 760px; margin-bottom: 16px; }
   button.primary { background: var(--accent); color: #fff; border: 0; padding: 9px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; }
-  button.ghost { background: none; border: 1px solid var(--line); color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  button.ghost, a.ghost { background: none; border: 1px solid var(--line); color: var(--text); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; text-decoration: none; display: inline-block; }
   button.danger { color: var(--danger); }
   button:disabled { opacity: .55; cursor: wait; }
   input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
@@ -45,6 +46,9 @@
   .chip small { color: var(--muted); }
   .chip.idea { border-color: var(--s-idea); } .chip.draft { border-color: var(--s-draft); } .chip.ready { border-color: var(--s-ready); }
   .chip.scheduled { border-color: var(--s-scheduled); } .chip.posted { border-color: var(--s-posted); }
+  .chip.busy { animation: pulse 1.2s infinite; }
+  .chip.err { outline: 1px solid var(--danger); }
+  @keyframes pulse { 50% { opacity: .45; } }
   .overlay { position: fixed; inset: 0; background: rgba(10, 12, 20, .55); display: none; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 30px 12px; z-index: 10; }
   .overlay.show { display: flex; }
   .modal { background: var(--card); border-radius: 14px; width: 100%; max-width: 640px; padding: 20px; }
@@ -52,43 +56,105 @@
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .checks { display: flex; gap: 14px; flex-wrap: wrap; }
   .checks label { display: flex; gap: 6px; align-items: center; margin: 0; color: var(--text); font-size: 14px; }
-  .checks input { width: auto; }
-  .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .checks input, .mode input { width: auto; }
+  .actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; align-items: center; }
   #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1d2433; color: #fff; padding: 10px 18px; border-radius: 10px; display: none; z-index: 20; max-width: 90vw; }
   #toast.err { background: var(--danger); }
   .hint { color: var(--muted); font-size: 13px; }
   .banner { background: #fff4d6; color: #6b4e00; padding: 10px 14px; border-radius: 10px; margin-bottom: 14px; font-size: 14px; }
-  @media (max-width: 700px) { .day { min-height: 80px; } .chip small { display: none; } .row { grid-template-columns: 1fr; } }
+  #jobs { display: none; background: var(--accent-soft); color: var(--accent); padding: 8px 20px; font-size: 14px; border-bottom: 1px solid var(--line); }
+  #jobs div { display: flex; gap: 10px; align-items: center; }
+  .spin { width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: rot .8s linear infinite; display: inline-block; flex: none; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mode { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; cursor: pointer; color: var(--text); font-size: 14px; }
+  .mode:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .mode span { display: block; color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+  .stepper { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 4px; }
+  .pill { padding: 4px 10px; border-radius: 999px; font-size: 12.5px; border: 1px solid var(--line); color: var(--muted); }
+  .pill.done { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .pill.current { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .pill.soon { border-style: dashed; opacity: .7; }
+  .err-text { color: var(--danger); }
+  .viewtoggle { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .viewtoggle button { background: none; border: 0; padding: 7px 12px; cursor: pointer; color: var(--muted); }
+  .viewtoggle button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .pcard { margin-bottom: 12px; }
+  .ptop { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+  .badge { padding: 2px 8px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); font-size: 12px; color: var(--text); }
+  .ptitle { font-weight: 600; margin: 6px 0 2px; }
+  .pcard pre { white-space: pre-wrap; font: inherit; background: var(--bg); padding: 8px 10px; border-radius: 8px; margin: 6px 0; }
+  .pcard details { margin-top: 6px; }
+  .pcard summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+  @media (max-width: 700px) { .day { min-height: 80px; } .chip small { display: none; } .row, .modes { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 <header>
   <h1>Social Studio</h1>
   <nav>
-    <button data-tab="calendar" class="active" data-i18n="tab.calendar">Calendar</button>
+    <button data-tab="create" class="active" data-i18n="tab.create">Create</button>
+    <button data-tab="calendar" data-i18n="tab.calendar">Calendar</button>
     <button data-tab="brand" data-i18n="tab.brand">Brand Profile</button>
     <button data-tab="settings" data-i18n="tab.settings">Settings</button>
   </nav>
   <div class="spacer"></div>
   <select id="uiLang" style="width:auto" aria-label="Language"><option value="en">English</option><option value="hi">हिंदी</option></select>
 </header>
+<div id="jobs"></div>
 
 <main>
-  <!-- Calendar -->
-  <section id="tab-calendar">
-    <div id="keyBanner" class="banner" hidden data-i18n="banner.key">To use AI, first add your Gemini API key in Settings.</div>
+  <div id="keyBanner" class="banner" hidden data-i18n="banner.key">To use AI, first add your Gemini API key in Settings.</div>
+
+  <!-- Create (quick, no calendar needed) -->
+  <section id="tab-create">
+    <div class="card narrow">
+      <h2 style="margin-top:0" data-i18n="create.title">Create content</h2>
+      <p class="hint" data-i18n="create.hint">Make one piece of content right now. No calendar needed.</p>
+      <label data-i18n="create.topic">Topic (leave empty and the AI will pick one)</label>
+      <input id="c_topic" data-i18n-ph="create.topic.ph" placeholder="e.g. 3 mistakes to avoid on a business website">
+      <div class="row">
+        <div><label data-i18n="f.format">Format</label><select id="c_format"></select></div>
+        <div><label data-i18n="f.type">Content type</label><select id="c_type"></select></div>
+        <div><label data-i18n="f.duration">Video length</label><select id="c_duration"></select></div>
+      </div>
+      <label data-i18n="f.platforms">Platforms</label><div class="checks" id="c_platforms"></div>
+      <label data-i18n="create.mode">How do you want to work?</label>
+      <div class="modes">
+        <label class="mode"><input type="radio" name="mode" value="step" checked><div><b data-i18n="mode.step">Step by step</b><span data-i18n="mode.step.d">The AI writes the script first. You review it, then continue to the next step.</span></div></label>
+        <label class="mode"><input type="radio" name="mode" value="auto"><div><b data-i18n="mode.auto">Fully automatic</b><span data-i18n="mode.auto.d">Get everything in one go: script, caption, hashtags and editing plan. Then just download and post.</span></div></label>
+      </div>
+      <div class="actions"><button class="primary" id="createBtn" data-i18n="btn.create">Create</button></div>
+      <p class="hint" data-i18n="create.bg">It keeps working in the background. You can switch tabs while the AI writes (keep the black window open).</p>
+    </div>
+    <div class="card narrow" id="workspace" hidden>
+      <h3 id="wsTitle" style="margin:0"></h3>
+      <div class="stepper" id="stepper"></div>
+      <div id="wsStatus" class="hint"></div>
+      <div id="wsBody"></div>
+      <div class="actions" id="wsActions"></div>
+    </div>
+  </section>
+
+  <!-- Calendar (optional) -->
+  <section id="tab-calendar" hidden>
+    <p class="hint" data-i18n="cal.optional">The calendar is optional. Use it only if you want to plan posts ahead (for example a whole month).</p>
     <div class="toolbar">
       <button class="ghost" id="prev">&larr;</button>
       <h2 id="monthTitle"></h2>
       <button class="ghost" id="next">&rarr;</button>
       <button class="ghost" id="todayBtn" data-i18n="btn.today">Today</button>
+      <div class="viewtoggle"><button id="vCal" class="on" data-i18n="view.cal">Calendar</button><button id="vList" data-i18n="view.list">List</button></div>
       <div class="spacer"></div>
       <button class="primary" id="planBtn" data-i18n="btn.plan">Plan the month with AI</button>
     </div>
     <div class="legend" id="legend"></div>
-    <div class="grid" id="dows"></div>
-    <div class="grid" id="grid"></div>
-    <p class="hint" data-i18n="tip.drag">Tip: drag a post onto another day to change its date. Click a post to edit it.</p>
+    <div id="calView">
+      <div class="grid" id="dows"></div>
+      <div class="grid" id="grid"></div>
+      <p class="hint" data-i18n="tip.drag">Tip: drag a post onto another day to change its date. Click a post to edit it.</p>
+    </div>
+    <div id="listView" hidden></div>
   </section>
 
   <!-- Brand -->
@@ -100,10 +166,8 @@
       <label data-i18n="brand.business">What does your business do?</label><textarea id="b_business" data-i18n-ph="brand.business.ph" placeholder="e.g. I teach online yoga classes"></textarea>
       <label data-i18n="brand.audience">Who is your audience?</label><textarea id="b_audience" data-i18n-ph="brand.audience.ph" placeholder="e.g. Working women aged 25-40 who want to stay fit"></textarea>
       <div class="row">
-        <div><label data-i18n="brand.tone">Tone</label>
-          <select id="b_tone"></select></div>
-        <div><label data-i18n="brand.language">Content language</label>
-          <select id="b_language"></select></div>
+        <div><label data-i18n="brand.tone">Tone</label><select id="b_tone"></select></div>
+        <div><label data-i18n="brand.language">Content language</label><select id="b_language"></select></div>
       </div>
       <label data-i18n="brand.platforms">Default platforms (used for new posts)</label>
       <div class="checks" id="b_platforms"></div>
@@ -131,6 +195,8 @@
   <label data-i18n="plan.theme">Theme for this month</label><input id="p_theme" data-i18n-ph="plan.theme.ph" placeholder="e.g. Yoga for beginners">
   <label data-i18n="plan.per">Posts per week</label>
   <select id="p_per"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>7</option></select>
+  <div class="checks" style="margin-top:14px"><label><input type="checkbox" id="p_full" checked><span data-i18n="plan.full">Also write the full content for every post (script, caption, editing plan)</span></label></div>
+  <p class="hint" data-i18n="plan.bg">This runs in the background. You can keep using the tool while it works.</p>
   <div class="actions"><button class="primary" id="planGo" data-i18n="btn.makePlan">Create plan</button><button class="ghost" data-close data-i18n="btn.cancel">Cancel</button></div>
 </div></div>
 
@@ -142,19 +208,23 @@
     <div><label data-i18n="f.time">Time</label><input type="time" id="f_time"></div>
     <div><label data-i18n="f.format">Format</label><select id="f_format"></select></div>
     <div><label data-i18n="f.type">Content type</label><select id="f_content_type"></select></div>
+    <div><label data-i18n="f.duration">Video length</label><select id="f_duration"></select></div>
+    <div><label data-i18n="f.status">Status</label><select id="f_status"></select></div>
   </div>
   <label data-i18n="f.topic">Topic</label><input id="f_topic">
   <label data-i18n="f.platforms">Platforms</label><div class="checks" id="f_platforms"></div>
-  <label data-i18n="f.status">Status</label><select id="f_status"></select>
-  <div class="actions"><button class="primary" id="genBtn" data-i18n="btn.gen">Write content with AI</button></div>
+  <div class="actions"><button class="primary" id="genBtn" data-i18n="btn.gen">Write everything with AI</button></div>
+  <p class="hint" id="genErr" hidden></p>
   <label data-i18n="f.hook">Hook</label><input id="f_hook">
+  <label id="scriptLabel" data-i18n="f.script">Script / on-screen text</label><textarea id="f_script"></textarea>
   <label data-i18n="f.caption">Caption</label><textarea id="f_caption"></textarea>
   <label data-i18n="f.hashtags">Hashtags</label><input id="f_hashtags">
   <label data-i18n="f.cta">Call to action</label><input id="f_cta">
-  <label id="scriptLabel" data-i18n="f.script">Video script</label><textarea id="f_script"></textarea>
+  <label data-i18n="f.edit_plan">Editing plan (B-roll, music, sound effects, transitions)</label><textarea id="f_edit_plan"></textarea>
   <label data-i18n="f.image">Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
   <div class="actions">
     <button class="primary" id="postSave" data-i18n="btn.save">Save</button>
+    <button class="ghost" id="postDownload" data-i18n="btn.download">Download content pack</button>
     <button class="ghost" data-close data-i18n="btn.close">Close</button>
     <div class="spacer"></div>
     <button class="ghost danger" id="postDelete" data-i18n="btn.delete">Delete</button>
@@ -166,13 +236,20 @@
 <script>
 const $ = (id) => document.getElementById(id);
 const I18N = {
-  en: {},
   hi: {
-    "tab.calendar": "कैलेंडर", "tab.brand": "ब्रांड प्रोफ़ाइल", "tab.settings": "सेटिंग्स",
+    "tab.create": "बनाएं", "tab.calendar": "कैलेंडर", "tab.brand": "ब्रांड प्रोफ़ाइल", "tab.settings": "सेटिंग्स",
     "banner.key": "AI चलाने के लिए पहले Settings में Gemini API key डालें।",
+    "create.title": "कंटेंट बनाएं", "create.hint": "अभी एक कंटेंट बनाएं। कैलेंडर की ज़रूरत नहीं।",
+    "create.topic": "टॉपिक (खाली छोड़ें तो AI खुद चुन लेगा)", "create.topic.ph": "जैसे: बिज़नेस वेबसाइट पर बचने वाली 3 गलतियाँ",
+    "create.mode": "आप कैसे काम करना चाहते हैं?", "btn.create": "बनाएं",
+    "mode.step": "स्टेप बाय स्टेप", "mode.step.d": "AI पहले स्क्रिप्ट लिखेगा। आप देखकर अगले स्टेप पर जाएंगे।",
+    "mode.auto": "पूरा ऑटोमैटिक", "mode.auto.d": "सब कुछ एक साथ: स्क्रिप्ट, कैप्शन, हैशटैग और एडिटिंग प्लान। फिर बस डाउनलोड करें और पोस्ट करें।",
+    "create.bg": "काम बैकग्राउंड में चलता रहता है। AI लिख रहा हो तब आप टैब बदल सकते हैं (काली विंडो खुली रखें)।",
+    "cal.optional": "कैलेंडर वैकल्पिक है। इसे तभी इस्तेमाल करें जब आगे का प्लान बनाना हो (जैसे पूरा महीना)।",
+    "view.cal": "कैलेंडर", "view.list": "लिस्ट",
     "btn.today": "आज", "btn.plan": "AI से महीने का प्लान बनाएं", "btn.save": "सेव करें", "btn.saveKey": "Key सेव करें",
     "btn.cancel": "रद्द करें", "btn.close": "बंद करें", "btn.delete": "डिलीट करें", "btn.makePlan": "प्लान बनाएं",
-    "btn.gen": "AI से कंटेंट लिखवाएं",
+    "btn.gen": "AI से सब कुछ लिखवाएं", "btn.download": "कंटेंट पैक डाउनलोड करें",
     "tip.drag": "टिप: पोस्ट को दूसरे दिन पर खींचकर छोड़ें तो उसकी तारीख बदल जाएगी। एडिट करने के लिए पोस्ट पर क्लिक करें।",
     "brand.hint": "इसे एक बार भरें। AI इसी से आपके जैसा कंटेंट लिखता है।",
     "brand.name": "ब्रांड / आपका नाम", "brand.business": "आपका बिज़नेस क्या करता है?",
@@ -183,18 +260,31 @@ const I18N = {
     "key.saved": "Key सेव है।", "key.none": "अभी कोई key नहीं है।",
     "plan.title": "AI से महीने का प्लान", "plan.hint": "AI पूरे महीने के लिए दिन, फ़ॉर्मेट और टॉपिक सुझाएगा। बाद में आप सब एडिट कर सकते हैं।",
     "plan.theme": "इस महीने की थीम", "plan.theme.ph": "जैसे: बिगिनर्स के लिए योगा", "plan.per": "हफ़्ते में कितनी पोस्ट?",
-    "f.date": "तारीख", "f.time": "समय", "f.format": "फ़ॉर्मेट", "f.type": "कंटेंट टाइप", "f.topic": "टॉपिक",
+    "plan.full": "हर पोस्ट का पूरा कंटेंट भी लिखें (स्क्रिप्ट, कैप्शन, एडिटिंग प्लान)",
+    "plan.bg": "यह बैकग्राउंड में चलता है। काम होते समय आप टूल इस्तेमाल करते रह सकते हैं।",
+    "f.date": "तारीख", "f.time": "समय", "f.format": "फ़ॉर्मेट", "f.type": "कंटेंट टाइप", "f.topic": "टॉपिक", "f.duration": "वीडियो की लंबाई",
     "f.platforms": "प्लेटफ़ॉर्म", "f.status": "स्टेटस", "f.hook": "हुक", "f.caption": "कैप्शन", "f.hashtags": "हैशटैग",
-    "f.cta": "कॉल टू एक्शन", "f.script": "वीडियो स्क्रिप्ट", "f.image": "इमेज / विज़ुअल आइडिया",
+    "f.cta": "कॉल टू एक्शन", "f.script": "स्क्रिप्ट / स्क्रीन पर टेक्स्ट", "f.image": "इमेज / विज़ुअल आइडिया", "f.image_idea": "इमेज / विज़ुअल आइडिया",
+    "f.edit_plan": "एडिटिंग प्लान (B-roll, म्यूज़िक, साउंड इफ़ेक्ट, ट्रांज़िशन)",
     "post.new": "नया पोस्ट", "post.edit": "पोस्ट एडिट करें", "post.addTip": "पोस्ट जोड़ें",
-    "post.genTip": "पहले Save करें, फिर AI से कंटेंट लिखवाएं",
-    "busy.save": "सेव हो रहा है...", "busy.gen": "AI लिख रहा है...", "busy.plan": "प्लान बन रहा है...",
+    "busy.save": "सेव हो रहा है...", "busy.gen": "AI लिख रहा है...", "busy.plan": "प्लान बन रहा है...", "busy.create": "बन रहा है...",
     "toast.saved": "सेव हो गया", "toast.generated": "कंटेंट तैयार!", "toast.brand": "ब्रांड प्रोफ़ाइल सेव हो गई",
-    "toast.key": "Key सेव हो गई", "toast.plan": "{n} पोस्ट का प्लान बन गया",
+    "toast.key": "Key सेव हो गई", "toast.plan": "प्लान तैयार: {n} पोस्ट",
     "confirm.delete": "यह पोस्ट डिलीट कर दूँ?", "err.generic": "कुछ गलत हो गया",
+    "step.script": "स्क्रिप्ट", "step.caption": "कैप्शन और हैशटैग", "step.edit": "एडिटिंग प्लान",
+    "step.voice": "वॉइस और अवतार (जल्द)", "step.video": "ऑटो-एडिट वीडियो (जल्द)", "step.done": "डाउनलोड",
+    "step.of": "स्टेप {i} / {n}: {name}", "btn.regen": "दोबारा लिखवाएं", "btn.next": "सेव करें और अगला स्टेप", "btn.finish": "सेव करें और पूरा करें",
+    "btn.again": "दोबारा कोशिश करें", "btn.another": "एक और बनाएं", "btn.openCal": "कैलेंडर में खोलें",
+    "ws.loading": "AI लिख रहा है... यह कुछ सेकंड से 1-2 मिनट ले सकता है। आप दूसरे टैब पर जा सकते हैं।",
+    "ws.final": "आपका कंटेंट तैयार है! ज़रूरत हो तो एडिट करें, फिर डाउनलोड करें।",
+    "ws.soon": "वॉइस, अवतार और ऑटो-एडिट वीडियो अगले फ़ेज़ में आएंगे। अभी आपको पूरा कंटेंट पैक डाउनलोड के लिए मिलता है।",
+    "ws.saved": "सेव हो गया",
+    "job.planning": "प्लान बन रहा है", "job.writing": "कंटेंट लिख रहा है", "job.working": "काम चल रहा है", "job.failed": "फेल",
+    "list.empty": "इस महीने कोई पोस्ट नहीं है।", "gen.error": "AI कंटेंट नहीं लिख पाया:",
     "No Gemini API key found. Add your key on the Settings page.": "Gemini API key नहीं मिली। Settings पेज पर key डालें।",
     "The API key is invalid or not working. Check it again in Settings.": "API key गलत है या काम नहीं कर रही। Settings में दोबारा जाँचें।",
     "Free limit reached. Please try again in a while (or tomorrow).": "फ़्री लिमिट पूरी हो गई। थोड़ी देर बाद (या कल) फिर कोशिश करें।",
+    "Google's AI is busy right now. Please try again in a minute.": "Google का AI अभी बिज़ी है। एक मिनट बाद फिर कोशिश करें।",
     "Could not connect to Gemini. Check your internet connection.": "Gemini से कनेक्ट नहीं हो पाया। इंटरनेट जाँचें।",
     "Could not understand the AI response. Please try again.": "AI का जवाब समझ नहीं आया। फिर कोशिश करें।",
     "The AI response had the wrong format. Please try again.": "AI का जवाब गलत फ़ॉर्मेट में था। फिर कोशिश करें।",
@@ -211,13 +301,27 @@ const I18N = {
 const EN_DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const EN_TEXT = {
+  "tab.create": "Create", "tab.calendar": "Calendar", "btn.save": "Save",
+  "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
+  "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
+  "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
   "post.new": "New post", "post.edit": "Edit post", "post.addTip": "Add post",
-  "post.genTip": "Save first, then write content with AI",
-  "busy.save": "Saving...", "busy.gen": "AI is writing...", "busy.plan": "Planning...",
+  "busy.save": "Saving...", "busy.gen": "AI is writing...", "busy.plan": "Planning...", "busy.create": "Creating...",
   "toast.saved": "Saved", "toast.generated": "Content ready!", "toast.brand": "Brand profile saved",
-  "toast.key": "Key saved", "toast.plan": "Plan created with {n} posts",
+  "toast.key": "Key saved", "toast.plan": "Plan ready: {n} posts",
   "confirm.delete": "Delete this post?", "err.generic": "Something went wrong",
   "key.saved": "Key is saved.", "key.none": "No key yet.",
+  "step.script": "Script", "step.caption": "Caption & hashtags", "step.edit": "Editing plan",
+  "step.voice": "Voice & avatar (soon)", "step.video": "Auto-edit video (soon)", "step.done": "Download",
+  "step.of": "Step {i} of {n}: {name}", "btn.regen": "Regenerate", "btn.next": "Save & next step", "btn.finish": "Save & finish",
+  "btn.again": "Try again", "btn.another": "Create another", "btn.openCal": "Open in calendar",
+  "btn.gen": "Write everything with AI", "btn.download": "Download content pack",
+  "ws.loading": "The AI is writing... this can take a few seconds to 1-2 minutes. You can switch to another tab.",
+  "ws.final": "Your content is ready! Edit anything you like, then download it.",
+  "ws.soon": "Voice, avatar and auto-edited video are coming in the next phases. For now you get the full content pack to download.",
+  "ws.saved": "Saved",
+  "job.planning": "Planning", "job.writing": "Writing content", "job.working": "Working", "job.failed": "failed",
+  "list.empty": "No posts this month.", "gen.error": "The AI could not write the content:",
 };
 let uiLang = "en";
 try { uiLang = localStorage.getItem("uiLang") || "en"; } catch (e) {}
@@ -227,7 +331,12 @@ function t(key, vars) {
   return v;
 }
 const PLATFORM_NAMES = { youtube: "YouTube", linkedin: "LinkedIn", instagram: "Instagram", facebook: "Facebook", x: "X" };
-function opt(v) { if (PLATFORM_NAMES[v]) return PLATFORM_NAMES[v]; return uiLang === "hi" && I18N.hi["opt." + v] || v.charAt(0).toUpperCase() + v.slice(1).replace(/-/g, " "); }
+function opt(v) {
+  if (PLATFORM_NAMES[v]) return PLATFORM_NAMES[v];
+  if (/ sec$/.test(v)) return uiLang === "hi" ? v.replace("sec", "सेकंड") : v;
+  return uiLang === "hi" && I18N.hi["opt." + v] || v.charAt(0).toUpperCase() + v.slice(1).replace(/-/g, " ");
+}
+function trErr(msg) { return uiLang === "hi" && I18N.hi[msg] ? I18N.hi[msg] : msg; }
 function applyStatic() {
   document.documentElement.lang = uiLang;
   document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -239,17 +348,18 @@ function applyStatic() {
     el.placeholder = uiLang === "hi" && I18N.hi[el.dataset.i18nPh] ? I18N.hi[el.dataset.i18nPh] : el.dataset.enPh;
   });
 }
-let cfg = null, posts = [], cur = new Date(), editing = null, dragId = null;
+
+let cfg = null, posts = [], cur = new Date(), editing = null, dragId = null, view = "cal", pollTimer = null;
 cur.setDate(1);
 
 function esc(s) { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 function pad(n) { return String(n).padStart(2, "0"); }
 function monthKey() { return `${cur.getFullYear()}-${pad(cur.getMonth() + 1)}`; }
+function isBusy(p) { return p.gen_status === "running" || p.gen_status === "queued"; }
 
 function toast(msg, isErr) {
-  msg = I18N.hi[msg] && uiLang === "hi" ? I18N.hi[msg] : msg;
-  const t = $("toast"); t.textContent = msg; t.className = isErr ? "err" : ""; t.style.display = "block";
-  clearTimeout(toast.t); toast.t = setTimeout(() => (t.style.display = "none"), isErr ? 6000 : 2500);
+  const el = $("toast"); el.textContent = trErr(msg); el.className = isErr ? "err" : ""; el.style.display = "block";
+  clearTimeout(toast.t); toast.t = setTimeout(() => (el.style.display = "none"), isErr ? 7000 : 2500);
 }
 
 async function api(method, path, body) {
@@ -265,29 +375,167 @@ async function busy(btn, labelKey, fn) {
 }
 
 // ----- tabs -----
-document.querySelectorAll("nav button").forEach((b) => b.onclick = () => {
-  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("active", x === b));
-  ["calendar", "brand", "settings"].forEach((t) => ($("tab-" + t).hidden = t !== b.dataset.tab));
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
+  ["create", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
+  if (name === "calendar") loadPosts();
+}
+document.querySelectorAll("nav button").forEach((b) => (b.onclick = () => showTab(b.dataset.tab)));
+
+// ----- background jobs (progress bar on top) -----
+const activeJobs = {};
+function renderJobs() {
+  const box = $("jobs"); const ids = Object.keys(activeJobs);
+  box.style.display = ids.length ? "block" : "none";
+  box.innerHTML = ids.map((id) => {
+    const a = activeJobs[id], j = a.job;
+    let txt = a.label;
+    if (j) {
+      txt += " - " + t(j.stage ? "job." + j.stage : "job.working");
+      if (j.total) txt += ` ${j.done}/${j.total}`;
+      if (j.failed) txt += ` (${j.failed} ${t("job.failed")})`;
+    }
+    return `<div><i class="spin"></i><span>${esc(txt)}</span></div>`;
+  }).join("");
+}
+function trackJob(id, label) {
+  return new Promise((resolve, reject) => {
+    activeJobs[id] = { label, job: null }; renderJobs();
+    const finish = () => { delete activeJobs[id]; renderJobs(); };
+    const tick = async () => {
+      let j;
+      try { j = await api("GET", "/api/jobs/" + id); } catch (e) { finish(); return reject(e); }
+      activeJobs[id].job = j; renderJobs();
+      if (j.kind === "plan" && !$("tab-calendar").hidden) loadPosts();
+      if (j.state === "running") { setTimeout(tick, 1500); return; }
+      finish();
+      j.state === "done" ? resolve(j) : reject(new Error(j.error));
+    };
+    tick();
+  });
+}
+
+// ----- shared pieces -----
+function fillSelect(id, values) {
+  const old = $(id).value;
+  $(id).innerHTML = values.map((v) => `<option value="${v}">${esc(opt(v))}</option>`).join("");
+  if (old && values.includes(old)) $(id).value = old;
+}
+function checks(id, name, selected) {
+  $(id).innerHTML = cfg.platforms.map((p) => `<label><input type="checkbox" name="${name}" value="${p}" ${selected.includes(p) ? "checked" : ""}>${esc(opt(p))}</label>`).join("");
+}
+function checked(name) { return [...document.querySelectorAll(`input[name=${name}]:checked`)].map((x) => x.value); }
+async function download(postId) { location.href = `/api/posts/${postId}/export`; }
+
+// ----- Create tab (quick, step by step or automatic) -----
+const STEP_DEFS = [
+  { id: "script", fields: ["hook", "script"] },
+  { id: "caption", fields: ["caption", "hashtags", "cta"] },
+  { id: "edit", fields: ["edit_plan", "image_idea"] },
+];
+const FIELD_KIND = { hook: "input", script: "textarea", caption: "textarea", hashtags: "input", cta: "input", edit_plan: "textarea", image_idea: "textarea" };
+const FINAL_FIELDS = ["hook", "script", "caption", "hashtags", "cta", "edit_plan", "image_idea"];
+let ws = null;
+
+function fieldsHTML(fields) {
+  return fields.map((f) => {
+    const label = t("f." + f);
+    return FIELD_KIND[f] === "input"
+      ? `<label>${esc(label)}</label><input id="w_${f}">`
+      : `<label>${esc(label)}</label><textarea id="w_${f}" style="min-height:${f === "script" || f === "edit_plan" ? 150 : 80}px"></textarea>`;
+  }).join("");
+}
+function fillFields(fields) { fields.forEach((f) => ($("w_" + f).value = ws.post[f] || "")); }
+async function saveFields(fields) {
+  const body = {}; fields.forEach((f) => (body[f] = $("w_" + f).value));
+  ws.post = await api("PUT", "/api/posts/" + ws.post.id, body);
+}
+
+function renderStepper() {
+  const idx = ws.state === "final" ? STEP_DEFS.length : ws.stepIdx;
+  const pills = STEP_DEFS.map((s, i) => `<span class="pill ${i < idx ? "done" : i === idx ? "current" : ""}">${i < idx ? "✓ " : ""}${i + 1}. ${esc(t("step." + s.id))}</span>`);
+  pills.push(`<span class="pill soon">${esc(t("step.voice"))}</span>`, `<span class="pill soon">${esc(t("step.video"))}</span>`);
+  pills.push(`<span class="pill ${ws.state === "final" ? "current" : "soon"}">${esc(t("step.done"))}</span>`);
+  $("stepper").innerHTML = pills.join("");
+}
+
+function renderWs() {
+  if (!ws) { $("workspace").hidden = true; return; }
+  $("workspace").hidden = false;
+  $("wsTitle").textContent = ws.post.topic || (uiLang === "hi" ? "नया कंटेंट" : "New content");
+  renderStepper();
+  const status = $("wsStatus"), body = $("wsBody"), actions = $("wsActions");
+  status.innerHTML = ""; body.innerHTML = ""; actions.innerHTML = "";
+  const btn = (cls, text, fn) => { const b = document.createElement("button"); b.className = cls; b.textContent = text; b.onclick = fn; actions.appendChild(b); return b; };
+
+  if (ws.state === "loading") {
+    status.innerHTML = `<i class="spin"></i> ${esc(t("ws.loading"))}`;
+  } else if (ws.state === "error") {
+    status.innerHTML = `<span class="err-text">${esc(t("gen.error"))} ${esc(trErr(ws.error))}</span>`;
+    btn("primary", t("btn.again"), () => runStep(ws.step));
+  } else if (ws.state === "step") {
+    const def = STEP_DEFS[ws.stepIdx];
+    status.textContent = t("step.of", { i: ws.stepIdx + 1, n: STEP_DEFS.length, name: t("step." + def.id) });
+    body.innerHTML = fieldsHTML(def.fields); fillFields(def.fields);
+    btn("ghost", t("btn.regen"), () => runStep(def.id));
+    const last = ws.stepIdx === STEP_DEFS.length - 1;
+    btn("primary", last ? t("btn.finish") : t("btn.next"), async (e) => {
+      await busy(e.target, "busy.save", async () => {
+        await saveFields(def.fields);
+        if (last) { ws.state = "final"; renderWs(); } else { ws.stepIdx++; await runStep(STEP_DEFS[ws.stepIdx].id); }
+      });
+    });
+  } else if (ws.state === "final") {
+    status.textContent = t("ws.final");
+    body.innerHTML = fieldsHTML(FINAL_FIELDS) + `<p class="hint">${esc(t("ws.soon"))}</p>`; fillFields(FINAL_FIELDS);
+    btn("primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); download(ws.post.id); }));
+    btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); toast(t("ws.saved")); }));
+    btn("ghost", t("btn.openCal"), () => { cur = new Date(ws.post.date + "T00:00"); cur.setDate(1); showTab("calendar"); });
+    btn("ghost", t("btn.another"), () => { ws = null; renderWs(); $("c_topic").value = ""; window.scrollTo(0, 0); });
+  }
+}
+
+async function runStep(step, jobId) {
+  const me = ws; me.state = "loading"; me.step = step; renderWs();
+  try {
+    if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step })).job;
+    await trackJob(jobId, me.post.topic || t("tab.create"));
+    me.post = await api("GET", "/api/posts/" + me.post.id);
+    me.state = step === "all" ? "final" : "step";
+  } catch (e) { me.state = "error"; me.error = e.message; }
+  if (ws === me) renderWs();
+}
+
+$("createBtn").onclick = (e) => busy(e.target, "busy.create", async () => {
+  const mode = document.querySelector("input[name=mode]:checked").value;
+  const r = await api("POST", "/api/quick", {
+    topic: $("c_topic").value, format: $("c_format").value, content_type: $("c_type").value,
+    duration: $("c_duration").value, platforms: checked("cp"), mode,
+  });
+  ws = { post: r.post, mode, stepIdx: 0, state: "loading", step: "script" };
+  if (mode === "auto") runStep("all", r.job); else runStep("script");
 });
 
 // ----- calendar -----
 async function loadPosts() {
   posts = await api("GET", "/api/posts?month=" + monthKey());
-  renderCalendar();
+  renderCalendar(); renderList();
+  clearTimeout(pollTimer);
+  if (posts.some(isBusy) && !$("tab-calendar").hidden) pollTimer = setTimeout(loadPosts, 2500);
 }
 
 function renderCalendar() {
   $("monthTitle").textContent = `${(uiLang === "hi" ? I18N.hi.months : EN_MONTHS)[cur.getMonth()]} ${cur.getFullYear()}`;
   const first = (new Date(cur.getFullYear(), cur.getMonth(), 1).getDay() + 6) % 7; // Monday = 0
   const days = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate();
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const t0 = new Date(); const todayStr = `${t0.getFullYear()}-${pad(t0.getMonth() + 1)}-${pad(t0.getDate())}`;
   const grid = $("grid"); grid.innerHTML = "";
   for (let i = 0; i < first; i++) grid.insertAdjacentHTML("beforeend", '<div class="day empty"></div>');
   for (let d = 1; d <= days; d++) {
     const dateStr = `${monthKey()}-${pad(d)}`;
     const cell = document.createElement("div");
     cell.className = "day" + (dateStr === todayStr ? " today" : "");
-    cell.innerHTML = `<span class="num">${d}</span><button class="add" title="${t("post.addTip")}">+</button>`;
+    cell.innerHTML = `<span class="num">${d}</span><button class="add" title="${esc(t("post.addTip"))}">+</button>`;
     cell.querySelector(".add").onclick = () => openPost({ date: dateStr });
     cell.ondragover = (e) => { e.preventDefault(); cell.classList.add("over"); };
     cell.ondragleave = () => cell.classList.remove("over");
@@ -298,9 +546,9 @@ function renderCalendar() {
     };
     posts.filter((p) => p.date === dateStr).forEach((p) => {
       const chip = document.createElement("div");
-      chip.className = "chip " + p.status; chip.draggable = true;
-      chip.innerHTML = `<b>${esc(opt(p.format))}</b> <small>${esc(p.topic || opt(p.content_type))}</small>`;
-      chip.title = `${opt(p.content_type)} | ${opt(p.status)} | ${p.time}`;
+      chip.className = "chip " + p.status + (isBusy(p) ? " busy" : "") + (p.gen_status === "error" ? " err" : ""); chip.draggable = true;
+      chip.innerHTML = `<b>${esc(opt(p.format))}</b> <small>${esc(p.hook || p.topic || opt(p.content_type))}</small>`;
+      chip.title = `${p.hook || p.topic}\n${opt(p.content_type)} | ${opt(p.status)} | ${p.time}`;
       chip.ondragstart = () => (dragId = p.id);
       chip.ondragend = () => (dragId = null);
       chip.onclick = () => openPost(p);
@@ -310,57 +558,79 @@ function renderCalendar() {
   }
 }
 
+function renderList() {
+  const box = $("listView");
+  if (!posts.length) { box.innerHTML = `<p class="hint">${esc(t("list.empty"))}</p>`; return; }
+  box.innerHTML = posts.map((p) => {
+    const state = isBusy(p) ? `<i class="spin"></i>` : p.gen_status === "error" ? `<span class="err-text">${esc(t("gen.error"))} ${esc(trErr(p.gen_error))}</span>` : "";
+    const det = (k, txt) => (txt ? `<details><summary>${esc(t(k))}</summary><pre>${esc(txt)}</pre></details>` : "");
+    return `<div class="card pcard">
+      <div class="ptop"><b>${esc(p.date)} ${esc(p.time)}</b><span class="badge">${esc(opt(p.format))}</span><span class="badge">${esc(opt(p.content_type))}</span>
+        <span class="badge">${esc(opt(p.status))}</span>${p.platforms.map((x) => `<span class="badge">${esc(opt(x))}</span>`).join("")}${state}</div>
+      <div class="ptitle">${esc(p.hook || p.topic || "-")}</div>
+      ${p.caption ? `<pre>${esc(p.caption)}${p.hashtags ? "\n\n" + esc(p.hashtags) : ""}</pre>` : ""}
+      ${det("f.script", p.script)}${det("f.edit_plan", p.edit_plan)}
+      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => openPost(posts.find((p) => p.id === +b.dataset.edit))));
+  box.querySelectorAll("[data-dl]").forEach((b) => (b.onclick = () => download(b.dataset.dl)));
+}
+
+function setView(v) {
+  view = v; $("calView").hidden = v !== "cal"; $("listView").hidden = v !== "list";
+  $("vCal").classList.toggle("on", v === "cal"); $("vList").classList.toggle("on", v === "list");
+}
+$("vCal").onclick = () => setView("cal"); $("vList").onclick = () => setView("list");
 function renderDows() { $("dows").innerHTML = (uiLang === "hi" ? I18N.hi.dow : EN_DOW).map((d) => `<div class="dow">${d}</div>`).join(""); }
 $("prev").onclick = () => { cur.setMonth(cur.getMonth() - 1); loadPosts(); };
 $("next").onclick = () => { cur.setMonth(cur.getMonth() + 1); loadPosts(); };
 $("todayBtn").onclick = () => { cur = new Date(); cur.setDate(1); loadPosts(); };
 
 // ----- post modal -----
-function fillSelect(id, values) { const old = $(id).value; $(id).innerHTML = values.map((v) => `<option value="${v}">${esc(opt(v))}</option>`).join(""); if (old) $(id).value = old; }
-function checks(id, name, selected) {
-  $(id).innerHTML = cfg.platforms.map((p) => `<label><input type="checkbox" name="${name}" value="${p}" ${selected.includes(p) ? "checked" : ""}>${esc(opt(p))}</label>`).join("");
-}
-function checked(name) { return [...document.querySelectorAll(`input[name=${name}]:checked`)].map((x) => x.value); }
-
+const MODAL_FIELDS = ["date", "time", "format", "content_type", "duration", "topic", "status", "hook", "caption", "hashtags", "cta", "script", "image_idea", "edit_plan"];
 function openPost(p) {
   editing = p.id ? p : null;
-  const post = { format: "image", content_type: "educational", topic: "", platforms: cfg.brand.platforms, status: "idea", time: "10:00",
-    hook: "", caption: "", hashtags: "", cta: "", script: "", image_idea: "", ...p };
+  const post = { format: "image", content_type: "educational", topic: "", platforms: cfg.brand.platforms, status: "idea", time: "10:00", duration: "30-60 sec",
+    hook: "", caption: "", hashtags: "", cta: "", script: "", image_idea: "", edit_plan: "", ...p };
   $("postTitle").textContent = p.id ? t("post.edit") : t("post.new");
-  ["date", "time", "format", "content_type", "topic", "status", "hook", "caption", "hashtags", "cta", "script", "image_idea"]
-    .forEach((k) => ($("f_" + k).value = post[k]));
+  MODAL_FIELDS.forEach((k) => ($("f_" + k).value = post[k]));
   checks("f_platforms", "pf", post.platforms);
-  $("postDelete").hidden = !p.id; $("genBtn").disabled = !p.id;
-  $("genBtn").title = p.id ? "" : t("post.genTip");
+  $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("genBtn").hidden = !p.id;
+  const err = $("genErr"); err.hidden = post.gen_status !== "error"; err.textContent = `${t("gen.error")} ${trErr(post.gen_error || "")}`;
   toggleScript(); $("postOverlay").classList.add("show");
 }
 function toggleScript() {
-  const v = ["video", "story"].includes($("f_format").value);
-  $("scriptLabel").hidden = !v; $("f_script").hidden = !v;
+  const hide = $("f_format").value === "text";
+  $("scriptLabel").hidden = hide; $("f_script").hidden = hide;
 }
 $("f_format").onchange = toggleScript;
 
 function readForm() {
   const o = { platforms: checked("pf") };
-  ["date", "time", "format", "content_type", "topic", "status", "hook", "caption", "hashtags", "cta", "script", "image_idea"]
-    .forEach((k) => (o[k] = $("f_" + k).value));
+  MODAL_FIELDS.forEach((k) => (o[k] = $("f_" + k).value));
   return o;
 }
-function showPost(p) { editing = p; openPost(p); }
 
 $("postSave").onclick = (e) => busy(e.target, "busy.save", async () => {
   const data = readForm();
   const saved = editing ? await api("PUT", "/api/posts/" + editing.id, data) : await api("POST", "/api/posts", data);
   toast(t("toast.saved"));
-  const monthOfPost = saved.date.slice(0, 7);
-  if (monthOfPost !== monthKey()) { cur = new Date(saved.date + "T00:00"); cur.setDate(1); }
+  if (saved.date.slice(0, 7) !== monthKey()) { cur = new Date(saved.date + "T00:00"); cur.setDate(1); }
   await loadPosts();
-  if (!editing) showPost(saved); // ab AI button chal sakta hai
+  openPost(saved);
 });
 $("genBtn").onclick = (e) => busy(e.target, "busy.gen", async () => {
-  await api("PUT", "/api/posts/" + editing.id, readForm());
-  const p = await api("POST", `/api/posts/${editing.id}/generate`);
-  showPost(p); await loadPosts(); toast(t("toast.generated"));
+  const id = editing.id;
+  await api("PUT", "/api/posts/" + id, readForm());
+  const r = await api("POST", `/api/posts/${id}/generate`, { step: "all" });
+  try { await trackJob(r.job, editing.topic || t("post.edit")); } finally { await loadPosts(); }
+  const p = await api("GET", "/api/posts/" + id);
+  if (editing && editing.id === id) openPost(p);
+  toast(t("toast.generated"));
+});
+$("postDownload").onclick = (e) => busy(e.target, "busy.save", async () => {
+  await api("PUT", "/api/posts/" + editing.id, readForm()); download(editing.id);
 });
 $("postDelete").onclick = async () => {
   if (!confirm(t("confirm.delete"))) return;
@@ -371,8 +641,10 @@ document.querySelectorAll("[data-close]").forEach((b) => (b.onclick = () => b.cl
 // ----- AI plan -----
 $("planBtn").onclick = () => $("planOverlay").classList.add("show");
 $("planGo").onclick = (e) => busy(e.target, "busy.plan", async () => {
-  const made = await api("POST", "/api/ai/plan", { month: monthKey(), theme: $("p_theme").value, posts_per_week: +$("p_per").value });
-  $("planOverlay").classList.remove("show"); await loadPosts(); toast(t("toast.plan", { n: made.length }));
+  const r = await api("POST", "/api/jobs/plan", { month: monthKey(), theme: $("p_theme").value, posts_per_week: +$("p_per").value, full: $("p_full").checked });
+  $("planOverlay").classList.remove("show");
+  trackJob(r.job, t("tab.calendar")).then((j) => { loadPosts(); toast(t("toast.plan", { n: j.post_ids.length })); })
+    .catch((err) => { loadPosts(); toast(err.message, true); });
 });
 
 // ----- brand + settings -----
@@ -395,9 +667,11 @@ function renderKeyState() {
 // ----- language -----
 function buildOptions() {
   applyStatic(); renderDows();
-  fillSelect("f_format", cfg.formats); fillSelect("f_content_type", cfg.content_types); fillSelect("f_status", cfg.statuses);
+  fillSelect("c_format", cfg.formats); fillSelect("c_type", cfg.content_types); fillSelect("c_duration", cfg.durations);
+  fillSelect("f_format", cfg.formats); fillSelect("f_content_type", cfg.content_types); fillSelect("f_duration", cfg.durations); fillSelect("f_status", cfg.statuses);
   fillSelect("b_tone", ["friendly", "professional", "funny", "inspiring", "bold"]); fillSelect("b_language", ["hinglish", "hindi", "english"]);
-  const bp = cfg.brand.platforms; checks("b_platforms", "bp", bp);
+  const keepC = $("c_platforms").children.length ? checked("cp") : cfg.brand.platforms;
+  checks("c_platforms", "cp", keepC); checks("b_platforms", "bp", cfg.brand.platforms);
   $("legend").innerHTML = cfg.statuses.map((s) => `<span><i class="dot" style="background:var(--s-${s})"></i>${esc(opt(s))}</span>`).join("");
   renderKeyState();
 }
@@ -405,7 +679,7 @@ $("uiLang").onchange = () => {
   uiLang = $("uiLang").value;
   try { localStorage.setItem("uiLang", uiLang); } catch (e) {}
   const keep = checked("bp"); if (keep.length) cfg.brand.platforms = keep;
-  buildOptions(); renderCalendar();
+  buildOptions(); renderCalendar(); renderList(); renderWs(); renderJobs();
 };
 
 // ----- start -----
@@ -413,8 +687,14 @@ $("uiLang").onchange = () => {
   cfg = await api("GET", "/api/config");
   ["name", "business", "audience"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
   $("uiLang").value = uiLang;
-  buildOptions(); $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
-  await loadPosts();
+  $("c_format").value = "video";
+  buildOptions();
+  $("c_format").value = "video"; $("c_duration").value = "30-60 sec";
+  $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
+  // background me chal rahe kaam (page reload ke baad bhi) wapas dikhao
+  try {
+    (await api("GET", "/api/jobs")).forEach((j) => trackJob(j.id, j.label || "AI").then(() => loadPosts()).catch((e) => toast(e.message, true)));
+  } catch (e) {}
 })();
 </script>
 </body>
