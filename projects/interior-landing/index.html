@@ -42,6 +42,10 @@ h3{font-size:1.5rem;margin-bottom:6px}
 .ph.c{background:linear-gradient(135deg,#e6d5cc,#c19a8a)}
 .ph.d{background:linear-gradient(135deg,#d4cfc6,#a39a8c)}
 
+/* photo backgrounds: gradient stays as fallback while image loads */
+.ph[style]{background-image:var(--img),linear-gradient(135deg,#d9c9ae,#b9a07a);background-size:cover;background-position:center;background-repeat:no-repeat}
+.hero-img[style]{background-position:center 40%}
+
 /* nav */
 header{position:sticky;top:0;z-index:50;background:rgba(250,247,242,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
@@ -233,7 +237,7 @@ footer a:hover{color:var(--accent)}
       </div>
     </div>
     <div class="hero-img-wrap">
-      <div class="ph hero-img"><span>Replace: hero project photo</span></div>
+      <div class="ph hero-img" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-ivory-and-walnut-living-space.webp)" role="img" aria-label="Ivory and walnut living space"></div>
       <div class="hero-card"><strong>500+</strong>Projects delivered</div>
     </div>
   </div>
@@ -250,7 +254,7 @@ footer a:hover{color:var(--accent)}
 <!-- ABOUT / WHY -->
 <section>
   <div class="wrap split">
-    <div class="ph"><span>Replace: studio / team photo</span></div>
+    <div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Warm-Natural-Light-Design-Studio.webp)" role="img" aria-label="Our design studio"><span>Our design studio</span></div>
     <div>
       <p class="eyebrow">About Us</p>
       <h2>Design that feels personal, built to last.</h2>
@@ -278,20 +282,20 @@ footer a:hover{color:var(--accent)}
       <button class="tab" data-t="com">Commercial</button>
     </div>
     <div class="cards" id="res">
-      <div class="card"><div class="ph"></div><div class="card-body"><h3>Full Home Interiors</h3><p>Turnkey design and execution for apartments and villas.</p></div></div>
-      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Modular Kitchens</h3><p>Smart, durable kitchens tailored to how you cook.</p></div></div>
-      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Wardrobes & Storage</h3><p>Custom storage that maximises every inch.</p></div></div>
-      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Living & Bedrooms</h3><p>Warm, layered rooms with furniture, lighting and décor.</p></div></div>
-      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Renovation</h3><p>Refresh an existing home without the chaos.</p></div></div>
-      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Furniture & Décor</h3><p>Curated pieces, art and soft furnishings to finish the look.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Refined-stone-and-wood-living-room.webp)"></div><div class="card-body"><h3>Full Home Interiors</h3><p>Turnkey design and execution for apartments and villas.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Modern-Ivory-Kitchen-with-Stone-Island.webp)"></div><div class="card-body"><h3>Modular Kitchens</h3><p>Smart, durable kitchens tailored to how you cook.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Luxury-illuminated-walk-in-wardrobe.webp)"></div><div class="card-body"><h3>Wardrobes & Storage</h3><p>Custom storage that maximises every inch.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Serene-Luxury-Bedroom-Retreat.webp)"></div><div class="card-body"><h3>Living & Bedrooms</h3><p>Warm, layered rooms with furniture, lighting and décor.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Elegant-Indian-Contemporary-Living-Room.webp)"></div><div class="card-body"><h3>Renovation</h3><p>Refresh an existing home without the chaos.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sculptural-Chair-and-Coffee-Table-Vignette.webp)"></div><div class="card-body"><h3>Furniture & Décor</h3><p>Curated pieces, art and soft furnishings to finish the look.</p></div></div>
     </div>
     <div class="cards hidden" id="com">
-      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Offices & Co-working</h3><p>Productive layouts that reflect your brand.</p></div></div>
-      <div class="card"><div class="ph"></div><div class="card-body"><h3>Retail & Showrooms</h3><p>Stores designed to draw people in and lift sales.</p></div></div>
-      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Cafés & Restaurants</h3><p>Atmosphere, flow and kitchen planning in one package.</p></div></div>
-      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Clinics & Salons</h3><p>Calm, hygienic and functional professional spaces.</p></div></div>
-      <div class="card"><div class="ph"></div><div class="card-body"><h3>Hospitality</h3><p>Boutique hotels, guest houses and lounges.</p></div></div>
-      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Space Planning & 3D</h3><p>Layouts and visualisations before you commit.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-glass-and-walnut-coworking-space.webp)"></div><div class="card-body"><h3>Offices & Co-working</h3><p>Productive layouts that reflect your brand.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Warm-sculpted-fashion-boutique.webp)"></div><div class="card-body"><h3>Retail & Showrooms</h3><p>Stores designed to draw people in and lift sales.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Warm-Natural-Light-Design-Studio.webp)"></div><div class="card-body"><h3>Cafés & Studios</h3><p>Atmosphere, flow and natural light planned in one package.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-ivory-and-walnut-living-space.webp)"></div><div class="card-body"><h3>Clinics & Salons</h3><p>Calm, hygienic and functional professional spaces.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Serene-Luxury-Bedroom-Retreat.webp)"></div><div class="card-body"><h3>Hospitality</h3><p>Boutique hotels, guest houses and lounges.</p></div></div>
+      <div class="card"><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Refined-stone-and-wood-living-room.webp)"></div><div class="card-body"><h3>Space Planning & 3D</h3><p>Layouts and visualisations before you commit.</p></div></div>
     </div>
   </div>
 </section>
@@ -317,15 +321,15 @@ footer a:hover{color:var(--accent)}
     <div class="head center"><p class="eyebrow">Our Work</p><h2>Recent projects</h2></div>
     <div class="filters">
       <button class="on" data-f="all">All</button><button data-f="home">Homes</button>
-      <button data-f="office">Offices</button><button data-f="retail">Retail & Café</button>
+      <button data-f="office">Offices</button><button data-f="retail">Retail</button>
     </div>
     <div class="gallery">
-      <div class="ph" data-c="home"><span>3 BHK · Modern</span></div>
-      <div class="ph b" data-c="office"><span>Office · Minimal</span></div>
-      <div class="ph c" data-c="home"><span>Villa · Classic</span></div>
-      <div class="ph d" data-c="retail"><span>Café · Contemporary</span></div>
-      <div class="ph" data-c="home"><span>2 BHK · Scandinavian</span></div>
-      <div class="ph b" data-c="retail"><span>Boutique · Luxe</span></div>
+      <div class="ph" data-c="home" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-ivory-and-walnut-living-space.webp)"><span>Living · Ivory &amp; Walnut</span></div>
+      <div class="ph" data-c="office" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-glass-and-walnut-coworking-space.webp)"><span>Co-working · Glass &amp; Walnut</span></div>
+      <div class="ph" data-c="home" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Refined-stone-and-wood-living-room.webp)"><span>Villa · Stone &amp; Wood</span></div>
+      <div class="ph" data-c="office" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Warm-Natural-Light-Design-Studio.webp)"><span>Studio · Natural Light</span></div>
+      <div class="ph" data-c="home" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Modern-Ivory-Kitchen-with-Stone-Island.webp)"><span>Kitchen · Ivory &amp; Stone</span></div>
+      <div class="ph" data-c="retail" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Warm-sculpted-fashion-boutique.webp)"><span>Boutique · Warm Sculpted</span></div>
     </div>
   </div>
 </section>
@@ -350,8 +354,8 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <div class="head center"><p class="eyebrow">Design Styles</p><h2>Find your look</h2></div>
     <div class="styles">
-      <div class="ph"><span>Modern</span></div><div class="ph b"><span>Minimal</span></div>
-      <div class="ph c"><span>Contemporary Luxe</span></div><div class="ph d"><span>Classic & Traditional</span></div>
+      <div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sophisticated-ivory-and-walnut-living-space.webp)"><span>Modern</span></div><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Sculptural-Chair-and-Coffee-Table-Vignette.webp)"><span>Minimal</span></div>
+      <div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Serene-Luxury-Bedroom-Retreat.webp)"><span>Contemporary Luxe</span></div><div class="ph" style="--img:url(https://tanu.hsim.site/wp-content/uploads/2026/10/Elegant-Indian-Contemporary-Living-Room.webp)"><span>Indian Contemporary</span></div>
     </div>
   </div>
 </section>
