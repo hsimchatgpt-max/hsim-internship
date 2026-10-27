@@ -3,6 +3,7 @@
 Sirf Python ki built-in libraries use hui hain, to koi `pip install` nahi chahiye.
 Chalane ke liye:  python server.py   (phir browser me http://localhost:8000)
 """
+import base64
 import calendar
 import json
 import os
@@ -37,7 +38,7 @@ PLATFORMS = ["youtube", "linkedin", "instagram", "facebook", "x"]
 STATUSES = ["idea", "draft", "ready", "scheduled", "posted"]
 DURATIONS = ["15-30 sec", "30-60 sec", "60-90 sec"]
 MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]  # sirf tab jab model list na mile
-STEPS = ["all", "script", "caption", "edit"]
+STEPS = ["all", "script", "caption", "edit", "image"]
 
 DB_LOCK = threading.Lock()
 
@@ -56,7 +57,8 @@ NEW_COLUMNS = [  # purane data wale users ke liye migration
     ("duration", "TEXT NOT NULL DEFAULT '30-60 sec'"),
     ("gen_status", "TEXT NOT NULL DEFAULT ''"),
     ("gen_error", "TEXT NOT NULL DEFAULT ''"),
-    ("design", "TEXT NOT NULL DEFAULT ''"),  # image designer ki settings (JSON)
+    ("design", "TEXT NOT NULL DEFAULT ''"),  # manual image designer ki settings (JSON)
+    ("images", "TEXT NOT NULL DEFAULT '[]'"),  # AI se bani image files ke naam (JSON list)
 ]
 
 
@@ -127,6 +129,7 @@ def save_brand(data):
 def row_to_post(row):
     post = dict(row)
     post["platforms"] = json.loads(post["platforms"] or "[]")
+    post["images"] = json.loads(post.get("images") or "[]")
     return post
 
 
@@ -268,6 +271,7 @@ KEY_ERROR = "The API key is invalid or not working. Check it again in Settings."
 BUSY_ERROR = "Google's AI is busy right now. Please try again in a minute."
 LIMIT_ERROR = "Free limit reached. Please try again in a while (or tomorrow)."
 _model_cache = []
+_image_model_cache = []
 
 
 def http_error_message(e):
@@ -286,10 +290,8 @@ def model_rank(name):
     return (0 if "flash" in name else 1, 1 if "lite" in name else 0, 1 if unstable else 0, -ver)
 
 
-def available_models(key, refresh=False):
-    """Google se poochta hai ki is key par kaun se models chal sakte hain (cache karke)."""
-    if _model_cache and not refresh:
-        return list(_model_cache)
+def fetch_model_names(key):
+    """Google se poochta hai ki is key par kaun se generateContent models hain."""
     req = urllib.request.Request(API_ROOT + "/models?pageSize=200", headers={"x-goog-api-key": key})
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -297,19 +299,32 @@ def available_models(key, refresh=False):
     except urllib.error.HTTPError as e:
         if e.code in (400, 401, 403):
             raise AIError(KEY_ERROR)
-        models = []
+        return []
     except (urllib.error.URLError, TimeoutError):
         raise AIError("Could not connect to Gemini. Check your internet connection.")
-    names = [
-        m["name"].split("/", 1)[-1] for m in models
-        if "generateContent" in m.get("supportedGenerationMethods", [])
-        and m["name"].split("/", 1)[-1].startswith("gemini")
-        and not any(w in m["name"] for w in SKIP_WORDS)
-    ]
+    return [m["name"].split("/", 1)[-1] for m in models
+            if "generateContent" in m.get("supportedGenerationMethods", [])
+            and m["name"].split("/", 1)[-1].startswith("gemini")]
+
+
+def available_models(key, refresh=False):
+    """Text models (tez/stable pehle), cache ke saath."""
+    if _model_cache and not refresh:
+        return list(_model_cache)
+    names = [n for n in fetch_model_names(key) if not any(w in n for w in SKIP_WORDS)]
     names.sort(key=model_rank)
-    chosen = names[:3] or list(MODELS)  # list na mile to purane naam try karo
-    _model_cache[:] = chosen
-    return list(chosen)
+    _model_cache[:] = names[:5] or list(MODELS)  # list na mile to purane naam try karo
+    return list(_model_cache)
+
+
+def available_image_models(key, refresh=False):
+    """Image bana sakne wale models (naya/stable pehle)."""
+    if _image_model_cache and not refresh:
+        return list(_image_model_cache)
+    names = [n for n in fetch_model_names(key) if "image" in n and not any(w in n for w in ("tts", "audio", "live", "embedding"))]
+    names.sort(key=lambda n: (1 if any(w in n for w in ("preview", "exp")) else 0, -float((re.search(r"gemini-(\d+(?:\.\d+)?)", n) or [0, 0])[1] or 0)))
+    _image_model_cache[:] = names[:3]
+    return list(_image_model_cache)
 
 
 def request_model(key, model, prompt, think_off):
@@ -351,7 +366,7 @@ def call_gemini(prompt):
                     all_missing = False
                     if e.code in RETRY_CODES:
                         retryable = True
-                        last_error = LIMIT_ERROR if e.code == 429 else BUSY_ERROR
+                        last_error = (LIMIT_ERROR + f" [{model}: {msg[:160]}]") if e.code == 429 else BUSY_ERROR
                         break
                     raise AIError(f"Gemini error {e.code}: {msg[:200]}")
                 except (urllib.error.URLError, TimeoutError):
@@ -362,6 +377,92 @@ def call_gemini(prompt):
                     break
         if all_missing:
             last_error = "No Gemini model is available for this key."
+        if retryable and attempt < len(RETRY_WAITS):
+            time.sleep(RETRY_WAITS[attempt])
+            continue
+        break
+    raise AIError(last_error)
+
+
+IMAGES_DIR = DATA / "images"
+IMAGE_LIMIT_ERROR = ("Image generation limit reached. Image models usually need billing enabled on your Gemini API key "
+                     "(Google AI Studio, your key, Set up billing).")
+NO_IMAGE_MODEL = "No image model is available for this key. Image generation usually needs billing enabled on the key."
+
+
+def mock_png():
+    """Test ke liye chhoti nakli PNG."""
+    import struct
+    import zlib
+    w = h = 64
+    rows = b""
+    for y in range(h):
+        rows += b"\x00" + b"".join(bytes([x * 4, y * 4, 160]) for x in range(w))
+
+    def chunk(t, d):
+        c = struct.pack(">I", len(d)) + t + d
+        return c + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress(rows)) + chunk(b"IEND", b""))
+
+
+def request_image(key, model, prompt, aspect, use_ratio):
+    config = {"responseModalities": ["TEXT", "IMAGE"]}
+    if use_ratio:
+        config["imageConfig"] = {"aspectRatio": aspect}
+    body = json.dumps({"contents": [{"parts": [{"text": prompt}]}], "generationConfig": config}).encode()
+    req = urllib.request.Request(
+        f"{API_ROOT}/models/{model}:generateContent", data=body, method="POST",
+        headers={"Content-Type": "application/json", "x-goog-api-key": key},
+    )
+    with urllib.request.urlopen(req, timeout=180) as resp:
+        payload = json.loads(resp.read())
+    for part in payload["candidates"][0]["content"]["parts"]:
+        inline = part.get("inlineData") or part.get("inline_data")
+        if inline and inline.get("data"):
+            return base64.b64decode(inline["data"])
+    raise ValueError("no image in response")
+
+
+def generate_image(prompt, aspect):
+    """Prompt se image (PNG bytes) banwata hai. Busy hone par retry, models par fallback."""
+    if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
+        time.sleep(float(os.environ.get("MOCK_DELAY", "0")))
+        return mock_png()
+    key = get_api_key()
+    if not key:
+        raise AIError("No Gemini API key found. Add your key on the Settings page.")
+    last_error = BUSY_ERROR
+    for attempt in range(len(RETRY_WAITS) + 1):
+        models = available_image_models(key, refresh=attempt == len(RETRY_WAITS))
+        if not models:
+            raise AIError(NO_IMAGE_MODEL)
+        retryable = False
+        for model in models:
+            for use_ratio in (True, False):
+                try:
+                    return request_image(key, model, prompt, aspect, use_ratio)
+                except urllib.error.HTTPError as e:
+                    msg = http_error_message(e)
+                    if e.code in (401, 403) or (e.code == 400 and "API key" in msg):
+                        raise AIError(KEY_ERROR)
+                    if e.code == 400 and use_ratio:
+                        continue  # aspect ratio samajh nahi aaya, bina uske try karo
+                    if e.code == 404:
+                        break
+                    if e.code == 429 and ("limit: 0" in msg or "billing" in msg.lower()):
+                        last_error = IMAGE_LIMIT_ERROR + f" [{model}]"
+                        break  # is model ki free limit 0 hai, agla model
+                    if e.code in RETRY_CODES:
+                        retryable = True
+                        last_error = (LIMIT_ERROR if e.code == 429 else BUSY_ERROR)
+                        break
+                    raise AIError(f"Gemini error {e.code}: {msg[:200]}")
+                except (urllib.error.URLError, TimeoutError):
+                    raise AIError("Could not connect to Gemini. Check your internet connection.")
+                except (KeyError, IndexError, ValueError):
+                    last_error = "The AI did not return an image. Please try again."
+                    break
         if retryable and attempt < len(RETRY_WAITS):
             time.sleep(RETRY_WAITS[attempt])
             continue
@@ -523,6 +624,57 @@ def ai_generate_post(post_id, step="all"):
     return update_post(post_id, fields)
 
 
+ASPECTS = {"story": "9:16", "video": "16:9", "text": "1:1"}
+
+
+def slide_texts(post):
+    """Carousel script se slide-wise text, warna ek hi text."""
+    lines = lambda t: [x.strip() for x in re.split(r"\n+", t) if x.strip()]
+    if post["format"] == "carousel" and post["script"]:
+        parts = [x.strip() for x in re.split(r"(?im)^\s*slide\s*\d+\s*[:.\-\u2013]?", post["script"]) if x.strip()]
+        if len(parts) >= 2:
+            return [" - ".join(lines(x)[:2]) for x in parts[:8]]
+    if post["format"] == "image" and post["script"]:
+        return [" - ".join(lines(post["script"])[:2])]
+    return [post["hook"] or post["topic"]]
+
+
+def build_image_prompt(post, text, idx, total, note):
+    brand = get_brand()
+    kind = {"video": "YouTube thumbnail / video cover", "story": "vertical story", "carousel": "carousel slide",
+            "image": "post image", "text": "post image"}[post["format"]]
+    series = f" This is slide {idx + 1} of {total} in one carousel: keep exactly the same visual style, colors and layout across all slides." if total > 1 else ""
+    return (
+        f"Create a professional, scroll-stopping social media {kind} for {', '.join(post['platforms']) or 'social media'}.{series}\n"
+        f"Business: {brand['business'] or brand['name'] or 'general'}. Audience: {brand['audience'] or 'general'}. Tone: {brand['tone']}.\n"
+        f"Topic: {post['topic']}. Content type: {post['content_type']}.\n"
+        f"Put this text on the image, large, readable and spelled exactly: \"{text}\"\n"
+        "Modern, clean, high-quality design with strong visual hierarchy and good contrast. "
+        "No watermarks, no extra random text, no logos of other brands."
+        + (f"\nExtra request from the user: {note}" if note else "")
+    )
+
+
+def ai_generate_images(post_id, note="", on_progress=None):
+    post = get_post(post_id)
+    if not post:
+        raise AIError("post not found")
+    texts = slide_texts(post)
+    aspect = ASPECTS.get(post["format"], "4:5")
+    IMAGES_DIR.mkdir(parents=True, exist_ok=True)
+    names = []
+    for i, text in enumerate(texts):
+        png = generate_image(build_image_prompt(post, text, i, len(texts), note), aspect)
+        name = f"post{post_id}-{int(time.time())}-{i + 1}.png"
+        (IMAGES_DIR / name).write_bytes(png)
+        names.append(name)
+        if on_progress:
+            on_progress(i + 1, len(texts))
+    with DB_LOCK, db() as con:
+        con.execute("UPDATE posts SET images = ? WHERE id = ?", (json.dumps(names), post_id))
+    return names
+
+
 # ---------- background jobs ----------
 # Lamba kaam (AI likhna) background thread me hota hai, screen band/switch karne par bhi chalta rehta hai.
 
@@ -547,6 +699,11 @@ def job_update(job_id, **kw):
         JOBS[job_id].update(kw)
 
 
+def job_snapshot(job_id):
+    with JOBS_LOCK:
+        return dict(JOBS[job_id])
+
+
 def job_incr(job_id, key):
     with JOBS_LOCK:
         JOBS[job_id][key] += 1
@@ -569,17 +726,24 @@ def start_job(kind, label, fn):
     return job_id
 
 
-def generate_job(post_id, step):
+def generate_job(post_id, step, note=""):
     def work(job_id):
+        post = get_post(post_id)
+        wants_text = step != "image"
+        wants_image = step == "image" or (step == "all" and post["format"] != "video")
         job_update(job_id, post_ids=[post_id], stage="writing", total=1)
         set_gen(post_id, "running")
         try:
-            ai_generate_post(post_id, step)
+            if wants_text:
+                ai_generate_post(post_id, step)
+            if wants_image:
+                job_update(job_id, stage="imaging")
+                ai_generate_images(post_id, note, lambda i, n: job_update(job_id, done=i, total=n))
         except AIError as e:
             set_gen(post_id, "error", str(e))
             raise
         set_gen(post_id, "done")
-        job_incr(job_id, "done")
+        job_update(job_id, done=job_snapshot(job_id)["total"])
     return work
 
 
@@ -650,12 +814,26 @@ class Handler(BaseHTTPRequestHandler):
                     "formats": FORMATS, "content_types": CONTENT_TYPES, "platforms": PLATFORMS,
                     "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()),
                 })
+            if method == "GET" and path == "/api/diagnose":  # "Test my key": kya-kya chal sakta hai
+                if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
+                    return self.send_json({"text_models": ["mock-flash"], "image_models": ["mock-image"], "text_ok": True, "text_error": ""})
+                key = get_api_key()
+                if not key:
+                    raise AIError("No Gemini API key found. Add your key on the Settings page.")
+                out = {"text_models": available_models(key, True), "image_models": available_image_models(key, True),
+                       "text_ok": True, "text_error": ""}
+                try:
+                    call_gemini('Reply with JSON {"ok": true}')
+                except AIError as e:
+                    out["text_ok"], out["text_error"] = False, str(e)
+                return self.send_json(out)
             if method == "PUT" and path == "/api/brand":
                 return self.send_json(save_brand(self.read_json()))
             if method == "POST" and path == "/api/settings/key":
                 key = str(self.read_json().get("key", "")).strip()
                 save_settings({"gemini_api_key": key})
                 _model_cache.clear()
+                _image_model_cache.clear()
                 return self.send_json({"has_key": bool(key)})
             if method == "GET" and path == "/api/posts":
                 m = re.search(r"month=(\d{4}-\d{2})", query)
@@ -673,7 +851,7 @@ class Handler(BaseHTTPRequestHandler):
                     "date": date.today().isoformat(),
                     "format": body.get("format", "video"),
                     "content_type": body.get("content_type", "educational"),
-                    "topic": str(body.get("topic", ""))[:300],
+                    "topic": str(body.get("topic", ""))[:600],
                     "duration": body.get("duration", "30-60 sec"),
                     "platforms": body.get("platforms", brand["platforms"]),
                 })
@@ -708,10 +886,12 @@ class Handler(BaseHTTPRequestHandler):
                     post = get_post(post_id)
                     if not post:
                         return self.send_json({"error": "post not found"}, 404)
-                    step = self.read_json().get("step", "all")
+                    body = self.read_json()
+                    step = body.get("step", "all")
                     if step not in STEPS:
                         return self.send_json({"error": "invalid step"}, 400)
-                    job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step))
+                    note = str(body.get("note", ""))[:500]
+                    job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step, note))
                     return self.send_json({"job": job})
                 if action == "/export" and method == "GET":
                     post = get_post(post_id)
@@ -747,7 +927,25 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def serve_image(self):
+        name = self.path.split("?")[0][len("/files/"):]
+        target = (IMAGES_DIR / name).resolve()
+        if not re.fullmatch(r"[\w\-]+\.png", name) or IMAGES_DIR.resolve() not in target.parents or not target.is_file():
+            self.send_response(404)
+            self.end_headers()
+            return
+        body = target.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "image/png")
+        self.send_header("Content-Length", str(len(body)))
+        if "download=1" in self.path:
+            self.send_header("Content-Disposition", f'attachment; filename="{name}"')
+        self.end_headers()
+        self.wfile.write(body)
+
     def do_GET(self):
+        if self.path.startswith("/files/"):
+            return self.serve_image()
         self.handle_api("GET") if self.path.startswith("/api/") else self.serve_static()
 
     def do_POST(self):

@@ -86,6 +86,9 @@
   .pcard pre { white-space: pre-wrap; font: inherit; background: var(--bg); padding: 8px 10px; border-radius: 8px; margin: 6px 0; }
   .pcard details { margin-top: 6px; }
   .pcard summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+  .imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 12px 0; }
+  .imgs img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .imgs a { margin-top: 6px; }
   .modal.wide { max-width: 1000px; }
   .dgrid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
   .dpreview canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); background: #ddd; display: block; max-height: 70vh; object-fit: contain; }
@@ -120,8 +123,8 @@
     <div class="card narrow">
       <h2 style="margin-top:0" data-i18n="create.title">Create content</h2>
       <p class="hint" data-i18n="create.hint">Make one piece of content right now. No calendar needed.</p>
-      <label data-i18n="create.topic">Topic (leave empty and the AI will pick one)</label>
-      <input id="c_topic" data-i18n-ph="create.topic.ph" placeholder="e.g. 3 mistakes to avoid on a business website">
+      <label data-i18n="create.topic">What do you want to make? Describe it like you would to ChatGPT (leave empty and the AI will pick a topic)</label>
+      <textarea id="c_topic" data-i18n-ph="create.topic.ph" placeholder="e.g. A 30-second video about 3 mistakes to avoid on a business website" style="min-height:70px"></textarea>
       <div class="row">
         <div><label data-i18n="f.format">Format</label><select id="c_format"></select></div>
         <div><label data-i18n="f.type">Content type</label><select id="c_type"></select></div>
@@ -180,6 +183,7 @@
       </div>
       <label data-i18n="brand.platforms">Default platforms (used for new posts)</label>
       <div class="checks" id="b_platforms"></div>
+      <div hidden>
       <label data-i18n="brand.colors">Brand colors (used in image designs)</label>
       <div class="row3">
         <div><span class="hint" data-i18n="brand.primary">Main</span><input type="color" id="b_primary" value="#5b4bdb"></div>
@@ -193,6 +197,7 @@
         <img id="b_logoPrev" alt="" style="max-height:44px;max-width:120px;display:none;background:#ccc;border-radius:6px">
         <button class="ghost" id="b_logoClear" hidden data-i18n="btn.removeLogo">Remove logo</button>
       </div>
+      </div>
       <div class="actions"><button class="primary" id="saveBrand" data-i18n="btn.save">Save</button></div>
     </div>
   </section>
@@ -205,7 +210,9 @@
       <input id="s_key" type="password" placeholder="AIza..." autocomplete="off">
       <p class="hint" id="keyState"></p>
       <p class="hint" data-i18n="key.privacy">Your key is stored only in the <code>data/</code> folder on your computer and is never uploaded.</p>
-      <div class="actions"><button class="primary" id="saveKey" data-i18n="btn.saveKey">Save key</button></div>
+      <p class="hint" data-i18n="key.pro">Note: a Gemini Pro subscription in the Gemini app is separate from this API key. To remove the free limits and to create AI images, enable billing for your API key in Google AI Studio.</p>
+      <div class="actions"><button class="primary" id="saveKey" data-i18n="btn.saveKey">Save key</button><button class="ghost" id="testKey" data-i18n="btn.test">Test my key</button></div>
+      <pre id="testOut" class="hint" style="white-space:pre-wrap"></pre>
     </div>
   </section>
 </main>
@@ -235,7 +242,8 @@
   </div>
   <label data-i18n="f.topic">Topic</label><input id="f_topic">
   <label data-i18n="f.platforms">Platforms</label><div class="checks" id="f_platforms"></div>
-  <div class="actions"><button class="primary" id="genBtn" data-i18n="btn.gen">Write everything with AI</button></div>
+  <div class="actions"><button class="primary" id="genBtn" data-i18n="btn.gen">Write everything with AI</button><button class="ghost" id="imgBtn" data-i18n="btn.aiimage">Create image with AI</button></div>
+  <div id="f_images"></div>
   <p class="hint" id="genErr" hidden></p>
   <label data-i18n="f.hook">Hook</label><input id="f_hook">
   <label id="scriptLabel" data-i18n="f.script">Script / on-screen text</label><textarea id="f_script"></textarea>
@@ -246,7 +254,7 @@
   <label data-i18n="f.image">Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
   <div class="actions">
     <button class="primary" id="postSave" data-i18n="btn.save">Save</button>
-    <button class="ghost" id="postDesign" data-i18n="btn.design">Design image</button>
+    <button class="ghost" id="postDesign" data-i18n="btn.design">Manual design (advanced)</button>
     <button class="ghost" id="postDownload" data-i18n="btn.download">Download content pack</button>
     <button class="ghost" data-close data-i18n="btn.close">Close</button>
     <div class="spacer"></div>
@@ -290,7 +298,7 @@ const I18N = {
     "tab.create": "बनाएं", "tab.calendar": "कैलेंडर", "tab.brand": "ब्रांड प्रोफ़ाइल", "tab.settings": "सेटिंग्स",
     "banner.key": "AI चलाने के लिए पहले Settings में Gemini API key डालें।",
     "create.title": "कंटेंट बनाएं", "create.hint": "अभी एक कंटेंट बनाएं। कैलेंडर की ज़रूरत नहीं।",
-    "create.topic": "टॉपिक (खाली छोड़ें तो AI खुद चुन लेगा)", "create.topic.ph": "जैसे: बिज़नेस वेबसाइट पर बचने वाली 3 गलतियाँ",
+    "create.topic": "आप क्या बनाना चाहते हैं? ChatGPT की तरह बताएं (खाली छोड़ें तो AI खुद टॉपिक चुन लेगा)", "create.topic.ph": "जैसे: बिज़नेस वेबसाइट पर बचने वाली 3 गलतियों पर 30 सेकंड का वीडियो",
     "create.mode": "आप कैसे काम करना चाहते हैं?", "btn.create": "बनाएं",
     "mode.step": "स्टेप बाय स्टेप", "mode.step.d": "AI पहले स्क्रिप्ट लिखेगा। आप देखकर अगले स्टेप पर जाएंगे।",
     "mode.auto": "पूरा ऑटोमैटिक", "mode.auto.d": "सब कुछ एक साथ: स्क्रिप्ट, कैप्शन, हैशटैग और एडिटिंग प्लान। फिर बस डाउनलोड करें और पोस्ट करें।",
@@ -334,11 +342,13 @@ const I18N = {
     "No Gemini API key found. Add your key on the Settings page.": "Gemini API key नहीं मिली। Settings पेज पर key डालें।",
     "The API key is invalid or not working. Check it again in Settings.": "API key गलत है या काम नहीं कर रही। Settings में दोबारा जाँचें।",
     "Free limit reached. Please try again in a while (or tomorrow).": "फ़्री लिमिट पूरी हो गई। थोड़ी देर बाद (या कल) फिर कोशिश करें।",
+    "Image generation limit reached. Image models usually need billing enabled on your Gemini API key (Google AI Studio, your key, Set up billing).": "इमेज बनाने की लिमिट पूरी हो गई। इमेज मॉडल के लिए आमतौर पर API key पर billing चालू करनी पड़ती है (Google AI Studio, आपकी key, Set up billing)।",
+    "No image model is available for this key. Image generation usually needs billing enabled on the key.": "इस key पर कोई इमेज मॉडल उपलब्ध नहीं है। इमेज बनाने के लिए आमतौर पर key पर billing चालू होनी चाहिए।",
     "Google's AI is busy right now. Please try again in a minute.": "Google का AI अभी बिज़ी है। एक मिनट बाद फिर कोशिश करें।",
     "Could not connect to Gemini. Check your internet connection.": "Gemini से कनेक्ट नहीं हो पाया। इंटरनेट जाँचें।",
     "Could not understand the AI response. Please try again.": "AI का जवाब समझ नहीं आया। फिर कोशिश करें।",
     "The AI response had the wrong format. Please try again.": "AI का जवाब गलत फ़ॉर्मेट में था। फिर कोशिश करें।",
-    "btn.design": "इमेज डिज़ाइन करें", "btn.dlpng": "PNG डाउनलोड करें", "btn.dlall": "सभी स्लाइड डाउनलोड करें",
+    "btn.design": "मैनुअल डिज़ाइन (एडवांस्ड)", "btn.aiimage": "AI से इमेज बनाएं", "btn.makeimg": "इमेज बनाएं / दोबारा बनाएं", "step.image": "AI इमेज", "job.imaging": "इमेज बन रही है", "ws.note": "बदलाव चाहिए? (वैकल्पिक) जैसे: ज़्यादा चमकीला बनाओ", "btn.dlimg": "इमेज डाउनलोड करें", "key.pro": "ध्यान दें: Gemini ऐप का Pro सब्सक्रिप्शन इस API key से अलग होता है। फ़्री लिमिट हटाने और AI इमेज बनाने के लिए Google AI Studio में अपनी API key पर billing चालू करें।", "btn.test": "मेरी key टेस्ट करें", "test.text": "टेक्स्ट AI", "test.image": "इमेज AI", "test.none": "कोई मॉडल नहीं मिला", "btn.dlpng": "PNG डाउनलोड करें", "btn.dlall": "सभी स्लाइड डाउनलोड करें",
     "btn.saveDesign": "डिज़ाइन सेव करें", "btn.removeLogo": "लोगो हटाएं", "toast.design": "डिज़ाइन सेव हो गया",
     "d.title": "इमेज डिज़ाइन", "d.hint": "आपके ब्रांड के रंग और लोगो अपने आप लगते हैं। कुछ भी बदलें, फिर PNG डाउनलोड करें।",
     "d.head": "हेडलाइन", "d.sub": "सब-टेक्स्ट", "d.size": "साइज़", "d.template": "टेम्पलेट", "d.bg": "बैकग्राउंड", "d.font": "फ़ॉन्ट",
@@ -363,7 +373,10 @@ const EN_TEXT = {
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
-  "btn.design": "Design image", "btn.dlpng": "Download PNG", "btn.dlall": "Download all slides",
+  "btn.design": "Manual design (advanced)", "btn.aiimage": "Create image with AI", "btn.makeimg": "Create / regenerate image", "step.image": "AI image",
+  "job.imaging": "Creating image", "ws.note": "Want a change? (optional) e.g. make it brighter", "btn.dlimg": "Download image",
+  "test.text": "Text AI", "test.image": "Image AI", "test.none": "no model found",
+  "btn.dlpng": "Download PNG", "btn.dlall": "Download all slides",
   "btn.saveDesign": "Save design", "btn.removeLogo": "Remove logo", "toast.design": "Design saved", "d.slide": "Slide",
   "post.new": "New post", "post.edit": "Edit post", "post.addTip": "Add post",
   "busy.save": "Saving...", "busy.gen": "AI is writing...", "busy.plan": "Planning...", "busy.create": "Creating...",
@@ -396,7 +409,12 @@ function opt(v) {
   if (/ sec$/.test(v)) return uiLang === "hi" ? v.replace("sec", "सेकंड") : v;
   return uiLang === "hi" && I18N.hi["opt." + v] || v.charAt(0).toUpperCase() + v.slice(1).replace(/-/g, " ");
 }
-function trErr(msg) { return uiLang === "hi" && I18N.hi[msg] ? I18N.hi[msg] : msg; }
+function trErr(msg) {
+  if (uiLang !== "hi") return msg;
+  if (I18N.hi[msg]) return I18N.hi[msg];
+  for (const k in I18N.hi) if (k.length > 25 && msg.startsWith(k)) return I18N.hi[k] + msg.slice(k.length);
+  return msg;
+}
 function applyStatic() {
   document.documentElement.lang = uiLang;
   document.querySelectorAll("[data-i18n]").forEach((el) => {
@@ -488,13 +506,16 @@ function checked(name) { return [...document.querySelectorAll(`input[name=${name
 async function download(postId) { location.href = `/api/posts/${postId}/export`; }
 
 // ----- Create tab (quick, step by step or automatic) -----
-const STEP_DEFS = [
-  { id: "script", fields: ["hook", "script"] },
-  { id: "caption", fields: ["caption", "hashtags", "cta"] },
-  { id: "edit", fields: ["edit_plan", "image_idea"] },
-];
+const TEXT_STEPS = [{ id: "script", fields: ["hook", "script"] }, { id: "caption", fields: ["caption", "hashtags", "cta"] }];
+function stepsFor(format) {
+  return [...TEXT_STEPS, format === "video" ? { id: "edit", fields: ["edit_plan", "image_idea"] } : { id: "image", fields: [] }];
+}
+function finalFields(format) { return format === "video" ? ["hook", "script", "caption", "hashtags", "cta", "edit_plan", "image_idea"] : ["hook", "script", "caption", "hashtags", "cta"]; }
+function imagesHTML(post) {
+  if (!post.images || !post.images.length) return "";
+  return `<div class="imgs">${post.images.map((n) => `<div><img src="/files/${esc(n)}" alt=""><a class="ghost" href="/files/${esc(n)}?download=1" download>${esc(t("btn.dlimg"))}</a></div>`).join("")}</div>`;
+}
 const FIELD_KIND = { hook: "input", script: "textarea", caption: "textarea", hashtags: "input", cta: "input", edit_plan: "textarea", image_idea: "textarea" };
-const FINAL_FIELDS = ["hook", "script", "caption", "hashtags", "cta", "edit_plan", "image_idea"];
 let ws = null;
 
 function fieldsHTML(fields) {
@@ -512,9 +533,9 @@ async function saveFields(fields) {
 }
 
 function renderStepper() {
-  const idx = ws.state === "final" ? STEP_DEFS.length : ws.stepIdx;
-  const pills = STEP_DEFS.map((s, i) => `<span class="pill ${i < idx ? "done" : i === idx ? "current" : ""}">${i < idx ? "✓ " : ""}${i + 1}. ${esc(t("step." + s.id))}</span>`);
-  pills.push(`<span class="pill soon">${esc(t("step.voice"))}</span>`, `<span class="pill soon">${esc(t("step.video"))}</span>`);
+  const idx = ws.state === "final" ? ws.steps.length : ws.stepIdx;
+  const pills = ws.steps.map((s, i) => `<span class="pill ${i < idx ? "done" : i === idx ? "current" : ""}">${i < idx ? "✓ " : ""}${i + 1}. ${esc(t("step." + s.id))}</span>`);
+  if (ws.post.format === "video") pills.push(`<span class="pill soon">${esc(t("step.voice"))}</span>`, `<span class="pill soon">${esc(t("step.video"))}</span>`);
   pills.push(`<span class="pill ${ws.state === "final" ? "current" : "soon"}">${esc(t("step.done"))}</span>`);
   $("stepper").innerHTML = pills.join("");
 }
@@ -532,34 +553,36 @@ function renderWs() {
     status.innerHTML = `<i class="spin"></i> ${esc(t("ws.loading"))}`;
   } else if (ws.state === "error") {
     status.innerHTML = `<span class="err-text">${esc(t("gen.error"))} ${esc(trErr(ws.error))}</span>`;
-    btn("primary", t("btn.again"), () => runStep(ws.step));
+    btn("primary", t("btn.again"), () => runStep(ws.step, null, ws.note));
   } else if (ws.state === "step") {
-    const def = STEP_DEFS[ws.stepIdx];
-    status.textContent = t("step.of", { i: ws.stepIdx + 1, n: STEP_DEFS.length, name: t("step." + def.id) });
-    body.innerHTML = fieldsHTML(def.fields); fillFields(def.fields);
-    btn("ghost", t("btn.regen"), () => runStep(def.id));
-    const last = ws.stepIdx === STEP_DEFS.length - 1;
+    const def = ws.steps[ws.stepIdx];
+    status.textContent = t("step.of", { i: ws.stepIdx + 1, n: ws.steps.length, name: t("step." + def.id) });
+    if (def.id === "image") {
+      body.innerHTML = imagesHTML(ws.post) + `<input id="w_note" placeholder="${esc(t("ws.note"))}">`;
+    } else { body.innerHTML = fieldsHTML(def.fields); fillFields(def.fields); }
+    btn("ghost", def.id === "image" ? t("btn.makeimg") : t("btn.regen"), () => runStep(def.id, null, def.id === "image" ? $("w_note").value : ""));
+    const last = ws.stepIdx === ws.steps.length - 1;
     btn("primary", last ? t("btn.finish") : t("btn.next"), async (e) => {
       await busy(e.target, "busy.save", async () => {
         await saveFields(def.fields);
-        if (last) { ws.state = "final"; renderWs(); } else { ws.stepIdx++; await runStep(STEP_DEFS[ws.stepIdx].id); }
+        if (last) { ws.state = "final"; renderWs(); } else { ws.stepIdx++; await runStep(ws.steps[ws.stepIdx].id); }
       });
     });
   } else if (ws.state === "final") {
     status.textContent = t("ws.final");
-    body.innerHTML = fieldsHTML(FINAL_FIELDS) + `<p class="hint">${esc(t("ws.soon"))}</p>`; fillFields(FINAL_FIELDS);
-    btn("primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); download(ws.post.id); }));
-    btn("ghost", t("btn.design"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); openDesign(ws.post); }));
-    btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); toast(t("ws.saved")); }));
+    const FF = finalFields(ws.post.format);
+    body.innerHTML = imagesHTML(ws.post) + fieldsHTML(FF) + (ws.post.format === "video" ? `<p class="hint">${esc(t("ws.soon"))}</p>` : ""); fillFields(FF);
+    btn("primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); download(ws.post.id); }));
+    btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); toast(t("ws.saved")); }));
     btn("ghost", t("btn.openCal"), () => { cur = new Date(ws.post.date + "T00:00"); cur.setDate(1); showTab("calendar"); });
     btn("ghost", t("btn.another"), () => { ws = null; renderWs(); $("c_topic").value = ""; window.scrollTo(0, 0); });
   }
 }
 
-async function runStep(step, jobId) {
-  const me = ws; me.state = "loading"; me.step = step; renderWs();
+async function runStep(step, jobId, note) {
+  const me = ws; me.state = "loading"; me.step = step; me.note = note || ""; renderWs();
   try {
-    if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step })).job;
+    if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step, note: me.note })).job;
     await trackJob(jobId, me.post.topic || t("tab.create"));
     me.post = await api("GET", "/api/posts/" + me.post.id);
     me.state = step === "all" ? "final" : "step";
@@ -573,7 +596,7 @@ $("createBtn").onclick = (e) => busy(e.target, "busy.create", async () => {
     topic: $("c_topic").value, format: $("c_format").value, content_type: $("c_type").value,
     duration: $("c_duration").value, platforms: checked("cp"), mode,
   });
-  ws = { post: r.post, mode, stepIdx: 0, state: "loading", step: "script" };
+  ws = { post: r.post, mode, stepIdx: 0, state: "loading", step: "script", steps: stepsFor(r.post.format) };
   if (mode === "auto") runStep("all", r.job); else runStep("script");
 });
 
@@ -629,13 +652,13 @@ function renderList() {
       <div class="ptop"><b>${esc(p.date)} ${esc(p.time)}</b><span class="badge">${esc(opt(p.format))}</span><span class="badge">${esc(opt(p.content_type))}</span>
         <span class="badge">${esc(opt(p.status))}</span>${p.platforms.map((x) => `<span class="badge">${esc(opt(x))}</span>`).join("")}${state}</div>
       <div class="ptitle">${esc(p.hook || p.topic || "-")}</div>
+      ${imagesHTML(p)}
       ${p.caption ? `<pre>${esc(p.caption)}${p.hashtags ? "\n\n" + esc(p.hashtags) : ""}</pre>` : ""}
       ${det("f.script", p.script)}${det("f.edit_plan", p.edit_plan)}
-      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-design="${p.id}">${esc(t("btn.design"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
+      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
     </div>`;
   }).join("");
   box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => openPost(posts.find((p) => p.id === +b.dataset.edit))));
-  box.querySelectorAll("[data-design]").forEach((b) => (b.onclick = () => openDesign(posts.find((p) => p.id === +b.dataset.design))));
   box.querySelectorAll("[data-dl]").forEach((b) => (b.onclick = () => download(b.dataset.dl)));
 }
 
@@ -658,7 +681,8 @@ function openPost(p) {
   $("postTitle").textContent = p.id ? t("post.edit") : t("post.new");
   MODAL_FIELDS.forEach((k) => ($("f_" + k).value = post[k]));
   checks("f_platforms", "pf", post.platforms);
-  $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("postDesign").hidden = !p.id; $("genBtn").hidden = !p.id;
+  $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("postDesign").hidden = !p.id; $("imgBtn").hidden = !p.id;
+  $("f_images").innerHTML = imagesHTML(post); $("genBtn").hidden = !p.id;
   const err = $("genErr"); err.hidden = post.gen_status !== "error"; err.textContent = `${t("gen.error")} ${trErr(post.gen_error || "")}`;
   toggleScript(); $("postOverlay").classList.add("show");
 }
@@ -691,6 +715,14 @@ $("genBtn").onclick = (e) => busy(e.target, "busy.gen", async () => {
   if (editing && editing.id === id) openPost(p);
   toast(t("toast.generated"));
 });
+$("imgBtn").onclick = (e) => busy(e.target, "busy.gen", async () => {
+  const id = editing.id;
+  await api("PUT", "/api/posts/" + id, readForm());
+  const r = await api("POST", `/api/posts/${id}/generate`, { step: "image" });
+  try { await trackJob(r.job, editing.topic || t("post.edit")); } finally { await loadPosts(); }
+  const p = await api("GET", "/api/posts/" + id);
+  if (editing && editing.id === id) openPost(p);
+});
 $("postDownload").onclick = (e) => busy(e.target, "busy.save", async () => {
   await api("PUT", "/api/posts/" + editing.id, readForm()); download(editing.id);
 });
@@ -721,6 +753,11 @@ $("saveBrand").onclick = (e) => busy(e.target, "busy.save", async () => {
 $("saveKey").onclick = (e) => busy(e.target, "busy.save", async () => {
   const r = await api("POST", "/api/settings/key", { key: $("s_key").value });
   $("s_key").value = ""; cfg.has_key = r.has_key; renderKeyState(); toast(t("toast.key"));
+});
+$("testKey").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const r = await api("GET", "/api/diagnose");
+  const list = (a) => (a.length ? a.join(", ") : t("test.none"));
+  $("testOut").textContent = `${t("test.text")}: ${r.text_ok ? "OK" : trErr(r.text_error)}\n  ${list(r.text_models)}\n${t("test.image")}: ${list(r.image_models)}`;
 });
 function renderKeyState() {
   $("keyState").textContent = cfg.has_key ? t("key.saved") : t("key.none");

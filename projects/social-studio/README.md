@@ -8,6 +8,8 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
   - **Step by step:** pehle script, dekho/edit karo, phir caption + hashtags, phir editing plan. Har step ke baad aage jao.
   - **Fully automatic:** script, caption, hashtags, editing plan sab ek saath. Phir "Download content pack".
 - **Calendar tab (optional):** jise aage ka plan chahiye. "Plan the month with AI" poore mahine ke posts banata hai **aur har post ka poora content bhi** (script, caption, editing plan). Calendar ya List view me sab dikhta hai, kisi par click karke edit karo.
+- **AI image (ChatGPT jaisa):** image/carousel/story ka content banate hi AI khud poori image bana deta hai (text ke saath). Carousel me har slide ki alag image. Bas download karo. Badlav chahiye to likh do ("zyada bright karo") aur dobara banwao. Iske liye Gemini API key par billing chahiye hoti hai (Settings me "Test my key" se check karo).
+- **Manual design (advanced):** post edit window me, agar khud templates se banana ho.
 - **Image Designer (Phase 2):** "Design image" button se post, carousel slides, story ya YouTube thumbnail banao. Brand colors + logo + font apne aap lagte hain; 4 templates, apni photo background me, aur PNG download (carousel ki saari slides ek saath). Brand Profile me colors, font aur logo ek baar set karo.
 - Kaam **background me** chalta hai: AI likh raha ho tab tab badal sakte ho. Google busy ho to tool khud dobara try karta hai.
 - Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi.
