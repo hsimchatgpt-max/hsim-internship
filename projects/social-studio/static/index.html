@@ -214,6 +214,13 @@
       <div class="actions"><button class="primary" id="saveKey" data-i18n="btn.saveKey">Save key</button><button class="ghost" id="testKey" data-i18n="btn.test">Test my key</button></div>
       <pre id="testOut" class="hint" style="white-space:pre-wrap"></pre>
     </div>
+    <div class="card" style="max-width:640px;margin-top:16px">
+      <h2 style="margin-top:0" data-i18n="tools.title">Free video tools</h2>
+      <p class="hint" data-i18n="tools.hint">To make videos on your own computer for free you need FFmpeg (the video editor) and a voice. One click installs them.</p>
+      <div id="toolsBox"></div>
+      <label data-i18n="tools.music">Add your own background music (mp3 / wav)</label><input type="file" id="musicFile" accept=".mp3,.wav,.m4a,.ogg">
+      <p class="hint" data-i18n="tools.musichint">Use only royalty-free music (for example from Pixabay Music), otherwise Instagram/YouTube can block your video.</p>
+    </div>
   </section>
 </main>
 
@@ -254,12 +261,29 @@
   <label data-i18n="f.image">Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
   <div class="actions">
     <button class="primary" id="postSave" data-i18n="btn.save">Save</button>
+    <button class="ghost" id="postVideo" data-i18n="btn.makevideo">Make video (free)</button>
     <button class="ghost" id="postDesign" data-i18n="btn.design">Manual design (advanced)</button>
     <button class="ghost" id="postDownload" data-i18n="btn.download">Download content pack</button>
     <button class="ghost" data-close data-i18n="btn.close">Close</button>
     <div class="spacer"></div>
     <button class="ghost danger" id="postDelete" data-i18n="btn.delete">Delete</button>
   </div>
+</div></div>
+
+<!-- Video maker -->
+<div class="overlay" id="videoOverlay"><div class="modal">
+  <h3 data-i18n="v.title">Make video (free)</h3>
+  <p class="hint" data-i18n="v.hint">Your script becomes a video: voice-over, scenes, transitions, background music and sound effects. Free, made on your own computer.</p>
+  <div class="banner" id="v_setup" hidden><span></span> <button class="ghost" id="v_install" data-i18n="tools.install">Install</button></div>
+  <div class="row">
+    <div><label data-i18n="v.voice">Voice</label><select id="v_voice"></select></div>
+    <div><label data-i18n="v.music">Background music</label><select id="v_music"></select></div>
+    <div><label data-i18n="v.quality">Quality</label><select id="v_quality"></select></div>
+  </div>
+  <p class="hint" id="v_scenes"></p>
+  <div class="actions"><button class="primary" id="v_make" data-i18n="v.make">Make video</button><button class="ghost" data-close data-i18n="btn.close">Close</button></div>
+  <p class="hint" id="v_status"></p>
+  <div id="v_result"></div>
 </div></div>
 
 <!-- Image designer -->
@@ -330,7 +354,7 @@ const I18N = {
     "toast.key": "Key सेव हो गई", "toast.plan": "प्लान तैयार: {n} पोस्ट",
     "confirm.delete": "यह पोस्ट डिलीट कर दूँ?", "err.generic": "कुछ गलत हो गया",
     "step.script": "स्क्रिप्ट", "step.caption": "कैप्शन और हैशटैग", "step.edit": "एडिटिंग प्लान",
-    "step.voice": "वॉइस और अवतार (जल्द)", "step.video": "ऑटो-एडिट वीडियो (जल्द)", "step.done": "डाउनलोड",
+    "step.voice": "अवतार (जल्द)", "step.video": "ऑटो-एडिट वीडियो (जल्द)", "step.done": "डाउनलोड",
     "step.of": "स्टेप {i} / {n}: {name}", "btn.regen": "दोबारा लिखवाएं", "btn.next": "सेव करें और अगला स्टेप", "btn.finish": "सेव करें और पूरा करें",
     "btn.again": "दोबारा कोशिश करें", "btn.another": "एक और बनाएं", "btn.openCal": "कैलेंडर में खोलें",
     "ws.loading": "AI लिख रहा है... यह कुछ सेकंड से 1-2 मिनट ले सकता है। आप दूसरे टैब पर जा सकते हैं।",
@@ -356,6 +380,17 @@ const I18N = {
     "d.addSlide": "+ स्लाइड जोड़ें", "d.removeSlide": "स्लाइड हटाएं", "d.slide": "स्लाइड",
     "brand.colors": "ब्रांड के रंग (इमेज डिज़ाइन में लगेंगे)", "brand.primary": "मुख्य", "brand.secondary": "एक्सेंट", "brand.textcolor": "टेक्स्ट",
     "brand.font": "फ़ॉन्ट स्टाइल", "brand.logo": "लोगो (PNG या JPG)",
+    "btn.makevideo": "वीडियो बनाएं (फ़्री)", "btn.dlvideo": "वीडियो डाउनलोड करें",
+    "v.title": "वीडियो बनाएं (फ़्री)", "v.hint": "आपकी स्क्रिप्ट वीडियो बन जाती है: वॉइस-ओवर, सीन, ट्रांज़िशन, बैकग्राउंड म्यूज़िक और साउंड इफ़ेक्ट। फ़्री, आपके अपने कंप्यूटर पर बनता है।",
+    "v.voice": "आवाज़", "v.music": "बैकग्राउंड म्यूज़िक", "v.quality": "क्वालिटी", "v.make": "वीडियो बनाएं", "v.scenes": "{n} सीन बनेंगे",
+    "v.working": "वीडियो बन रहा है... कुछ मिनट लग सकते हैं। आप दूसरे टैब पर जा सकते हैं।", "v.done": "वीडियो तैयार है!",
+    "v.needff": "वीडियो बनाने के लिए FFmpeg चाहिए (फ़्री वीडियो एडिटर)।", "v.novoice": "कोई आवाज़ नहीं मिली। Settings में बेहतर आवाज़ें इंस्टॉल करें।",
+    "music.none": "कोई म्यूज़िक नहीं", "music.ambient": "हल्का बैकग्राउंड म्यूज़िक (बिल्ट-इन)",
+    "tools.title": "फ़्री वीडियो टूल्स", "tools.hint": "अपने कंप्यूटर पर फ़्री वीडियो बनाने के लिए FFmpeg (वीडियो एडिटर) और एक आवाज़ चाहिए। एक क्लिक में इंस्टॉल हो जाते हैं।",
+    "tools.install": "इंस्टॉल करें", "tools.ffmpeg": "वीडियो एडिटर", "tools.edge": "बेहतर आवाज़ें (Edge-TTS, हिंदी/अंग्रेज़ी)",
+    "tools.voices": "{n} आवाज़ें उपलब्ध", "tools.musicn": "आपके म्यूज़िक फ़ाइल: {n}",
+    "tools.music": "अपना बैकग्राउंड म्यूज़िक जोड़ें (mp3 / wav)", "tools.musichint": "सिर्फ़ रॉयल्टी-फ़्री म्यूज़िक इस्तेमाल करें (जैसे Pixabay Music), वरना Instagram/YouTube वीडियो ब्लॉक कर सकते हैं।",
+    "job.voice": "आवाज़ बन रही है", "job.editing": "वीडियो एडिट हो रहा है", "job.downloading": "डाउनलोड हो रहा है", "job.installing": "इंस्टॉल हो रहा है",
     "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
     "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
     "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
@@ -373,6 +408,14 @@ const EN_TEXT = {
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
+  "btn.makevideo": "Make video (free)", "btn.dlvideo": "Download video",
+  "v.title": "Make video (free)", "v.scenes": "{n} scenes will be made",
+  "v.working": "Making the video... this can take a few minutes. You can switch to another tab.", "v.done": "Video is ready!",
+  "v.needff": "FFmpeg (the free video editor) is needed to make videos.", "v.novoice": "No voice found. Install the better voices in Settings.",
+  "music.none": "No music", "music.ambient": "Soft background music (built-in)",
+  "tools.install": "Install", "tools.ffmpeg": "the video editor", "tools.edge": "Better voices (Edge-TTS, Hindi/English)",
+  "tools.voices": "{n} voices available", "tools.musicn": "Your music files: {n}",
+  "job.voice": "Creating voice", "job.editing": "Editing video", "job.downloading": "Downloading", "job.installing": "Installing",
   "btn.design": "Manual design (advanced)", "btn.aiimage": "Create image with AI", "btn.makeimg": "Create / regenerate image", "step.image": "AI image",
   "job.imaging": "Creating image", "ws.note": "Want a change? (optional) e.g. make it brighter", "btn.dlimg": "Download image",
   "test.text": "Text AI", "test.image": "Image AI", "test.none": "no model found",
@@ -385,7 +428,7 @@ const EN_TEXT = {
   "confirm.delete": "Delete this post?", "err.generic": "Something went wrong",
   "key.saved": "Key is saved.", "key.none": "No key yet.",
   "step.script": "Script", "step.caption": "Caption & hashtags", "step.edit": "Editing plan",
-  "step.voice": "Voice & avatar (soon)", "step.video": "Auto-edit video (soon)", "step.done": "Download",
+  "step.voice": "Avatar (soon)", "step.video": "Auto-edit video (soon)", "step.done": "Download",
   "step.of": "Step {i} of {n}: {name}", "btn.regen": "Regenerate", "btn.next": "Save & next step", "btn.finish": "Save & finish",
   "btn.again": "Try again", "btn.another": "Create another", "btn.openCal": "Open in calendar",
   "btn.gen": "Write everything with AI", "btn.download": "Download content pack",
@@ -457,6 +500,7 @@ function showTab(name) {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
   ["create", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
   if (name === "calendar") loadPosts();
+  if (name === "settings") loadTools();
 }
 document.querySelectorAll("nav button").forEach((b) => (b.onclick = () => showTab(b.dataset.tab)));
 
@@ -535,7 +579,7 @@ async function saveFields(fields) {
 function renderStepper() {
   const idx = ws.state === "final" ? ws.steps.length : ws.stepIdx;
   const pills = ws.steps.map((s, i) => `<span class="pill ${i < idx ? "done" : i === idx ? "current" : ""}">${i < idx ? "✓ " : ""}${i + 1}. ${esc(t("step." + s.id))}</span>`);
-  if (ws.post.format === "video") pills.push(`<span class="pill soon">${esc(t("step.voice"))}</span>`, `<span class="pill soon">${esc(t("step.video"))}</span>`);
+  if (ws.post.format === "video") pills.push(`<span class="pill soon">${esc(t("step.voice"))}</span>`);
   pills.push(`<span class="pill ${ws.state === "final" ? "current" : "soon"}">${esc(t("step.done"))}</span>`);
   $("stepper").innerHTML = pills.join("");
 }
@@ -571,8 +615,9 @@ function renderWs() {
   } else if (ws.state === "final") {
     status.textContent = t("ws.final");
     const FF = finalFields(ws.post.format);
-    body.innerHTML = imagesHTML(ws.post) + fieldsHTML(FF) + (ws.post.format === "video" ? `<p class="hint">${esc(t("ws.soon"))}</p>` : ""); fillFields(FF);
-    btn("primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); download(ws.post.id); }));
+    body.innerHTML = videoHTML(ws.post) + imagesHTML(ws.post) + fieldsHTML(FF) + ""; fillFields(FF);
+    if (ws.post.format === "video") btn("primary", t("btn.makevideo"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); await openVideo(ws.post); }));
+    btn(ws.post.format === "video" ? "ghost" : "primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); download(ws.post.id); }));
     btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); toast(t("ws.saved")); }));
     btn("ghost", t("btn.openCal"), () => { cur = new Date(ws.post.date + "T00:00"); cur.setDate(1); showTab("calendar"); });
     btn("ghost", t("btn.another"), () => { ws = null; renderWs(); $("c_topic").value = ""; window.scrollTo(0, 0); });
@@ -652,13 +697,14 @@ function renderList() {
       <div class="ptop"><b>${esc(p.date)} ${esc(p.time)}</b><span class="badge">${esc(opt(p.format))}</span><span class="badge">${esc(opt(p.content_type))}</span>
         <span class="badge">${esc(opt(p.status))}</span>${p.platforms.map((x) => `<span class="badge">${esc(opt(x))}</span>`).join("")}${state}</div>
       <div class="ptitle">${esc(p.hook || p.topic || "-")}</div>
-      ${imagesHTML(p)}
+      ${videoHTML(p)}${imagesHTML(p)}
       ${p.caption ? `<pre>${esc(p.caption)}${p.hashtags ? "\n\n" + esc(p.hashtags) : ""}</pre>` : ""}
       ${det("f.script", p.script)}${det("f.edit_plan", p.edit_plan)}
-      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
+      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button>${["video", "story"].includes(p.format) ? `<button class="ghost" data-video="${p.id}">${esc(t("btn.makevideo"))}</button>` : ""}<button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
     </div>`;
   }).join("");
   box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => openPost(posts.find((p) => p.id === +b.dataset.edit))));
+  box.querySelectorAll("[data-video]").forEach((b) => (b.onclick = () => openVideo(posts.find((p) => p.id === +b.dataset.video))));
   box.querySelectorAll("[data-dl]").forEach((b) => (b.onclick = () => download(b.dataset.dl)));
 }
 
@@ -682,7 +728,8 @@ function openPost(p) {
   MODAL_FIELDS.forEach((k) => ($("f_" + k).value = post[k]));
   checks("f_platforms", "pf", post.platforms);
   $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("postDesign").hidden = !p.id; $("imgBtn").hidden = !p.id;
-  $("f_images").innerHTML = imagesHTML(post); $("genBtn").hidden = !p.id;
+  $("postVideo").hidden = !p.id || !["video", "story"].includes(post.format);
+  $("f_images").innerHTML = videoHTML(post) + imagesHTML(post); $("genBtn").hidden = !p.id;
   const err = $("genErr"); err.hidden = post.gen_status !== "error"; err.textContent = `${t("gen.error")} ${trErr(post.gen_error || "")}`;
   toggleScript(); $("postOverlay").classList.add("show");
 }
@@ -966,6 +1013,116 @@ $("dSave").onclick = (e) => busy(e.target, "busy.save", async () => {
   D.post.design = JSON.stringify({ ...D.c, slides: D.slides }); toast(t("toast.design")); loadPosts();
 });
 $("postDesign").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openDesign(await api("GET", "/api/posts/" + editing.id)); };
+
+// ----- free video maker -----
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16), f = (v) => Math.max(0, Math.min(255, Math.round(v + amt)));
+  return `rgb(${f(n >> 16)},${f((n >> 8) & 255)},${f(n & 255)})`;
+}
+function parseScenes(post) {
+  const raw = post.script || "";
+  let parts = raw.split(/^\s*[*#\s]*scene\s*\d+[*\s]*[:.\-–]?/gim).map((x) => x.trim()).filter(Boolean);
+  if (parts.length < 2) {  // "Scene N" nahi mila: 2-2 vaakya ka ek scene
+    const sentences = raw.replace(/\[[^\]]*\]/g, " ").split(/(?<=[.!?।])\s+/).map((x) => x.trim()).filter(Boolean);
+    parts = []; for (let i = 0; i < sentences.length; i += 2) parts.push(sentences.slice(i, i + 2).join(" "));
+  }
+  const scenes = parts.map((part) => {
+    const onscreen = [...part.matchAll(/\[(?:on[- ]?screen text|text|caption|visual)?\s*:?\s*([^\]]+)\]/gi)].map((m) => m[1].trim()).filter(Boolean);
+    const spoken = part.replace(/\[[^\]]*\]/g, " ").replace(/\([^)]*\)/g, " ")
+      .replace(/^\s*(?:voice[- ]?over|narrator|avatar|speaker|vo)\s*:/gim, "").replace(/[*_#"“”]/g, "").replace(/\s+/g, " ").trim();
+    return { spoken, onscreen: onscreen[0] || "" };
+  }).filter((s) => s.spoken).slice(0, 14);
+  if (!scenes.length) {
+    [post.hook, post.cta].filter(Boolean).forEach((x) => scenes.push({ spoken: x, onscreen: "" }));
+  }
+  return scenes;
+}
+function drawScene(canvas, sc, i, n, height) {
+  const h = height, w = Math.round(height * 9 / 16); canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d"), b = cfg.brand, fam = FONT_STACKS.sans;
+  const pairs = [[b.primary, b.secondary], [shade(b.primary, -50), b.primary], [b.secondary, shade(b.primary, -30)], [shade(b.secondary, -60), shade(b.primary, 20)]];
+  const [c1, c2] = pairs[i % pairs.length], g = ctx.createLinearGradient(0, 0, w * (i % 2 ? 1 : 0.4), h);
+  g.addColorStop(0, c1); g.addColorStop(1, c2); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "rgba(255,255,255,0.07)"; ctx.beginPath(); ctx.arc(w * (i % 2 ? 0.85 : 0.1), h * 0.18, w * 0.42, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(w * (i % 2 ? 0.1 : 0.9), h * 0.85, w * 0.35, 0, 7); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,0.35)"; ctx.fillRect(w * 0.08, h * 0.04, w * 0.84, h * 0.006);
+  ctx.fillStyle = "#fff"; ctx.fillRect(w * 0.08, h * 0.04, w * 0.84 * (i + 1) / n, h * 0.006);
+  const m = w * 0.09, bw = w - 2 * m;
+  const sentence = (sc.spoken.match(/^.*?[.!?।](?:\s|$)/) || [sc.spoken])[0].trim();
+  const head = sc.onscreen || (sc.spoken.length > 120 ? sentence : sc.spoken);
+  ctx.fillStyle = "#fff";
+  const f = fitText(ctx, head, fam, 800, bw, h * (sc.onscreen ? 0.38 : 0.55), w * 0.105, w * 0.045);
+  ctx.font = `800 ${f.px}px ${fam}`;
+  const top = sc.onscreen ? h * 0.22 : (h - f.lines.length * f.lh) / 2;
+  ctx.shadowColor = "rgba(0,0,0,0.25)"; ctx.shadowBlur = w * 0.02; drawLines(ctx, f, w / 2, top, "center"); ctx.shadowBlur = 0;
+  if (sc.onscreen) {  // neeche subtitle jaisa: jo bola ja raha hai
+    const cap = fitText(ctx, sc.spoken.length > 170 ? sc.spoken.slice(0, 167) + "..." : sc.spoken, fam, 500, bw - w * 0.06, h * 0.2, w * 0.048, w * 0.028);
+    const boxH = cap.lines.length * cap.lh + w * 0.06, boxY = h * 0.7;
+    ctx.fillStyle = "rgba(0,0,0,0.35)"; ctx.beginPath(); ctx.roundRect(m, boxY, bw, boxH, w * 0.03); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = `500 ${cap.px}px ${fam}`; drawLines(ctx, cap, w / 2, boxY + w * 0.03, "center");
+  }
+}
+const VIDEO_QUALITY = { standard: ["Standard 720p (faster)", "स्टैंडर्ड 720p (तेज़)"], high: ["High 1080p (slower)", "हाई 1080p (धीमा)"] };
+let V = null;
+function videoHTML(post) {
+  if (!post.video) return "";
+  return `<div><video controls preload="metadata" style="max-width:260px;width:100%;border-radius:10px" src="/videos/${esc(post.video)}"></video>
+    <div><a class="ghost" href="/videos/${esc(post.video)}?download=1" download>${esc(t("btn.dlvideo"))}</a></div></div>`;
+}
+async function openVideo(post) {
+  V = { post, tools: await api("GET", "/api/tools"), scenes: parseScenes(post) };
+  const tl = V.tools;
+  $("v_voice").innerHTML = tl.voices.map((v) => `<option value="${esc(v.id)}">${esc(v.label)}</option>`).join("");
+  if (tl.default_voice) $("v_voice").value = tl.default_voice;
+  $("v_music").innerHTML = [["none", t("music.none")], ["ambient", t("music.ambient")], ...tl.music.map((m) => [m, m])]
+    .map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
+  $("v_music").value = "ambient";
+  $("v_quality").innerHTML = Object.keys(VIDEO_QUALITY).map((k) => `<option value="${k}">${esc(VIDEO_QUALITY[k][uiLang === "hi" ? 1 : 0])}</option>`).join("");
+  $("v_scenes").textContent = t("v.scenes", { n: V.scenes.length });
+  const need = !tl.ffmpeg ? t("v.needff") : !tl.voices.length ? t("v.novoice") : "";
+  $("v_setup").hidden = !need; $("v_setup").firstChild.textContent = need; $("v_install").hidden = tl.ffmpeg;
+  $("v_make").disabled = !!need; $("v_status").innerHTML = "";
+  $("v_result").innerHTML = videoHTML(post);
+  $("videoOverlay").classList.add("show");
+}
+$("v_install").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const r = await api("POST", "/api/tools/ffmpeg");
+  await trackJob(r.job, "FFmpeg"); await openVideo(V.post);
+});
+$("v_make").onclick = (e) => busy(e.target, "busy.gen", async () => {
+  const quality = $("v_quality").value, height = quality === "high" ? 1920 : 1280, c = document.createElement("canvas");
+  const scenes = V.scenes.map((sc, i) => { drawScene(c, sc, i, V.scenes.length, height); return { image: c.toDataURL("image/png"), text: sc.spoken }; });
+  $("v_status").innerHTML = `<i class="spin"></i> ${esc(t("v.working"))}`;
+  try {
+    const r = await api("POST", `/api/posts/${V.post.id}/video`, { scenes, voice: $("v_voice").value, music: $("v_music").value, quality });
+    await trackJob(r.job, t("v.title"));
+    V.post = await api("GET", "/api/posts/" + V.post.id); $("v_result").innerHTML = videoHTML(V.post);
+    $("v_status").textContent = t("v.done"); loadPosts(); if (ws && ws.post.id === V.post.id) ws.post = V.post;
+  } catch (err) { $("v_status").innerHTML = `<span class="err-text">${esc(trErr(err.message))}</span>`; }
+});
+$("postVideo").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openVideo(await api("GET", "/api/posts/" + editing.id)); };
+
+// ----- settings: free tools setup -----
+async function loadTools() {
+  const tl = await api("GET", "/api/tools");
+  const row = (ok, label, btn) => `<div style="display:flex;gap:10px;align-items:center;margin:8px 0"><span>${ok ? "✅" : "⬜"}</span><span>${esc(label)}</span>${btn || ""}</div>`;
+  $("toolsBox").innerHTML =
+    row(tl.ffmpeg, "FFmpeg (" + t("tools.ffmpeg") + ")", tl.ffmpeg ? "" : `<button class="ghost" id="t_ff">${esc(t("tools.install"))}</button>`) +
+    row(tl.edge, t("tools.edge"), tl.edge ? "" : `<button class="ghost" id="t_edge">${esc(t("tools.install"))}</button>`) +
+    row(tl.voices.length > 0, t("tools.voices", { n: tl.voices.length })) +
+    row(tl.music.length > 0, t("tools.musicn", { n: tl.music.length }));
+  const wire = (id, url, label) => $(id) && ($(id).onclick = (e) => busy(e.target, "busy.save", async () => {
+    try { const r = await api("POST", url); await trackJob(r.job, label); } catch (err) { toast(err.message, true); }
+    loadTools();
+  }));
+  wire("t_ff", "/api/tools/ffmpeg", "FFmpeg"); wire("t_edge", "/api/tools/voices", t("tools.edge"));
+}
+$("musicFile").onchange = async () => {
+  const f = $("musicFile").files[0]; if (!f) return;
+  const data = await new Promise((res) => { const r = new FileReader(); r.onload = () => res(r.result.split(",")[1]); r.readAsDataURL(f); });
+  try { await api("POST", "/api/music", { name: f.name, data }); toast(t("toast.saved")); loadTools(); } catch (e) { toast(e.message, true); }
+  $("musicFile").value = "";
+};
 
 // ----- language -----
 function buildOptions() {

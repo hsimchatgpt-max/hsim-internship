@@ -7,7 +7,9 @@ import base64
 import calendar
 import json
 import os
+import platform
 import re
+import shutil
 import sqlite3
 import sys
 import threading
@@ -21,6 +23,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+import video as vid
 
 BASE = Path(__file__).parent
 DATA = BASE / "data"
@@ -59,6 +63,7 @@ NEW_COLUMNS = [  # purane data wale users ke liye migration
     ("gen_error", "TEXT NOT NULL DEFAULT ''"),
     ("design", "TEXT NOT NULL DEFAULT ''"),  # manual image designer ki settings (JSON)
     ("images", "TEXT NOT NULL DEFAULT '[]'"),  # AI se bani image files ke naam (JSON list)
+    ("video", "TEXT NOT NULL DEFAULT ''"),  # bani hui video file ka naam
 ]
 
 
@@ -385,6 +390,9 @@ def call_gemini(prompt):
 
 
 IMAGES_DIR = DATA / "images"
+VIDEOS_DIR = DATA / "videos"
+MUSIC_DIR = DATA / "music"
+MUSIC_EXT = (".mp3", ".wav", ".m4a", ".ogg")
 IMAGE_LIMIT_ERROR = ("Image generation limit reached. Image models usually need billing enabled on your Gemini API key "
                      "(Google AI Studio, your key, Set up billing).")
 NO_IMAGE_MODEL = "No image model is available for this key. Image generation usually needs billing enabled on the key."
@@ -474,7 +482,9 @@ def mock_ai(prompt):
     """Test ke liye: asli AI ke bina nakli jawab."""
     time.sleep(float(os.environ.get("MOCK_DELAY", "0")))
     plan = {"topic": "Mock topic"}
-    script = {"hook": "Mock hook", "script": "Scene 1: ..."}
+    script = {"hook": "Mock hook", "script": "Scene 1: Stop losing customers. [on-screen text: 3 website mistakes] Most business websites lose visitors every day.\n"
+                                              "Scene 2: Mistake one is no mobile version. Most people browse on their phones.\n"
+                                              "Scene 3: Fix these today and watch your enquiries grow. Follow us for more."}
     caption = {"caption": "Mock caption", "hashtags": ["#mock", "#test"], "cta": "Follow us!"}
     edit = {"edit_plan": {"duration_seconds": 45, "aspect_ratio": "9:16", "broll": ["city", "laptop"],
                           "music_mood": "upbeat", "sound_effects": ["whoosh"], "transitions": "quick cuts",
@@ -675,6 +685,85 @@ def ai_generate_images(post_id, note="", on_progress=None):
     return names
 
 
+# ---------- free video tools ----------
+
+def tools_status():
+    mock = os.environ.get("SOCIAL_STUDIO_MOCK_TTS") == "1"
+    voices = [{"id": "edge:mock", "label": "Mock voice", "lang": "en"}] if mock else vid.list_voices()
+    music = sorted(f.name for f in MUSIC_DIR.glob("*") if f.suffix.lower() in MUSIC_EXT) if MUSIC_DIR.exists() else []
+    return {"ffmpeg": bool(vid.find_ffmpeg(DATA)), "edge": vid.edge_available(), "voices": voices,
+            "default_voice": vid.default_voice(get_brand()["language"], voices), "music": music, "system": platform.system()}
+
+
+def save_music(name, b64):
+    clean = re.sub(r"[^\w.\- ]", "_", Path(name).name)
+    if Path(clean).suffix.lower() not in MUSIC_EXT:
+        raise ValueError("music must be mp3, wav, m4a or ogg")
+    MUSIC_DIR.mkdir(parents=True, exist_ok=True)
+    (MUSIC_DIR / clean).write_bytes(base64.b64decode(b64))
+    return clean
+
+
+def video_job(post_id, scenes, voice, music, quality):
+    def work(job_id):
+        found = vid.find_ffmpeg(DATA)
+        if not found:
+            raise AIError("FFmpeg is not installed. Open Settings and click 'Install FFmpeg'.")
+        ffmpeg, ffprobe = found
+        music_arg = None
+        if music == "ambient":
+            music_arg = "ambient"
+        elif music and music != "none":
+            path = MUSIC_DIR / Path(music).name
+            music_arg = str(path) if path.is_file() else None
+        folder = DATA / "tmp" / job_id
+        folder.mkdir(parents=True, exist_ok=True)
+        try:
+            job_update(job_id, post_ids=[post_id], stage="voice", total=len(scenes), done=0)
+            prepared = []
+            for i, sc in enumerate(scenes):
+                image, audio = folder / f"s{i}.png", folder / f"a{i}.mp3"
+                image.write_bytes(base64.b64decode(sc["image"].split(",", 1)[1]))
+                vid.synth(sc["text"], voice, audio, ffmpeg)
+                prepared.append({"image": str(image), "audio": str(audio), "slot": vid.duration(ffprobe, audio) + vid.PAD_SECS})
+                job_incr(job_id, "done")
+            job_update(job_id, stage="editing", done=0, total=100)
+            whoosh = folder / "whoosh.wav"
+            vid.make_whoosh(ffmpeg, whoosh)
+            VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
+            name = f"post{post_id}-{int(time.time())}.mp4"
+            vid.compose(ffmpeg, prepared, VIDEOS_DIR / name, music_arg, 1920 if quality == "high" else 1280, str(whoosh),
+                        lambda d, n: job_update(job_id, done=d, total=n))
+            with DB_LOCK, db() as con:
+                con.execute("UPDATE posts SET video = ? WHERE id = ?", (name, post_id))
+            job_update(job_id, done=100)
+        except vid.VideoError as e:
+            raise AIError(str(e))
+        finally:
+            shutil.rmtree(folder, ignore_errors=True)
+    return work
+
+
+def ffmpeg_job():
+    def work(job_id):
+        job_update(job_id, stage="downloading")
+        try:
+            vid.download_ffmpeg(DATA, lambda d, n: job_update(job_id, done=int(d * 100 / n), total=100))
+        except vid.VideoError as e:
+            raise AIError(str(e))
+    return work
+
+
+def voices_job():
+    def work(job_id):
+        job_update(job_id, stage="installing")
+        try:
+            vid.install_edge()
+        except vid.VideoError as e:
+            raise AIError(str(e))
+    return work
+
+
 # ---------- background jobs ----------
 # Lamba kaam (AI likhna) background thread me hota hai, screen band/switch karne par bhi chalta rehta hai.
 
@@ -799,9 +888,9 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def read_json(self):
+    def read_json(self, limit=1_000_000):
         length = int(self.headers.get("Content-Length") or 0)
-        if length > 1_000_000:
+        if length > limit:
             raise ValueError("body too large")
         return json.loads(self.rfile.read(length) or b"{}")
 
@@ -827,6 +916,15 @@ class Handler(BaseHTTPRequestHandler):
                 except AIError as e:
                     out["text_ok"], out["text_error"] = False, str(e)
                 return self.send_json(out)
+            if method == "GET" and path == "/api/tools":
+                return self.send_json(tools_status())
+            if method == "POST" and path == "/api/tools/ffmpeg":
+                return self.send_json({"job": start_job("tools", "FFmpeg", lambda job_id: ffmpeg_job()(job_id))})
+            if method == "POST" and path == "/api/tools/voices":
+                return self.send_json({"job": start_job("tools", "Voices", lambda job_id: voices_job()(job_id))})
+            if method == "POST" and path == "/api/music":
+                body = self.read_json(limit=30_000_000)
+                return self.send_json({"name": save_music(str(body.get("name", "")), str(body.get("data", "")))})
             if method == "PUT" and path == "/api/brand":
                 return self.send_json(save_brand(self.read_json()))
             if method == "POST" and path == "/api/settings/key":
@@ -879,7 +977,7 @@ class Handler(BaseHTTPRequestHandler):
                     job = dict(JOBS[m.group(1)]) if m.group(1) in JOBS else None
                 return self.send_json(job) if job else self.send_json({"error": "job not found"}, 404)
 
-            m = re.fullmatch(r"/api/posts/(\d+)(/generate|/export)?", path)
+            m = re.fullmatch(r"/api/posts/(\d+)(/generate|/export|/video)?", path)
             if m:
                 post_id, action = int(m.group(1)), m.group(2)
                 if action == "/generate" and method == "POST":
@@ -892,6 +990,23 @@ class Handler(BaseHTTPRequestHandler):
                         return self.send_json({"error": "invalid step"}, 400)
                     note = str(body.get("note", ""))[:500]
                     job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step, note))
+                    return self.send_json({"job": job})
+                if action == "/video" and method == "POST":
+                    if not get_post(post_id):
+                        return self.send_json({"error": "post not found"}, 404)
+                    body = self.read_json(limit=60_000_000)
+                    scenes = body.get("scenes")
+                    if not isinstance(scenes, list) or not 1 <= len(scenes) <= 30:
+                        return self.send_json({"error": "scenes must be a list of 1 to 30 items"}, 400)
+                    clean = []
+                    for sc in scenes:
+                        text, image = str(sc.get("text", "")).strip()[:1200], str(sc.get("image", ""))
+                        if not text or not image.startswith("data:image/png;base64,"):
+                            return self.send_json({"error": "each scene needs text and a PNG image"}, 400)
+                        clean.append({"text": text, "image": image})
+                    voice = str(body.get("voice", ""))[:80]
+                    quality = "high" if body.get("quality") == "high" else "standard"
+                    job = start_job("video", "Video", video_job(post_id, clean, voice, str(body.get("music", "none")), quality))
                     return self.send_json({"job": job})
                 if action == "/export" and method == "GET":
                     post = get_post(post_id)
@@ -927,17 +1042,33 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def serve_image(self):
-        name = self.path.split("?")[0][len("/files/"):]
-        target = (IMAGES_DIR / name).resolve()
-        if not re.fullmatch(r"[\w\-]+\.png", name) or IMAGES_DIR.resolve() not in target.parents or not target.is_file():
+    def serve_media(self, folder, ext, ctype):
+        name = self.path.split("?")[0].rsplit("/", 1)[-1]
+        target = (folder / name).resolve()
+        if not re.fullmatch(r"[\w\-]+\." + ext, name) or folder.resolve() not in target.parents or not target.is_file():
             self.send_response(404)
             self.end_headers()
             return
-        body = target.read_bytes()
-        self.send_response(200)
-        self.send_header("Content-Type", "image/png")
+        size = target.stat().st_size
+        start, end, status = 0, size - 1, 200
+        m = re.match(r"bytes=(\d*)-(\d*)", self.headers.get("Range", ""))
+        if m and (m.group(1) or m.group(2)):  # video seek ke liye
+            if m.group(1):
+                start = int(m.group(1))
+                end = int(m.group(2)) if m.group(2) else size - 1
+            else:
+                start = max(0, size - int(m.group(2)))
+            end = min(end, size - 1)
+            status = 206
+        with open(target, "rb") as f:
+            f.seek(start)
+            body = f.read(end - start + 1)
+        self.send_response(status)
+        self.send_header("Content-Type", ctype)
+        self.send_header("Accept-Ranges", "bytes")
         self.send_header("Content-Length", str(len(body)))
+        if status == 206:
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
         if "download=1" in self.path:
             self.send_header("Content-Disposition", f'attachment; filename="{name}"')
         self.end_headers()
@@ -945,7 +1076,9 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path.startswith("/files/"):
-            return self.serve_image()
+            return self.serve_media(IMAGES_DIR, "png", "image/png")
+        if self.path.startswith("/videos/"):
+            return self.serve_media(VIDEOS_DIR, "mp4", "video/mp4")
         self.handle_api("GET") if self.path.startswith("/api/") else self.serve_static()
 
     def do_POST(self):
