@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurelia Interiors | Homes & Workspaces, Beautifully Designed</title>
+<meta name="description" content="Residential and commercial interior design with turnkey execution. Book a free consultation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf7f2; --bg2:#f2ece3; --ink:#2b2622; --muted:#6f665e;
+  --accent:#b08d57; --accent-d:#8f6f3e; --line:#e4dccf; --white:#fff;
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+section{padding:88px 0}
+.alt{background:var(--bg2)}
+.eyebrow{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent-d);font-weight:600;margin-bottom:12px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.12}
+h1{font-size:clamp(2.6rem,6vw,4.6rem)}
+h2{font-size:clamp(2rem,4vw,3rem);margin-bottom:14px}
+h3{font-size:1.5rem;margin-bottom:6px}
+.lead{color:var(--muted);max-width:620px;font-size:1.05rem}
+.center{text-align:center}.center .lead{margin:0 auto}
+.head{margin-bottom:48px}
+.btn{display:inline-block;padding:14px 28px;border-radius:2px;font-weight:600;font-size:.92rem;letter-spacing:.04em;border:1px solid var(--accent);cursor:pointer;transition:.25s;font-family:var(--sans)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-d);border-color:var(--accent-d)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:#fff}
+
+/* placeholder imagery: swap with <img> later */
+.ph{background:linear-gradient(135deg,#d9c9ae,#b9a07a);position:relative;display:flex;align-items:flex-end;color:#fff}
+.ph span{padding:12px 16px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(transparent,rgba(0,0,0,.35));width:100%}
+.ph.b{background:linear-gradient(135deg,#cfd5cb,#9aa594)}
+.ph.c{background:linear-gradient(135deg,#e6d5cc,#c19a8a)}
+.ph.d{background:linear-gradient(135deg,#d4cfc6,#a39a8c)}
+
+/* nav */
+header{position:sticky;top:0;z-index:50;background:rgba(250,247,242,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{font-family:var(--serif);font-size:1.7rem;font-weight:700;letter-spacing:.02em}
+.logo b{color:var(--accent)}
+.menu{display:flex;gap:28px;font-size:.9rem}
+.menu a:hover{color:var(--accent-d)}
+.nav-cta{display:flex;align-items:center;gap:16px;font-size:.9rem}
+.nav-cta .btn{padding:10px 20px}
+.burger{display:none;background:none;border:0;font-size:1.6rem;cursor:pointer}
+
+/* hero */
+.hero{padding:64px 0 88px}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center}
+.hero p.lead{margin:22px 0 30px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap}
+.hero-img{height:560px;border-radius:2px}
+.hero-card{position:absolute;left:-28px;bottom:36px;background:var(--white);color:var(--ink);padding:18px 24px;box-shadow:0 14px 40px rgba(0,0,0,.12)}
+.hero-card strong{font-family:var(--serif);font-size:2rem;display:block;color:var(--accent-d);line-height:1}
+.hero-img-wrap{position:relative}
+
+/* trust */
+.trust{background:var(--ink);color:#fff;padding:36px 0}
+.trust-grid{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;gap:20px}
+.trust strong{font-family:var(--serif);font-size:2.4rem;color:var(--accent);display:block;line-height:1.1}
+.trust span{font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+
+/* about strip */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.split .ph{height:460px}
+.ticks{list-style:none;margin-top:22px}
+.ticks li{padding:8px 0 8px 30px;position:relative}
+.ticks li::before{content:"✓";position:absolute;left:0;color:var(--accent-d);font-weight:700}
+
+/* services */
+.tabs{display:flex;justify-content:center;gap:10px;margin-bottom:36px}
+.tab{padding:10px 26px;border:1px solid var(--line);background:transparent;cursor:pointer;font-family:var(--sans);font-size:.9rem;font-weight:600;transition:.2s}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.card{background:var(--white);border:1px solid var(--line);transition:.3s;overflow:hidden}
+.card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(60,40,10,.1)}
+.card .ph{height:190px}
+.card-body{padding:22px}
+.card-body p{color:var(--muted);font-size:.93rem}
+.hidden{display:none}
+
+/* why */
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
+.why div{padding:28px;border-top:2px solid var(--accent);background:var(--white)}
+.why .n{font-family:var(--serif);font-size:2.6rem;color:var(--accent);line-height:1}
+
+/* portfolio */
+.filters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:32px}
+.filters button{padding:8px 20px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:.85rem;font-family:var(--sans)}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.gallery .ph{height:300px;transition:.3s}
+.gallery .ph:nth-child(3n+2){height:360px}
+.gallery .ph:hover{filter:brightness(1.06)}
+
+/* process */
+.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;counter-reset:s}
+.step{text-align:center;position:relative;padding-top:8px}
+.step::before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:56px;height:56px;margin:0 auto 16px;border:1px solid var(--accent);border-radius:50%;font-family:var(--serif);font-size:1.5rem;color:var(--accent-d);background:var(--bg)}
+.step h3{font-size:1.2rem}
+.step p{font-size:.85rem;color:var(--muted)}
+.step small{display:block;margin-top:8px;color:var(--accent-d);font-weight:600;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+
+/* styles */
+.styles{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.styles .ph{height:240px}
+
+/* pricing */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:stretch}
+.plan{background:var(--white);border:1px solid var(--line);padding:36px 30px;display:flex;flex-direction:column}
+.plan.feat{border:2px solid var(--accent);transform:translateY(-12px);box-shadow:0 20px 50px rgba(60,40,10,.1)}
+.price{font-family:var(--serif);font-size:2.6rem;color:var(--accent-d);margin:10px 0 4px}
+.price small{font-size:.9rem;font-family:var(--sans);color:var(--muted)}
+.plan .ticks{flex:1;margin-bottom:24px}
+.note{font-size:.82rem;color:var(--muted);margin-top:24px}
+
+/* testimonials */
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.t{background:var(--white);padding:32px;border:1px solid var(--line)}
+.stars{color:var(--accent);letter-spacing:3px;margin-bottom:12px}
+.t p{font-family:var(--serif);font-size:1.25rem;line-height:1.4;margin-bottom:20px}
+.who{display:flex;align-items:center;gap:12px;font-size:.88rem}
+.av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#d9c9ae,#b08d57)}
+.who span{color:var(--muted);display:block;font-size:.8rem}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.team .ph{height:280px}
+.team h3{margin-top:14px;font-size:1.3rem}
+.team p{color:var(--muted);font-size:.88rem}
+
+/* location */
+.loc{display:grid;grid-template-columns:1fr 1.2fr;gap:48px}
+.loc ul{list-style:none;margin-top:20px}
+.loc li{padding:10px 0;border-bottom:1px solid var(--line);font-size:.95rem}
+.loc li b{display:block;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-d)}
+.map{min-height:360px;border:1px solid var(--line)}
+.map iframe{width:100%;height:100%;min-height:360px;border:0}
+
+/* faq */
+.faq{max-width:780px;margin:0 auto}
+details{border-bottom:1px solid var(--line);padding:20px 0}
+summary{cursor:pointer;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+summary::after{content:"+";color:var(--accent-d);font-size:1.4rem;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin-top:12px;color:var(--muted)}
+
+/* form */
+.cta{background:var(--ink);color:#fff}
+.cta .lead{color:#cfc6bb}
+.cta-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+form{background:var(--white);color:var(--ink);padding:36px;display:grid;gap:14px}
+form h3{margin-bottom:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:grid;gap:6px}
+input,select,textarea{font:inherit;padding:12px 14px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%;border-radius:2px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);border-color:transparent}
+.fine{font-size:.78rem;color:var(--muted);text-align:center}
+#ok{display:none;padding:14px;background:#eaf3e4;color:#2f5d1e;text-align:center;font-weight:600}
+.contact-list{list-style:none;margin-top:26px}
+.contact-list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.15)}
+
+/* footer */
+footer{background:#1d1916;color:#bdb3a8;padding:56px 0 24px;font-size:.9rem}
+.fgrid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:36px;margin-bottom:36px}
+footer h4{color:#fff;margin-bottom:12px;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase}
+footer a{display:block;padding:4px 0}
+footer a:hover{color:var(--accent)}
+.copy{border-top:1px solid #38312b;padding-top:20px;text-align:center;font-size:.8rem}
+
+/* floating */
+.wa{position:fixed;right:20px;bottom:20px;z-index:60;background:#25d366;color:#fff;padding:14px 20px;border-radius:40px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.mbar{display:none}
+
+@media(max-width:960px){
+  section{padding:64px 0}
+  .menu,.nav-cta .tel{display:none}
+  .burger{display:block}
+  .menu.open{display:flex;flex-direction:column;position:absolute;top:72px;left:0;right:0;background:var(--bg);padding:20px;border-bottom:1px solid var(--line)}
+  .hero-grid,.split,.loc,.cta-grid{grid-template-columns:1fr;gap:36px}
+  .hero-img{height:380px}.hero-card{left:12px}
+  .trust-grid,.styles,.team{grid-template-columns:repeat(2,1fr)}
+  .cards,.why,.gallery,.plans,.tgrid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .plan.feat{transform:none}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .wa{bottom:76px}
+  .mbar{display:grid;grid-template-columns:1fr 1fr;position:fixed;bottom:0;left:0;right:0;z-index:55}
+  .mbar a{padding:16px;text-align:center;font-weight:600;color:#fff;background:var(--ink)}
+  .mbar a+a{background:var(--accent)}
+  body{padding-bottom:54px}
+}
+@media(max-width:560px){.row{grid-template-columns:1fr}.nav-cta .btn{display:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#top" class="logo">Aurelia<b>.</b></a>
+    <nav class="menu" id="menu">
+      <a href="#services">Services</a><a href="#portfolio">Portfolio</a><a href="#process">Process</a>
+      <a href="#pricing">Pricing</a><a href="#reviews">Reviews</a><a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="tel" href="tel:+910000000000">+91 00000 00000</a>
+      <a class="btn btn-primary" href="#contact">Free Consultation</a>
+      <button class="burger" aria-label="Menu" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow">Interior Design · Homes & Workspaces</p>
+      <h1>Spaces designed around the way you live & work.</h1>
+      <p class="lead">From concept to the final cushion, we design and build elegant interiors for homes, offices and retail spaces: on budget and on time.</p>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="#contact">Book Free Consultation</a>
+        <a class="btn btn-ghost" href="#portfolio">View Our Work</a>
+      </div>
+    </div>
+    <div class="hero-img-wrap">
+      <div class="ph hero-img"><span>Replace: hero project photo</span></div>
+      <div class="hero-card"><strong>500+</strong>Projects delivered</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<div class="trust"><div class="wrap trust-grid">
+  <div><strong>12+</strong><span>Years of experience</span></div>
+  <div><strong>500+</strong><span>Spaces designed</span></div>
+  <div><strong>98%</strong><span>Client satisfaction</span></div>
+  <div><strong>10 yr</strong><span>Structural warranty</span></div>
+</div></div>
+
+<!-- ABOUT / WHY -->
+<section>
+  <div class="wrap split">
+    <div class="ph"><span>Replace: studio / team photo</span></div>
+    <div>
+      <p class="eyebrow">About Us</p>
+      <h2>Design that feels personal, built to last.</h2>
+      <p class="lead">We are a design-and-build studio. One team handles the design, the budget and the site, so nothing gets lost between the idea and the finished space.</p>
+      <ul class="ticks">
+        <li>In-house designers, carpenters and site engineers</li>
+        <li>Fixed-price quotes, no hidden costs</li>
+        <li>Photo-realistic 3D views before work begins</li>
+        <li>A dedicated project manager for every project</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="alt" id="services">
+  <div class="wrap">
+    <div class="head center">
+      <p class="eyebrow">What We Offer</p>
+      <h2>Complete interior solutions</h2>
+      <p class="lead">Whether it's a family home or a growing business, we handle everything under one roof.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab on" data-t="res">Residential</button>
+      <button class="tab" data-t="com">Commercial</button>
+    </div>
+    <div class="cards" id="res">
+      <div class="card"><div class="ph"></div><div class="card-body"><h3>Full Home Interiors</h3><p>Turnkey design and execution for apartments and villas.</p></div></div>
+      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Modular Kitchens</h3><p>Smart, durable kitchens tailored to how you cook.</p></div></div>
+      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Wardrobes & Storage</h3><p>Custom storage that maximises every inch.</p></div></div>
+      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Living & Bedrooms</h3><p>Warm, layered rooms with furniture, lighting and décor.</p></div></div>
+      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Renovation</h3><p>Refresh an existing home without the chaos.</p></div></div>
+      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Furniture & Décor</h3><p>Curated pieces, art and soft furnishings to finish the look.</p></div></div>
+    </div>
+    <div class="cards hidden" id="com">
+      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Offices & Co-working</h3><p>Productive layouts that reflect your brand.</p></div></div>
+      <div class="card"><div class="ph"></div><div class="card-body"><h3>Retail & Showrooms</h3><p>Stores designed to draw people in and lift sales.</p></div></div>
+      <div class="card"><div class="ph c"></div><div class="card-body"><h3>Cafés & Restaurants</h3><p>Atmosphere, flow and kitchen planning in one package.</p></div></div>
+      <div class="card"><div class="ph b"></div><div class="card-body"><h3>Clinics & Salons</h3><p>Calm, hygienic and functional professional spaces.</p></div></div>
+      <div class="card"><div class="ph"></div><div class="card-body"><h3>Hospitality</h3><p>Boutique hotels, guest houses and lounges.</p></div></div>
+      <div class="card"><div class="ph d"></div><div class="card-body"><h3>Space Planning & 3D</h3><p>Layouts and visualisations before you commit.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section>
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Why Aurelia</p><h2>The difference you'll feel</h2></div>
+    <div class="why">
+      <div><span class="n">01</span><h3>Transparent pricing</h3><p class="lead">Itemised quotes and fixed budgets. What we quote is what you pay.</p></div>
+      <div><span class="n">02</span><h3>On-time delivery</h3><p class="lead">A clear timeline with weekly progress updates and photos.</p></div>
+      <div><span class="n">03</span><h3>Quality materials</h3><p class="lead">Branded, tested materials backed by a written warranty.</p></div>
+      <div><span class="n">04</span><h3>One accountable team</h3><p class="lead">Design, civil, carpentry and décor, all managed by us.</p></div>
+      <div><span class="n">05</span><h3>3D before you build</h3><p class="lead">See every room in realistic detail and change it before work begins.</p></div>
+      <div><span class="n">06</span><h3>After-sales care</h3><p class="lead">Free service visits and quick fixes after handover.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="alt" id="portfolio">
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Our Work</p><h2>Recent projects</h2></div>
+    <div class="filters">
+      <button class="on" data-f="all">All</button><button data-f="home">Homes</button>
+      <button data-f="office">Offices</button><button data-f="retail">Retail & Café</button>
+    </div>
+    <div class="gallery">
+      <div class="ph" data-c="home"><span>3 BHK · Modern</span></div>
+      <div class="ph b" data-c="office"><span>Office · Minimal</span></div>
+      <div class="ph c" data-c="home"><span>Villa · Classic</span></div>
+      <div class="ph d" data-c="retail"><span>Café · Contemporary</span></div>
+      <div class="ph" data-c="home"><span>2 BHK · Scandinavian</span></div>
+      <div class="ph b" data-c="retail"><span>Boutique · Luxe</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">How It Works</p><h2>From first call to final handover</h2></div>
+    <div class="steps">
+      <div class="step"><h3>Consultation</h3><p>Free call or visit to understand needs and budget.</p><small>Day 1</small></div>
+      <div class="step"><h3>Site Survey</h3><p>Precise measurements and requirement capture.</p><small>Day 3–5</small></div>
+      <div class="step"><h3>Design & 3D</h3><p>Layouts, mood boards and realistic 3D views.</p><small>Week 1–3</small></div>
+      <div class="step"><h3>Quote & Sign-off</h3><p>Itemised quote, materials and agreement.</p><small>Week 3–4</small></div>
+      <div class="step"><h3>Execution</h3><p>Build with weekly updates and quality checks.</p><small>Week 4–12</small></div>
+      <div class="step"><h3>Handover</h3><p>Styling, final walkthrough and warranty.</p><small>Final week</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- STYLES -->
+<section class="alt">
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Design Styles</p><h2>Find your look</h2></div>
+    <div class="styles">
+      <div class="ph"><span>Modern</span></div><div class="ph b"><span>Minimal</span></div>
+      <div class="ph c"><span>Contemporary Luxe</span></div><div class="ph d"><span>Classic & Traditional</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Packages</p><h2>Transparent starting prices</h2>
+      <p class="lead">Every project is quoted after a site visit. These are indicative starting rates.</p></div>
+    <div class="plans">
+      <div class="plan"><h3>Essential</h3><div class="price">₹1,100<small> /sq ft onwards</small></div>
+        <ul class="ticks"><li>Space planning & 2D layout</li><li>Modular kitchen & wardrobes</li><li>Standard-grade materials</li><li>1-year warranty</li></ul>
+        <a class="btn btn-ghost" href="#contact">Get a Quote</a></div>
+      <div class="plan feat"><p class="eyebrow">Most Popular</p><h3>Premium</h3><div class="price">₹1,600<small> /sq ft onwards</small></div>
+        <ul class="ticks"><li>Everything in Essential</li><li>Photo-realistic 3D design</li><li>False ceiling, lighting & paint</li><li>Premium finishes & hardware</li><li>5-year warranty</li></ul>
+        <a class="btn btn-primary" href="#contact">Get a Quote</a></div>
+      <div class="plan"><h3>Luxe</h3><div class="price">₹2,400<small> /sq ft onwards</small></div>
+        <ul class="ticks"><li>Everything in Premium</li><li>Custom furniture & décor styling</li><li>Imported materials & smart home</li><li>Senior designer on your project</li><li>10-year warranty</li></ul>
+        <a class="btn btn-ghost" href="#contact">Get a Quote</a></div>
+    </div>
+    <p class="note center">* Placeholder prices. Replace with your own rates.</p>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="alt" id="reviews">
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Client Stories</p><h2>Loved by families & businesses</h2></div>
+    <div class="tgrid">
+      <div class="t"><div class="stars">★★★★★</div><p>"They understood our taste better than we did. The flat was ready exactly on the promised date."</p><div class="who"><div class="av"></div><div>Client Name<span>3 BHK, City</span></div></div></div>
+      <div class="t"><div class="stars">★★★★★</div><p>"Our new office has transformed how the team works. Professional from day one."</p><div class="who"><div class="av"></div><div>Client Name<span>Office, City</span></div></div></div>
+      <div class="t"><div class="stars">★★★★★</div><p>"Transparent pricing and zero surprises. The 3D design looked exactly like the finished home."</p><div class="who"><div class="av"></div><div>Client Name<span>Villa, City</span></div></div></div>
+    </div>
+    <p class="note center">* Placeholder reviews. Replace with real client testimonials, photos and Google rating.</p>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section>
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">Our Team</p><h2>The people behind the design</h2></div>
+    <div class="team">
+      <div><div class="ph"></div><h3>Founder Name</h3><p>Principal Designer</p></div>
+      <div><div class="ph b"></div><h3>Designer Name</h3><p>Residential Lead</p></div>
+      <div><div class="ph c"></div><h3>Designer Name</h3><p>Commercial Lead</p></div>
+      <div><div class="ph d"></div><h3>Manager Name</h3><p>Project Head</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section class="alt">
+  <div class="wrap loc">
+    <div>
+      <p class="eyebrow">Visit Us</p><h2>Our experience centre</h2>
+      <p class="lead">See real materials, finishes and sample kitchens in person.</p>
+      <ul>
+        <li><b>Address</b>Your Studio Address, Area, City, PIN</li>
+        <li><b>Hours</b>Mon–Sat, 10:00 am – 7:00 pm</li>
+        <li><b>Areas served</b>City 1, City 2, City 3 and nearby</li>
+        <li><b>Call / WhatsApp</b>+91 00000 00000</li>
+      </ul>
+    </div>
+    <div class="map"><iframe loading="lazy" title="Map" src="https://www.google.com/maps?q=New+Delhi&output=embed"></iframe></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="wrap">
+    <div class="head center"><p class="eyebrow">FAQ</p><h2>Questions, answered</h2></div>
+    <div class="faq">
+      <details><summary>How much does interior design cost?</summary><p>It depends on size, scope and materials. Our packages start from ₹1,100/sq ft, and you get an itemised quote after the site visit.</p></details>
+      <details><summary>How long does a project take?</summary><p>A typical 2–3 BHK takes 10–12 weeks from sign-off. Offices and shops vary with scope.</p></details>
+      <details><summary>Do you take both design-only and full turnkey projects?</summary><p>Both. Most clients choose turnkey so one team is accountable from design to handover.</p></details>
+      <details><summary>What are your payment terms?</summary><p>Milestone-based: booking, design approval, material delivery, execution stages and handover.</p></details>
+      <details><summary>Do you offer a warranty?</summary><p>Yes, 1 to 10 years depending on the package, covering workmanship and materials.</p></details>
+      <details><summary>Do you work in my city?</summary><p>We serve the cities listed above. Fill in the form and we'll confirm.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA + FORM -->
+<section class="cta" id="contact">
+  <div class="wrap cta-grid">
+    <div>
+      <p class="eyebrow" style="color:var(--accent)">Let's Begin</p>
+      <h2>Book your free design consultation</h2>
+      <p class="lead">Tell us about your space. A senior designer will call you within 24 hours: no obligation.</p>
+      <ul class="contact-list">
+        <li>✓ Free site visit & measurement</li>
+        <li>✓ Free initial design ideas</li>
+        <li>✓ Quote within 3 working days</li>
+        <li>📞 +91 00000 00000 &nbsp;·&nbsp; ✉ hello@aurelia.example</li>
+      </ul>
+    </div>
+    <form id="leadForm" novalidate>
+      <h3>Get your free consultation</h3>
+      <div class="row">
+        <label>Full name<input name="name" required placeholder="Your name"></label>
+        <label>Phone<input name="phone" type="tel" required pattern="[0-9+\s-]{10,15}" placeholder="+91 ..."></label>
+      </div>
+      <div class="row">
+        <label>Email<input name="email" type="email" placeholder="you@email.com"></label>
+        <label>City<input name="city" required placeholder="City"></label>
+      </div>
+      <div class="row">
+        <label>Property type
+          <select name="type" required><option value="">Select</option><option>Apartment</option><option>Villa / House</option><option>Office</option><option>Retail / Showroom</option><option>Café / Restaurant</option><option>Other</option></select></label>
+        <label>Budget
+          <select name="budget"><option value="">Select</option><option>Under ₹5 lakh</option><option>₹5–10 lakh</option><option>₹10–25 lakh</option><option>₹25 lakh+</option></select></label>
+      </div>
+      <div class="row">
+        <label>Scope
+          <select name="scope"><option>Full interiors</option><option>Kitchen / Wardrobes</option><option>Renovation</option><option>Design only</option></select></label>
+        <label>Start timeline
+          <select name="timeline"><option>Immediately</option><option>1–3 months</option><option>3–6 months</option><option>Just exploring</option></select></label>
+      </div>
+      <label>Message (optional)<textarea name="msg" rows="3" placeholder="Tell us about your space"></textarea></label>
+      <button class="btn btn-primary" type="submit">Request Free Consultation</button>
+      <div id="ok">Thank you! We'll call you within 24 hours.</div>
+      <p class="fine">We respect your privacy and never share your details.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fgrid">
+      <div><a class="logo" style="color:#fff" href="#top">Aurelia<b>.</b></a><p style="margin-top:10px">Elegant interiors for homes and workspaces.</p></div>
+      <div><h4>Explore</h4><a href="#services">Services</a><a href="#portfolio">Portfolio</a><a href="#pricing">Pricing</a></div>
+      <div><h4>Company</h4><a href="#process">Process</a><a href="#reviews">Reviews</a><a href="#contact">Contact</a></div>
+      <div><h4>Follow</h4><a href="#">Instagram</a><a href="#">Pinterest</a><a href="#">YouTube</a></div>
+    </div>
+    <p class="copy">© 2026 Aurelia Interiors. All rights reserved. · Privacy Policy · Terms</p>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/910000000000?text=Hi%2C%20I%27d%20like%20a%20consultation" target="_blank" rel="noopener">WhatsApp</a>
+<div class="mbar"><a href="tel:+910000000000">Call</a><a href="#contact">Free Quote</a></div>
+
+<script>
+// services tabs
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b));
+  ['res','com'].forEach(id=>document.getElementById(id).classList.toggle('hidden',id!==b.dataset.t));
+});
+// portfolio filter
+document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.filters button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.gallery .ph').forEach(g=>g.style.display=(b.dataset.f==='all'||g.dataset.c===b.dataset.f)?'':'none');
+});
+// close mobile menu on click
+document.querySelectorAll('#menu a').forEach(a=>a.onclick=()=>document.getElementById('menu').classList.remove('open'));
+// lead form: connect to your backend / Google Sheet / email service by setting ENDPOINT
+const ENDPOINT = ''; // e.g. a Google Apps Script web app URL or Formspree URL
+document.getElementById('leadForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const f=e.target;
+  if(!f.checkValidity()){f.reportValidity();return;}
+  const data=Object.fromEntries(new FormData(f));
+  try{
+    if(ENDPOINT) await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    else console.log('Lead (set ENDPOINT to send):',data);
+  }catch(err){console.error(err)}
+  f.reset();document.getElementById('ok').style.display='block';
+});
+</script>
+</body>
+</html>
