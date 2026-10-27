@@ -204,6 +204,53 @@ class AIError(Exception):
     pass
 
 
+API_ROOT = os.environ.get("GEMINI_API_ROOT", "https://generativelanguage.googleapis.com/v1beta")  # env sirf testing ke liye
+SKIP_WORDS = ("image", "tts", "audio", "live", "embedding", "vision", "robotics", "computer-use", "learnlm", "gemma", "aqa")
+_model_cache = []
+
+
+def http_error_message(e):
+    """Google ke error body se asli message nikalta hai."""
+    try:
+        return json.loads(e.read())["error"]["message"]
+    except Exception:
+        return ""
+
+
+def model_rank(name):
+    """Chhota number = behtar. Stable flash models sabse pehle, phir lite, phir baaki."""
+    version = re.search(r"gemini-(\d+(?:\.\d+)?)", name)
+    ver = float(version.group(1)) if version else 0
+    unstable = any(w in name for w in ("preview", "exp", "latest-"))
+    return (0 if "flash" in name else 1, 1 if "lite" in name else 0, 1 if unstable else 0, -ver)
+
+
+def available_models(key, refresh=False):
+    """Google se poochta hai ki is key par kaun se models chal sakte hain (cache karke)."""
+    if _model_cache and not refresh:
+        return list(_model_cache)
+    req = urllib.request.Request(API_ROOT + "/models?pageSize=200", headers={"x-goog-api-key": key})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            models = json.loads(resp.read()).get("models", [])
+    except urllib.error.HTTPError as e:
+        if e.code in (400, 401, 403):
+            raise AIError("The API key is invalid or not working. Check it again in Settings.")
+        models = []
+    except (urllib.error.URLError, TimeoutError):
+        raise AIError("Could not connect to Gemini. Check your internet connection.")
+    names = [
+        m["name"].split("/", 1)[-1] for m in models
+        if "generateContent" in m.get("supportedGenerationMethods", [])
+        and m["name"].split("/", 1)[-1].startswith("gemini")
+        and not any(w in m["name"] for w in SKIP_WORDS)
+    ]
+    names.sort(key=model_rank)
+    chosen = names[:3] or list(MODELS)  # list na mile to purane naam try karo
+    _model_cache[:] = chosen
+    return list(chosen)
+
+
 def call_gemini(prompt):
     """Prompt bhejta hai, JSON (dict/list) wapas deta hai."""
     if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
@@ -211,33 +258,41 @@ def call_gemini(prompt):
     key = get_api_key()
     if not key:
         raise AIError("No Gemini API key found. Add your key on the Settings page.")
-    last_error = "unknown error"
-    for model in MODELS:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
-        body = json.dumps({
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"responseMimeType": "application/json", "temperature": 0.9},
-        }).encode()
-        req = urllib.request.Request(
-            url, data=body, method="POST",
-            headers={"Content-Type": "application/json", "x-goog-api-key": key},
-        )
-        try:
-            with urllib.request.urlopen(req, timeout=90) as resp:
-                payload = json.loads(resp.read())
-            text = payload["candidates"][0]["content"]["parts"][0]["text"]
-            return json.loads(text)
-        except urllib.error.HTTPError as e:
-            if e.code in (400, 401, 403):
-                raise AIError("The API key is invalid or not working. Check it again in Settings.")
-            if e.code == 429:
-                last_error = "Free limit reached. Please try again in a while (or tomorrow)."
-                continue  # doosra model try karo
-            last_error = f"Gemini error {e.code}"
-        except (urllib.error.URLError, TimeoutError):
-            raise AIError("Could not connect to Gemini. Check your internet connection.")
-        except (KeyError, IndexError, ValueError):
-            last_error = "Could not understand the AI response. Please try again."
+    for attempt in range(2):  # 2nd attempt: model list refresh karke (agar saare models 404 de den)
+        last_error, all_missing = "unknown error", True
+        for model in available_models(key, refresh=attempt == 1):
+            body = json.dumps({
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json", "temperature": 0.9},
+            }).encode()
+            req = urllib.request.Request(
+                f"{API_ROOT}/models/{model}:generateContent", data=body, method="POST",
+                headers={"Content-Type": "application/json", "x-goog-api-key": key},
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=90) as resp:
+                    payload = json.loads(resp.read())
+                text = payload["candidates"][0]["content"]["parts"][0]["text"]
+                return json.loads(text)
+            except urllib.error.HTTPError as e:
+                msg = http_error_message(e)
+                if e.code in (401, 403) or (e.code == 400 and "API key" in msg):
+                    raise AIError("The API key is invalid or not working. Check it again in Settings.")
+                if e.code == 404:
+                    continue  # ye model nahi mila, agla try karo
+                all_missing = False
+                if e.code == 429:
+                    last_error = "Free limit reached. Please try again in a while (or tomorrow)."
+                else:
+                    last_error = f"Gemini error {e.code}: {msg[:200]}"
+            except (urllib.error.URLError, TimeoutError):
+                raise AIError("Could not connect to Gemini. Check your internet connection.")
+            except (KeyError, IndexError, ValueError):
+                all_missing = False
+                last_error = "Could not understand the AI response. Please try again."
+        if not all_missing:
+            raise AIError(last_error)
+        last_error = "No Gemini model is available for this key."
     raise AIError(last_error)
 
 
