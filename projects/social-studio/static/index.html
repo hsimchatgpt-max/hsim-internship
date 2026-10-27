@@ -212,6 +212,11 @@
       <p class="hint" data-i18n="key.privacy">Your key is stored only in the <code>data/</code> folder on your computer and is never uploaded.</p>
       <p class="hint" data-i18n="key.pro">Note: a Gemini Pro subscription in the Gemini app is separate from this API key. To remove the free limits and to create AI images, enable billing for your API key in Google AI Studio.</p>
       <div class="actions"><button class="primary" id="saveKey" data-i18n="btn.saveKey">Save key</button><button class="ghost" id="testKey" data-i18n="btn.test">Test my key</button></div>
+      <h3 style="margin-bottom:0" data-i18n="groq.title">Backup AI (optional, free)</h3>
+      <p class="hint" data-i18n="groq.hint">If the Gemini free limit runs out, the tool automatically uses this backup. Get a free key at console.groq.com/keys (no card needed).</p>
+      <input id="s_groq" type="password" placeholder="gsk_..." autocomplete="off">
+      <p class="hint" id="groqState"></p>
+      <div class="actions"><button class="primary" id="saveGroq" data-i18n="btn.saveKey">Save key</button></div>
       <pre id="testOut" class="hint" style="white-space:pre-wrap"></pre>
     </div>
     <div class="card" style="max-width:640px;margin-top:16px">
@@ -231,7 +236,7 @@
   <label data-i18n="plan.theme">Theme for this month</label><input id="p_theme" data-i18n-ph="plan.theme.ph" placeholder="e.g. Yoga for beginners">
   <label data-i18n="plan.per">Posts per week</label>
   <select id="p_per"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>7</option></select>
-  <div class="checks" style="margin-top:14px"><label><input type="checkbox" id="p_full" checked><span data-i18n="plan.full">Also write the full content for every post (script, caption, editing plan)</span></label></div>
+  <div class="checks" style="margin-top:14px"><label><input type="checkbox" id="p_full"><span data-i18n="plan.full">Also write the full content for every post now (uses many AI requests, so the free limit can run out. Leave it off and write content only for the posts you need.)</span></label></div>
   <p class="hint" data-i18n="plan.bg">This runs in the background. You can keep using the tool while it works.</p>
   <div class="actions"><button class="primary" id="planGo" data-i18n="btn.makePlan">Create plan</button><button class="ghost" data-close data-i18n="btn.cancel">Cancel</button></div>
 </div></div>
@@ -342,7 +347,7 @@ const I18N = {
     "key.saved": "Key सेव है।", "key.none": "अभी कोई key नहीं है।",
     "plan.title": "AI से महीने का प्लान", "plan.hint": "AI पूरे महीने के लिए दिन, फ़ॉर्मेट और टॉपिक सुझाएगा। बाद में आप सब एडिट कर सकते हैं।",
     "plan.theme": "इस महीने की थीम", "plan.theme.ph": "जैसे: बिगिनर्स के लिए योगा", "plan.per": "हफ़्ते में कितनी पोस्ट?",
-    "plan.full": "हर पोस्ट का पूरा कंटेंट भी लिखें (स्क्रिप्ट, कैप्शन, एडिटिंग प्लान)",
+    "plan.full": "हर पोस्ट का पूरा कंटेंट भी अभी लिखें (बहुत सारे AI रिक्वेस्ट लगते हैं, फ़्री लिमिट खत्म हो सकती है। बंद रखें और सिर्फ़ ज़रूरी पोस्ट का कंटेंट लिखवाएं।)",
     "plan.bg": "यह बैकग्राउंड में चलता है। काम होते समय आप टूल इस्तेमाल करते रह सकते हैं।",
     "f.date": "तारीख", "f.time": "समय", "f.format": "फ़ॉर्मेट", "f.type": "कंटेंट टाइप", "f.topic": "टॉपिक", "f.duration": "वीडियो की लंबाई",
     "f.platforms": "प्लेटफ़ॉर्म", "f.status": "स्टेटस", "f.hook": "हुक", "f.caption": "कैप्शन", "f.hashtags": "हैशटैग",
@@ -391,6 +396,8 @@ const I18N = {
     "tools.voices": "{n} आवाज़ें उपलब्ध", "tools.musicn": "आपके म्यूज़िक फ़ाइल: {n}",
     "tools.music": "अपना बैकग्राउंड म्यूज़िक जोड़ें (mp3 / wav)", "tools.musichint": "सिर्फ़ रॉयल्टी-फ़्री म्यूज़िक इस्तेमाल करें (जैसे Pixabay Music), वरना Instagram/YouTube वीडियो ब्लॉक कर सकते हैं।",
     "job.voice": "आवाज़ बन रही है", "job.editing": "वीडियो एडिट हो रहा है", "job.downloading": "डाउनलोड हो रहा है", "job.installing": "इंस्टॉल हो रहा है",
+    "groq.title": "बैकअप AI (वैकल्पिक, फ़्री)", "groq.hint": "Gemini की फ़्री लिमिट खत्म होने पर टूल अपने आप इस बैकअप को इस्तेमाल करता है। console.groq.com/keys पर फ़्री key बनाएं (कार्ड नहीं चाहिए)।",
+    "All free Gemini models are at their limit right now. Try again later (daily limits reset every day), or add a free backup AI key in Settings.": "सभी फ़्री Gemini मॉडल की लिमिट अभी खत्म है। बाद में कोशिश करें (लिमिट रोज़ रीसेट होती है), या Settings में फ़्री बैकअप AI key जोड़ें।",
     "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
     "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
     "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
@@ -408,6 +415,7 @@ const EN_TEXT = {
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
+  "groq.title": "Backup AI (optional, free)",
   "btn.makevideo": "Make video (free)", "btn.dlvideo": "Download video",
   "v.title": "Make video (free)", "v.scenes": "{n} scenes will be made",
   "v.working": "Making the video... this can take a few minutes. You can switch to another tab.", "v.done": "Video is ready!",
@@ -801,14 +809,19 @@ $("saveKey").onclick = (e) => busy(e.target, "busy.save", async () => {
   const r = await api("POST", "/api/settings/key", { key: $("s_key").value });
   $("s_key").value = ""; cfg.has_key = r.has_key; renderKeyState(); toast(t("toast.key"));
 });
+$("saveGroq").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const r = await api("POST", "/api/settings/groq", { key: $("s_groq").value });
+  $("s_groq").value = ""; cfg.has_groq = r.has_groq; renderKeyState(); toast(t("toast.key"));
+});
 $("testKey").onclick = (e) => busy(e.target, "busy.save", async () => {
   const r = await api("GET", "/api/diagnose");
   const list = (a) => (a.length ? a.join(", ") : t("test.none"));
-  $("testOut").textContent = `${t("test.text")}: ${r.text_ok ? "OK" : trErr(r.text_error)}\n  ${list(r.text_models)}\n${t("test.image")}: ${list(r.image_models)}`;
+  $("testOut").textContent = `${t("test.text")}: ${r.text_ok ? "OK" : trErr(r.text_error)}\n  ${list(r.text_models)}\n${t("test.image")}: ${list(r.image_models)}\n${t("groq.title")}: ${r.groq ? (r.groq_ok ? "OK" : "not working") : "-"}`;
 });
 function renderKeyState() {
   $("keyState").textContent = cfg.has_key ? t("key.saved") : t("key.none");
-  $("keyBanner").hidden = cfg.has_key;
+  $("keyBanner").hidden = cfg.has_key || cfg.has_groq;
+  $("groqState").textContent = cfg.has_groq ? t("key.saved") : t("key.none");
 }
 
 // ----- brand kit (colors, font, logo) -----

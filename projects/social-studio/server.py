@@ -288,11 +288,12 @@ def http_error_message(e):
 
 
 def model_rank(name):
-    """Chhota number = behtar. Stable flash models sabse pehle, phir lite, phir baaki."""
+    """Chhota number = pehle try. Stable 'lite' models pehle (free quota sabse zyada), phir flash, phir preview; naya version pehle."""
     version = re.search(r"gemini-(\d+(?:\.\d+)?)", name)
     ver = float(version.group(1)) if version else 0
     unstable = any(w in name for w in ("preview", "exp", "latest-"))
-    return (0 if "flash" in name else 1, 1 if "lite" in name else 0, 1 if unstable else 0, -ver)
+    group = (0 if "lite" in name else 1 if "flash" in name else 2) + (3 if unstable else 0)
+    return (group, -ver)
 
 
 def fetch_model_names(key):
@@ -318,7 +319,7 @@ def available_models(key, refresh=False):
         return list(_model_cache)
     names = [n for n in fetch_model_names(key) if not any(w in n for w in SKIP_WORDS)]
     names.sort(key=model_rank)
-    _model_cache[:] = names[:5] or list(MODELS)  # list na mile to purane naam try karo
+    _model_cache[:] = names[:8] or list(MODELS)  # list na mile to purane naam try karo
     return list(_model_cache)
 
 
@@ -346,17 +347,32 @@ def request_model(key, model, prompt, think_off):
     return json.loads(payload["candidates"][0]["content"]["parts"][0]["text"])
 
 
+ALL_LIMIT = ("All free Gemini models are at their limit right now. Try again later (daily limits reset every day), "
+             "or add a free backup AI key in Settings.")
+_cooldown = {}  # model -> kab tak skip karna hai (quota khatam hone par)
+
+
+def cool_down(model, msg):
+    m = re.search(r"retry in ([\d.]+)\s*s", msg, re.I)
+    _cooldown[model] = time.time() + (min(float(m.group(1)) + 1, 1800) if m else 1800)
+
+
 def call_gemini(prompt):
-    """Prompt bhejta hai, JSON (dict/list) wapas deta hai. Busy hone par khud retry karta hai."""
+    """Prompt bhejta hai, JSON (dict/list) wapas deta hai. Busy hone par retry, quota khatam hone par agla model."""
     if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
         return mock_ai(prompt)
     key = get_api_key()
     if not key:
         raise AIError("No Gemini API key found. Add your key on the Settings page.")
-    last_error = BUSY_ERROR
+    last_error, limit_note = BUSY_ERROR, ""
     for attempt in range(len(RETRY_WAITS) + 1):
-        retryable, all_missing = False, True
-        for model in available_models(key, refresh=attempt == len(RETRY_WAITS)):
+        retryable, all_missing, limited = False, True, 0
+        models = available_models(key, refresh=attempt == len(RETRY_WAITS))
+        for model in models:
+            if _cooldown.get(model, 0) > time.time():
+                limited += 1
+                all_missing = False
+                continue
             for think_off in (True, False):
                 try:
                     return request_model(key, model, prompt, think_off)
@@ -369,9 +385,13 @@ def call_gemini(prompt):
                     if e.code == 404:
                         break  # ye model nahi mila, agla model
                     all_missing = False
+                    if e.code == 429:
+                        cool_down(model, msg)
+                        limited += 1
+                        limit_note = f" [{model}: {msg[:140]}]"
+                        break
                     if e.code in RETRY_CODES:
-                        retryable = True
-                        last_error = (LIMIT_ERROR + f" [{model}: {msg[:160]}]") if e.code == 429 else BUSY_ERROR
+                        retryable, last_error = True, BUSY_ERROR
                         break
                     raise AIError(f"Gemini error {e.code}: {msg[:200]}")
                 except (urllib.error.URLError, TimeoutError):
@@ -382,11 +402,77 @@ def call_gemini(prompt):
                     break
         if all_missing:
             last_error = "No Gemini model is available for this key."
+        elif limited and limited >= len(models):
+            raise AIError(ALL_LIMIT + limit_note)
         if retryable and attempt < len(RETRY_WAITS):
             time.sleep(RETRY_WAITS[attempt])
             continue
         break
     raise AIError(last_error)
+
+
+# ---- backup AI (Groq, free) ----
+GROQ_ROOT = os.environ.get("GROQ_API_ROOT", "https://api.groq.com/openai/v1")  # env sirf testing ke liye
+GROQ_PREFERRED = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+
+
+def get_groq_key():
+    return (load_settings().get("groq_api_key") or os.environ.get("GROQ_API_KEY", "")).strip()
+
+
+def groq_request(key, path, body=None):
+    req = urllib.request.Request(
+        GROQ_ROOT + path, data=json.dumps(body).encode() if body else None, method="POST" if body else "GET",
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json", "User-Agent": "social-studio"},
+    )
+    with urllib.request.urlopen(req, timeout=120) as resp:
+        return json.loads(resp.read())
+
+
+def call_groq(prompt):
+    """Backup AI. Groq ki free key se; Gemini ka limit khatam hone par chalta hai."""
+    key = get_groq_key()
+    if not key:
+        raise AIError("No backup AI key found.")
+    try:
+        ids = [m["id"] for m in groq_request(key, "/models").get("data", [])]
+        models = [m for m in GROQ_PREFERRED if m in ids] or [m for m in ids if m.startswith("llama") and "guard" not in m][:2] or GROQ_PREFERRED
+    except (urllib.error.URLError, TimeoutError, ValueError, KeyError):
+        models = GROQ_PREFERRED
+    wrapped = "PLAN_REQUEST" in prompt
+    text = prompt + ('\nBecause JSON mode needs an object, return {"items": [ ... ]} instead of a bare array.' if wrapped else "")
+    last = "The backup AI is not available right now."
+    for model in models:
+        body = {"model": model, "temperature": 0.9, "response_format": {"type": "json_object"},
+                "messages": [{"role": "system", "content": "You reply with valid JSON only."}, {"role": "user", "content": text}]}
+        try:
+            data = json.loads(groq_request(key, "/chat/completions", body)["choices"][0]["message"]["content"])
+            return data.get("items", data) if wrapped and isinstance(data, dict) else data
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                raise AIError("The backup AI key is invalid or not working.")
+            last = "The backup AI is at its limit or busy. " + http_error_message(e)[:100]
+        except (urllib.error.URLError, TimeoutError):
+            raise AIError("Could not connect to the backup AI. Check your internet connection.")
+        except (KeyError, IndexError, ValueError):
+            last = "Could not understand the backup AI response."
+    raise AIError(last)
+
+
+def call_ai(prompt):
+    """Pehle Gemini; na chale to (agar key di ho) backup AI."""
+    has_gemini = bool(get_api_key()) or os.environ.get("SOCIAL_STUDIO_MOCK") == "1"
+    if not has_gemini and get_groq_key():
+        return call_groq(prompt)
+    try:
+        return call_gemini(prompt)
+    except AIError as first:
+        if not get_groq_key():
+            raise
+        try:
+            return call_groq(prompt)
+        except AIError as second:
+            raise AIError(f"{first} Backup AI: {second}")
 
 
 IMAGES_DIR = DATA / "images"
@@ -526,7 +612,7 @@ Month: {month} ({days} days). Theme for this month: {theme or 'general'}.
 Posts per week: {posts_per_week}. Mix formats ({', '.join(FORMATS)}) and content types ({', '.join(CONTENT_TYPES)}) for variety.
 Return ONLY a JSON array. Each item: {{"day": <1-{days}>, "format": <one of formats>, "content_type": <one of content types>, "topic": <short specific topic idea in the brand language>}}.
 Spread days evenly across the whole month. No duplicate days."""
-    items = call_gemini(prompt)
+    items = call_ai(prompt)
     if not isinstance(items, list):
         raise AIError("The AI response had the wrong format. Please try again.")
     created, seen = [], set()
@@ -613,7 +699,7 @@ def ai_generate_post(post_id, step="all"):
     post = get_post(post_id)
     if not post:
         raise AIError("post not found")
-    data = call_gemini(build_prompt(post, step))
+    data = call_ai(build_prompt(post, step))
     if isinstance(data, list) and data and isinstance(data[0], dict):
         data = data[0]
     if not isinstance(data, dict):
@@ -901,7 +987,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and path == "/api/config":
                 return self.send_json({
                     "formats": FORMATS, "content_types": CONTENT_TYPES, "platforms": PLATFORMS,
-                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()),
+                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()), "has_groq": bool(get_groq_key()),
                 })
             if method == "GET" and path == "/api/diagnose":  # "Test my key": kya-kya chal sakta hai
                 if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
@@ -910,12 +996,22 @@ class Handler(BaseHTTPRequestHandler):
                 if not key:
                     raise AIError("No Gemini API key found. Add your key on the Settings page.")
                 out = {"text_models": available_models(key, True), "image_models": available_image_models(key, True),
-                       "text_ok": True, "text_error": ""}
+                       "text_ok": True, "text_error": "", "groq": bool(get_groq_key()), "groq_ok": False}
+                if out["groq"]:
+                    try:
+                        call_groq('Reply with JSON {"ok": true}')
+                        out["groq_ok"] = True
+                    except AIError:
+                        pass
                 try:
                     call_gemini('Reply with JSON {"ok": true}')
                 except AIError as e:
                     out["text_ok"], out["text_error"] = False, str(e)
                 return self.send_json(out)
+            if method == "POST" and path == "/api/settings/groq":
+                key = str(self.read_json().get("key", "")).strip()
+                save_settings({"groq_api_key": key})
+                return self.send_json({"has_groq": bool(key)})
             if method == "GET" and path == "/api/tools":
                 return self.send_json(tools_status())
             if method == "POST" and path == "/api/tools/ffmpeg":
