@@ -86,6 +86,15 @@
   .pcard pre { white-space: pre-wrap; font: inherit; background: var(--bg); padding: 8px 10px; border-radius: 8px; margin: 6px 0; }
   .pcard details { margin-top: 6px; }
   .pcard summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+  .modal.wide { max-width: 1000px; }
+  .dgrid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+  .dpreview canvas { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); background: #ddd; display: block; max-height: 70vh; object-fit: contain; }
+  .dcontrols textarea { min-height: 56px; }
+  .row3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  input[type=color] { padding: 2px; height: 36px; cursor: pointer; }
+  input[type=range] { padding: 0; }
+  .slidebtn { cursor: pointer; background: none; font: inherit; }
+  @media (max-width: 800px) { .dgrid { grid-template-columns: 1fr; } }
   @media (max-width: 700px) { .day { min-height: 80px; } .chip small { display: none; } .row, .modes { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -171,6 +180,19 @@
       </div>
       <label data-i18n="brand.platforms">Default platforms (used for new posts)</label>
       <div class="checks" id="b_platforms"></div>
+      <label data-i18n="brand.colors">Brand colors (used in image designs)</label>
+      <div class="row3">
+        <div><span class="hint" data-i18n="brand.primary">Main</span><input type="color" id="b_primary" value="#5b4bdb"></div>
+        <div><span class="hint" data-i18n="brand.secondary">Accent</span><input type="color" id="b_secondary" value="#ff7a59"></div>
+        <div><span class="hint" data-i18n="brand.textcolor">Text</span><input type="color" id="b_text_color" value="#ffffff"></div>
+      </div>
+      <label data-i18n="brand.font">Font style</label><select id="b_font"></select>
+      <label data-i18n="brand.logo">Logo (PNG or JPG)</label>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input type="file" id="b_logoFile" accept="image/*" style="width:auto">
+        <img id="b_logoPrev" alt="" style="max-height:44px;max-width:120px;display:none;background:#ccc;border-radius:6px">
+        <button class="ghost" id="b_logoClear" hidden data-i18n="btn.removeLogo">Remove logo</button>
+      </div>
       <div class="actions"><button class="primary" id="saveBrand" data-i18n="btn.save">Save</button></div>
     </div>
   </section>
@@ -224,10 +246,38 @@
   <label data-i18n="f.image">Image / visual idea</label><textarea id="f_image_idea" style="min-height:60px"></textarea>
   <div class="actions">
     <button class="primary" id="postSave" data-i18n="btn.save">Save</button>
+    <button class="ghost" id="postDesign" data-i18n="btn.design">Design image</button>
     <button class="ghost" id="postDownload" data-i18n="btn.download">Download content pack</button>
     <button class="ghost" data-close data-i18n="btn.close">Close</button>
     <div class="spacer"></div>
     <button class="ghost danger" id="postDelete" data-i18n="btn.delete">Delete</button>
+  </div>
+</div></div>
+
+<!-- Image designer -->
+<div class="overlay" id="designOverlay"><div class="modal wide">
+  <h3 data-i18n="d.title">Design image</h3>
+  <p class="hint" data-i18n="d.hint">Your brand colors and logo are applied automatically. Change anything, then download the PNG.</p>
+  <div class="dgrid">
+    <div class="dpreview"><canvas id="dCanvas" width="1080" height="1350"></canvas><div class="stepper" id="dSlides"></div></div>
+    <div class="dcontrols">
+      <label data-i18n="d.head">Headline</label><textarea id="d_head"></textarea>
+      <label data-i18n="d.sub">Sub text</label><textarea id="d_sub"></textarea>
+      <div class="row"><div><label data-i18n="d.size">Size</label><select id="d_size"></select></div><div><label data-i18n="d.template">Template</label><select id="d_template"></select></div></div>
+      <div class="row"><div><label data-i18n="d.bg">Background</label><select id="d_bg"></select></div><div><label data-i18n="d.font">Font</label><select id="d_font"></select></div></div>
+      <div id="d_photoRow" hidden>
+        <label data-i18n="d.photo">Background photo</label><input type="file" id="d_photo" accept="image/*">
+        <label data-i18n="d.dark">Darken photo</label><input type="range" id="d_dark" min="0" max="85" value="45">
+      </div>
+      <div class="row"><div><label data-i18n="d.align">Text align</label><select id="d_align"></select></div><div><label data-i18n="d.logo">Logo</label><select id="d_logo"></select></div></div>
+      <div class="actions"><button class="ghost" id="dAddSlide" data-i18n="d.addSlide">+ Add slide</button><button class="ghost danger" id="dRemoveSlide" data-i18n="d.removeSlide">Remove slide</button></div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="dDownload" data-i18n="btn.dlpng">Download PNG</button>
+    <button class="ghost" id="dDownloadAll" data-i18n="btn.dlall">Download all slides</button>
+    <button class="ghost" id="dSave" data-i18n="btn.saveDesign">Save design</button>
+    <button class="ghost" data-close data-i18n="btn.close">Close</button>
   </div>
 </div></div>
 
@@ -288,6 +338,14 @@ const I18N = {
     "Could not connect to Gemini. Check your internet connection.": "Gemini से कनेक्ट नहीं हो पाया। इंटरनेट जाँचें।",
     "Could not understand the AI response. Please try again.": "AI का जवाब समझ नहीं आया। फिर कोशिश करें।",
     "The AI response had the wrong format. Please try again.": "AI का जवाब गलत फ़ॉर्मेट में था। फिर कोशिश करें।",
+    "btn.design": "इमेज डिज़ाइन करें", "btn.dlpng": "PNG डाउनलोड करें", "btn.dlall": "सभी स्लाइड डाउनलोड करें",
+    "btn.saveDesign": "डिज़ाइन सेव करें", "btn.removeLogo": "लोगो हटाएं", "toast.design": "डिज़ाइन सेव हो गया",
+    "d.title": "इमेज डिज़ाइन", "d.hint": "आपके ब्रांड के रंग और लोगो अपने आप लगते हैं। कुछ भी बदलें, फिर PNG डाउनलोड करें।",
+    "d.head": "हेडलाइन", "d.sub": "सब-टेक्स्ट", "d.size": "साइज़", "d.template": "टेम्पलेट", "d.bg": "बैकग्राउंड", "d.font": "फ़ॉन्ट",
+    "d.photo": "बैकग्राउंड फ़ोटो", "d.dark": "फ़ोटो गहरी करें", "d.align": "टेक्स्ट अलाइन", "d.logo": "लोगो",
+    "d.addSlide": "+ स्लाइड जोड़ें", "d.removeSlide": "स्लाइड हटाएं", "d.slide": "स्लाइड",
+    "brand.colors": "ब्रांड के रंग (इमेज डिज़ाइन में लगेंगे)", "brand.primary": "मुख्य", "brand.secondary": "एक्सेंट", "brand.textcolor": "टेक्स्ट",
+    "brand.font": "फ़ॉन्ट स्टाइल", "brand.logo": "लोगो (PNG या JPG)",
     "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
     "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
     "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
@@ -305,6 +363,8 @@ const EN_TEXT = {
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
+  "btn.design": "Design image", "btn.dlpng": "Download PNG", "btn.dlall": "Download all slides",
+  "btn.saveDesign": "Save design", "btn.removeLogo": "Remove logo", "toast.design": "Design saved", "d.slide": "Slide",
   "post.new": "New post", "post.edit": "Edit post", "post.addTip": "Add post",
   "busy.save": "Saving...", "busy.gen": "AI is writing...", "busy.plan": "Planning...", "busy.create": "Creating...",
   "toast.saved": "Saved", "toast.generated": "Content ready!", "toast.brand": "Brand profile saved",
@@ -489,6 +549,7 @@ function renderWs() {
     status.textContent = t("ws.final");
     body.innerHTML = fieldsHTML(FINAL_FIELDS) + `<p class="hint">${esc(t("ws.soon"))}</p>`; fillFields(FINAL_FIELDS);
     btn("primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); download(ws.post.id); }));
+    btn("ghost", t("btn.design"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); openDesign(ws.post); }));
     btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FINAL_FIELDS); toast(t("ws.saved")); }));
     btn("ghost", t("btn.openCal"), () => { cur = new Date(ws.post.date + "T00:00"); cur.setDate(1); showTab("calendar"); });
     btn("ghost", t("btn.another"), () => { ws = null; renderWs(); $("c_topic").value = ""; window.scrollTo(0, 0); });
@@ -570,10 +631,11 @@ function renderList() {
       <div class="ptitle">${esc(p.hook || p.topic || "-")}</div>
       ${p.caption ? `<pre>${esc(p.caption)}${p.hashtags ? "\n\n" + esc(p.hashtags) : ""}</pre>` : ""}
       ${det("f.script", p.script)}${det("f.edit_plan", p.edit_plan)}
-      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
+      <div class="actions"><button class="ghost" data-edit="${p.id}">${esc(t("post.edit"))}</button><button class="ghost" data-design="${p.id}">${esc(t("btn.design"))}</button><button class="ghost" data-dl="${p.id}">${esc(t("btn.download"))}</button></div>
     </div>`;
   }).join("");
   box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => openPost(posts.find((p) => p.id === +b.dataset.edit))));
+  box.querySelectorAll("[data-design]").forEach((b) => (b.onclick = () => openDesign(posts.find((p) => p.id === +b.dataset.design))));
   box.querySelectorAll("[data-dl]").forEach((b) => (b.onclick = () => download(b.dataset.dl)));
 }
 
@@ -596,7 +658,7 @@ function openPost(p) {
   $("postTitle").textContent = p.id ? t("post.edit") : t("post.new");
   MODAL_FIELDS.forEach((k) => ($("f_" + k).value = post[k]));
   checks("f_platforms", "pf", post.platforms);
-  $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("genBtn").hidden = !p.id;
+  $("postDelete").hidden = !p.id; $("postDownload").hidden = !p.id; $("postDesign").hidden = !p.id; $("genBtn").hidden = !p.id;
   const err = $("genErr"); err.hidden = post.gen_status !== "error"; err.textContent = `${t("gen.error")} ${trErr(post.gen_error || "")}`;
   toggleScript(); $("postOverlay").classList.add("show");
 }
@@ -652,6 +714,7 @@ $("saveBrand").onclick = (e) => busy(e.target, "busy.save", async () => {
   cfg.brand = await api("PUT", "/api/brand", {
     name: $("b_name").value, business: $("b_business").value, audience: $("b_audience").value,
     tone: $("b_tone").value, language: $("b_language").value, platforms: checked("bp"),
+    primary: $("b_primary").value, secondary: $("b_secondary").value, text_color: $("b_text_color").value, font: $("b_font").value, logo: brandLogo,
   });
   toast(t("toast.brand"));
 });
@@ -664,6 +727,209 @@ function renderKeyState() {
   $("keyBanner").hidden = cfg.has_key;
 }
 
+// ----- brand kit (colors, font, logo) -----
+let brandLogo = "";
+const FONT_STACKS = {
+  sans: '"Segoe UI","Helvetica Neue",Arial,"Nirmala UI","Kohinoor Devanagari","Noto Sans Devanagari",sans-serif',
+  serif: 'Georgia,"Times New Roman","Nirmala UI","Kohinoor Devanagari","Noto Serif Devanagari",serif',
+  display: 'Impact,"Arial Black","Nirmala UI","Kohinoor Devanagari",sans-serif',
+};
+const FONT_WEIGHT = { sans: [800, 500], serif: [700, 400], display: [400, 400] };
+const DLABEL = {
+  size: { portrait: ["Portrait 4:5 (1080x1350)", "पोर्ट्रेट 4:5 (1080x1350)"], square: ["Square 1:1 (1080x1080)", "स्क्वायर 1:1 (1080x1080)"],
+    story: ["Story / Reel 9:16 (1080x1920)", "स्टोरी / रील 9:16 (1080x1920)"], landscape: ["Landscape (1200x627)", "लैंडस्केप (1200x627)"],
+    thumbnail: ["YouTube thumbnail (1280x720)", "YouTube थंबनेल (1280x720)"] },
+  template: { bold: ["Bold center", "बोल्ड सेंटर"], quote: ["Quote", "कोट"], split: ["Split", "स्प्लिट"], minimal: ["Minimal", "मिनिमल"] },
+  bg: { gradient: ["Brand gradient", "ब्रांड ग्रेडिएंट"], solid: ["Solid brand color", "सॉलिड ब्रांड रंग"], light: ["Light", "हल्का"], photo: ["My photo", "मेरी फ़ोटो"] },
+  font: { sans: ["Clean (sans)", "क्लीन (sans)"], serif: ["Elegant (serif)", "एलिगेंट (serif)"], display: ["Impact", "इम्पैक्ट"] },
+  align: { center: ["Center", "बीच में"], left: ["Left", "बाएं"], right: ["Right", "दाएं"] },
+  logo: { none: ["No logo", "लोगो नहीं"], "bottom-center": ["Bottom center", "नीचे बीच में"], "bottom-left": ["Bottom left", "नीचे बाएं"],
+    "bottom-right": ["Bottom right", "नीचे दाएं"], "top-left": ["Top left", "ऊपर बाएं"], "top-right": ["Top right", "ऊपर दाएं"] },
+};
+const SIZES = { portrait: [1080, 1350], square: [1080, 1080], story: [1080, 1920], landscape: [1200, 627], thumbnail: [1280, 720] };
+function L(group, v) { return DLABEL[group][v][uiLang === "hi" ? 1 : 0]; }
+function fillDesignSelect(id, group) {
+  const old = $(id).value;
+  $(id).innerHTML = Object.keys(DLABEL[group]).map((v) => `<option value="${v}">${esc(L(group, v))}</option>`).join("");
+  if (old && DLABEL[group][old]) $(id).value = old;
+}
+function fillBrandKitSelects() {
+  const old = $("b_font").value;
+  $("b_font").innerHTML = Object.keys(DLABEL.font).map((v) => `<option value="${v}">${esc(L("font", v))}</option>`).join("");
+  $("b_font").value = old && DLABEL.font[old] ? old : cfg.brand.font;
+  ["size", "template", "bg", "font", "align", "logo"].forEach((g) => fillDesignSelect("d_" + g, g));
+}
+function showLogoPreview() {
+  $("b_logoPrev").style.display = brandLogo ? "inline-block" : "none";
+  $("b_logoPrev").src = brandLogo || ""; $("b_logoClear").hidden = !brandLogo;
+}
+$("b_logoFile").onchange = () => {
+  const f = $("b_logoFile").files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      for (const max of [400, 256, 160]) {  // chhota karo taaki save ho sake
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        const url = c.toDataURL("image/png");
+        if (url.length < 350000) { brandLogo = url; showLogoPreview(); return; }
+      }
+      toast(t("err.generic"), true);
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(f);
+};
+$("b_logoClear").onclick = () => { brandLogo = ""; $("b_logoFile").value = ""; showLogoPreview(); };
+
+// ----- image designer (canvas) -----
+let D = null;
+function loadImg(src) {
+  return new Promise((res) => { if (!src) return res(null); const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+}
+function wrapText(ctx, text, maxW) {
+  const lines = [];
+  text.split("\n").forEach((para) => {
+    let line = "";
+    para.split(/\s+/).filter(Boolean).forEach((word) => {
+      let w = word;
+      while (ctx.measureText(w).width > maxW && w.length > 1) {  // bahut lamba shabd tod do
+        let n = w.length; while (n > 1 && ctx.measureText(w.slice(0, n)).width > maxW) n--;
+        if (line) { lines.push(line); line = ""; }
+        lines.push(w.slice(0, n)); w = w.slice(n);
+      }
+      const test = line ? line + " " + w : w;
+      if (ctx.measureText(test).width <= maxW) line = test; else { lines.push(line); line = w; }
+    });
+    lines.push(line);
+  });
+  return lines.filter((l, i, a) => l !== "" || (i > 0 && i < a.length - 1));
+}
+function fitText(ctx, text, family, weight, boxW, boxH, maxPx, minPx) {
+  let px = maxPx, lines = [];
+  for (; px >= minPx; px -= 2) {
+    ctx.font = `${weight} ${px}px ${family}`;
+    lines = wrapText(ctx, text, boxW);
+    if (lines.length * px * 1.22 <= boxH) break;
+  }
+  return { px: Math.max(px, minPx), lines, lh: Math.max(px, minPx) * 1.22 };
+}
+function drawLines(ctx, fit, x, y, align) {
+  ctx.textAlign = align; ctx.textBaseline = "top";
+  fit.lines.forEach((l, i) => ctx.fillText(l, x, y + i * fit.lh));
+}
+function drawDesign(canvas, c, slide, brand, photo, logo) {
+  const [w, h] = SIZES[c.size]; canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d"), m = w * 0.08, family = FONT_STACKS[c.font], [wh, ws] = FONT_WEIGHT[c.font];
+  const light = c.bg === "light";
+  // background
+  if (c.bg === "photo" && photo) {
+    const k = Math.max(w / photo.width, h / photo.height);
+    ctx.drawImage(photo, (w - photo.width * k) / 2, (h - photo.height * k) / 2, photo.width * k, photo.height * k);
+    ctx.fillStyle = `rgba(0,0,0,${c.dark / 100})`; ctx.fillRect(0, 0, w, h);
+  } else if (c.bg === "solid") { ctx.fillStyle = brand.primary; ctx.fillRect(0, 0, w, h); }
+  else if (light) { ctx.fillStyle = "#f6f7fb"; ctx.fillRect(0, 0, w, h); }
+  else { const g = ctx.createLinearGradient(0, 0, w, h); g.addColorStop(0, brand.primary); g.addColorStop(1, brand.secondary); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); }
+  const textColor = light ? "#1d2433" : brand.text_color;
+  const accent = light ? brand.primary : c.bg === "solid" ? brand.secondary : textColor;
+  const align = c.template === "quote" ? "left" : c.align;
+  const ax = align === "center" ? w / 2 : align === "left" ? m : w - m, bw = w - 2 * m;
+  const bar = (y) => { ctx.fillStyle = accent; ctx.fillRect(align === "center" ? w / 2 - w * 0.06 : align === "left" ? m : w - m - w * 0.12, y, w * 0.12, Math.max(6, h * 0.006)); };
+  const head = slide.head || "", sub = slide.sub || "";
+  if (c.template === "split") {
+    const top = h * 0.58; ctx.save(); ctx.beginPath(); ctx.rect(0, top, w, h - top); ctx.clip();
+    ctx.fillStyle = light ? brand.primary : "#ffffff"; ctx.fillRect(0, top, w, h - top); ctx.restore();
+    ctx.fillStyle = textColor; let f = fitText(ctx, head, family, wh, bw, top - m * 1.6, w * 0.105, w * 0.04);
+    ctx.font = `${wh} ${f.px}px ${family}`; drawLines(ctx, f, ax, (top - f.lines.length * f.lh) / 2, align);
+    ctx.fillStyle = light ? "#ffffff" : "#1d2433"; f = fitText(ctx, sub, family, ws, bw, h - top - m * 2.4, w * 0.05, w * 0.03);
+    ctx.font = `${ws} ${f.px}px ${family}`; drawLines(ctx, f, ax, top + (h - top - f.lines.length * f.lh) / 2 - m * 0.25, align);
+  } else if (c.template === "quote") {
+    ctx.fillStyle = accent; ctx.globalAlpha = 0.35; ctx.font = `${wh} ${w * 0.34}px Georgia,serif`; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    ctx.fillText("“", m * 0.8, h * 0.05); ctx.globalAlpha = 1;
+    ctx.fillStyle = textColor; let f = fitText(ctx, head, family, wh, bw, h * 0.5, w * 0.085, w * 0.035);
+    ctx.font = `${wh} ${f.px}px ${family}`; drawLines(ctx, f, m, h * 0.26, "left");
+    if (sub) { ctx.globalAlpha = 0.85; f = fitText(ctx, "— " + sub, family, ws, bw, h * 0.14, w * 0.045, w * 0.028);
+      ctx.font = `${ws} ${f.px}px ${family}`; drawLines(ctx, f, m, h * 0.8 - f.lines.length * f.lh / 2, "left"); ctx.globalAlpha = 1; }
+  } else if (c.template === "minimal") {
+    bar(h * 0.22); ctx.fillStyle = textColor; let f = fitText(ctx, head, family, wh, bw, h * 0.38, w * 0.08, w * 0.035);
+    ctx.font = `${wh} ${f.px}px ${family}`; drawLines(ctx, f, ax, h * 0.27, align);
+    if (sub) { ctx.globalAlpha = 0.8; f = fitText(ctx, sub, family, ws, bw, h * 0.2, w * 0.04, w * 0.026);
+      ctx.font = `${ws} ${f.px}px ${family}`; drawLines(ctx, f, ax, h * 0.7, align); ctx.globalAlpha = 1; }
+  } else {  // bold
+    bar(h * 0.17); ctx.fillStyle = textColor; let f = fitText(ctx, head, family, wh, bw, h * 0.42, w * 0.11, w * 0.04);
+    const hy = h * 0.22 + (h * 0.42 - f.lines.length * f.lh) / 2;
+    ctx.font = `${wh} ${f.px}px ${family}`; drawLines(ctx, f, ax, hy, align);
+    if (sub) { ctx.globalAlpha = 0.9; const s = fitText(ctx, sub, family, ws, bw, h * 0.2, Math.min(f.px * 0.5, w * 0.05), w * 0.028);
+      ctx.font = `${ws} ${s.px}px ${family}`; drawLines(ctx, s, ax, h * 0.68, align); ctx.globalAlpha = 1; }
+  }
+  if (logo && c.logo !== "none") {
+    const k = Math.min(w * 0.26 / logo.width, h * 0.075 / logo.height), lw = logo.width * k, lh = logo.height * k, mm = m * 0.6;
+    const [vy, hx] = c.logo.split("-");
+    const lx = hx === "left" ? mm : hx === "right" ? w - mm - lw : (w - lw) / 2, ly = vy === "top" ? mm : h - mm - lh;
+    ctx.drawImage(logo, lx, ly, lw, lh);
+  }
+}
+const DEFAULT_DESIGN = { size: "portrait", template: "bold", bg: "gradient", font: "sans", align: "center", logo: "bottom-center", dark: 45 };
+function initialSlides(p) {
+  const lines = (txt) => txt.split(/\n+/).map((x) => x.trim()).filter(Boolean);
+  if (p.format === "carousel" && p.script) {
+    const parts = p.script.split(/^\s*(?:slide\s*\d+\s*[:.\-–]?)/gim).map((x) => x.trim()).filter(Boolean);
+    if (parts.length >= 2) return parts.map((x) => { const l = lines(x); return { head: l[0] || "", sub: l.slice(1).join(" ") }; });
+  }
+  if (p.format === "image" && p.script) { const l = lines(p.script); return [{ head: l[0], sub: l.slice(1).join(" ") || p.cta }]; }
+  const showCta = !["video", "carousel"].includes(p.format);  // video thumbnail / carousel cover par CTA nahi
+  return [{ head: p.hook || p.topic || "", sub: showCta ? p.cta : "" }];
+}
+async function openDesign(p) {
+  let saved = {}; try { saved = JSON.parse(p.design || "{}"); } catch (e) {}
+  const cfg0 = { ...DEFAULT_DESIGN, ...saved }; delete cfg0.slides;
+  if (!saved.size) cfg0.size = p.format === "story" ? "story" : p.format === "video" ? "thumbnail" : "portrait";
+  if (!brandLogo) cfg0.logo = "none";
+  D = { post: p, c: cfg0, slides: Array.isArray(saved.slides) && saved.slides.length ? saved.slides : initialSlides(p), idx: 0, photo: null, logo: await loadImg(brandLogo) };
+  ["size", "template", "bg", "font", "align", "logo"].forEach((k) => ($("d_" + k).value = D.c[k]));
+  $("d_dark").value = D.c.dark; $("d_photo").value = "";
+  $("designOverlay").classList.add("show"); syncDesignInputs();
+}
+function syncDesignInputs() {
+  const s = D.slides[D.idx]; $("d_head").value = s.head; $("d_sub").value = s.sub;
+  $("d_photoRow").hidden = D.c.bg !== "photo"; $("dRemoveSlide").hidden = D.slides.length < 2; $("dDownloadAll").hidden = D.slides.length < 2;
+  $("dSlides").innerHTML = D.slides.length > 1 ? D.slides.map((_, i) => `<button class="pill slidebtn ${i === D.idx ? "current" : ""}" data-i="${i}">${esc(t("d.slide"))} ${i + 1}</button>`).join("") : "";
+  $("dSlides").querySelectorAll("button").forEach((b) => (b.onclick = () => { D.idx = +b.dataset.i; syncDesignInputs(); }));
+  redrawDesign();
+}
+function redrawDesign() { if (D) drawDesign($("dCanvas"), D.c, D.slides[D.idx], cfg.brand, D.photo, D.logo); }
+["size", "template", "bg", "font", "align", "logo"].forEach((k) => ($("d_" + k).onchange = () => { D.c[k] = $("d_" + k).value; $("d_photoRow").hidden = D.c.bg !== "photo"; redrawDesign(); }));
+$("d_dark").oninput = () => { D.c.dark = +$("d_dark").value; redrawDesign(); };
+$("d_head").oninput = () => { D.slides[D.idx].head = $("d_head").value; redrawDesign(); };
+$("d_sub").oninput = () => { D.slides[D.idx].sub = $("d_sub").value; redrawDesign(); };
+$("d_photo").onchange = () => {
+  const f = $("d_photo").files[0]; if (!f) return;
+  const url = URL.createObjectURL(f); loadImg(url).then((img) => { D.photo = img; redrawDesign(); });
+};
+$("dAddSlide").onclick = () => { D.slides.push({ head: "", sub: "" }); D.idx = D.slides.length - 1; syncDesignInputs(); };
+$("dRemoveSlide").onclick = () => { D.slides.splice(D.idx, 1); D.idx = Math.max(0, D.idx - 1); syncDesignInputs(); };
+function savePng(canvas, name) {
+  return new Promise((res) => canvas.toBlob((blob) => {
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000); res();
+  }, "image/png"));
+}
+$("dDownload").onclick = () => savePng($("dCanvas"), `design-${D.post.id}-${D.idx + 1}.png`);
+$("dDownloadAll").onclick = async () => {
+  const c = document.createElement("canvas");
+  for (let i = 0; i < D.slides.length; i++) {
+    drawDesign(c, D.c, D.slides[i], cfg.brand, D.photo, D.logo);
+    await savePng(c, `design-${D.post.id}-${i + 1}.png`); await new Promise((r) => setTimeout(r, 400));
+  }
+};
+$("dSave").onclick = (e) => busy(e.target, "busy.save", async () => {
+  await api("PUT", "/api/posts/" + D.post.id, { design: JSON.stringify({ ...D.c, slides: D.slides }) });
+  D.post.design = JSON.stringify({ ...D.c, slides: D.slides }); toast(t("toast.design")); loadPosts();
+});
+$("postDesign").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openDesign(await api("GET", "/api/posts/" + editing.id)); };
+
 // ----- language -----
 function buildOptions() {
   applyStatic(); renderDows();
@@ -673,7 +939,7 @@ function buildOptions() {
   const keepC = $("c_platforms").children.length ? checked("cp") : cfg.brand.platforms;
   checks("c_platforms", "cp", keepC); checks("b_platforms", "bp", cfg.brand.platforms);
   $("legend").innerHTML = cfg.statuses.map((s) => `<span><i class="dot" style="background:var(--s-${s})"></i>${esc(opt(s))}</span>`).join("");
-  renderKeyState();
+  renderKeyState(); fillBrandKitSelects();
 }
 $("uiLang").onchange = () => {
   uiLang = $("uiLang").value;
@@ -691,6 +957,8 @@ $("uiLang").onchange = () => {
   buildOptions();
   $("c_format").value = "video"; $("c_duration").value = "30-60 sec";
   $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
+  ["primary", "secondary", "text_color"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
+  $("b_font").value = cfg.brand.font; brandLogo = cfg.brand.logo || ""; showLogoPreview();
   // background me chal rahe kaam (page reload ke baad bhi) wapas dikhao
   try {
     (await api("GET", "/api/jobs")).forEach((j) => trackJob(j.id, j.label || "AI").then(() => loadPosts()).catch((e) => toast(e.message, true)));

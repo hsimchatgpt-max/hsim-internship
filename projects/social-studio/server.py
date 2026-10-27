@@ -56,6 +56,7 @@ NEW_COLUMNS = [  # purane data wale users ke liye migration
     ("duration", "TEXT NOT NULL DEFAULT '30-60 sec'"),
     ("gen_status", "TEXT NOT NULL DEFAULT ''"),
     ("gen_error", "TEXT NOT NULL DEFAULT ''"),
+    ("design", "TEXT NOT NULL DEFAULT ''"),  # image designer ki settings (JSON)
 ]
 
 
@@ -94,10 +95,13 @@ def init_db():
         )
 
 
+FONTS = ["sans", "serif", "display"]
 DEFAULT_BRAND = {
     "name": "", "business": "", "audience": "", "tone": "friendly",
     "language": "hinglish", "platforms": ["instagram", "linkedin", "youtube"],
+    "primary": "#5b4bdb", "secondary": "#ff7a59", "text_color": "#ffffff", "font": "sans", "logo": "",
 }
+COLOR_RE = re.compile(r"#[0-9a-fA-F]{6}")
 
 
 def get_brand():
@@ -108,6 +112,13 @@ def get_brand():
 
 def save_brand(data):
     clean = {k: data.get(k, DEFAULT_BRAND[k]) for k in DEFAULT_BRAND}
+    for key in ("primary", "secondary", "text_color"):
+        if not COLOR_RE.fullmatch(str(clean[key])):
+            clean[key] = DEFAULT_BRAND[key]
+    if clean["font"] not in FONTS:
+        clean["font"] = "sans"
+    logo = str(clean["logo"])
+    clean["logo"] = logo if logo.startswith("data:image/") and len(logo) < 400_000 else ""
     with DB_LOCK, db() as con:
         con.execute("INSERT OR REPLACE INTO brand (id, data) VALUES (1, ?)", (json.dumps(clean),))
     return clean
@@ -121,7 +132,7 @@ def row_to_post(row):
 
 POST_FIELDS = [
     "date", "format", "content_type", "topic", "platforms", "status", "time", "duration",
-    "hook", "caption", "hashtags", "cta", "script", "image_idea", "edit_plan",
+    "hook", "caption", "hashtags", "cta", "script", "image_idea", "edit_plan", "design",
 ]
 
 
@@ -143,6 +154,8 @@ def clean_post_fields(data, partial):
             val = "30-60 sec"
         elif key == "date":
             date.fromisoformat(str(val))  # galat date par ValueError -> 400
+        elif key == "design":
+            val = str(val)[:4000]
         elif key == "time":
             if not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", str(val)):
                 val = "10:00"

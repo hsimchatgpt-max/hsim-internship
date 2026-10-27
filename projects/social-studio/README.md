@@ -8,6 +8,7 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
   - **Step by step:** pehle script, dekho/edit karo, phir caption + hashtags, phir editing plan. Har step ke baad aage jao.
   - **Fully automatic:** script, caption, hashtags, editing plan sab ek saath. Phir "Download content pack".
 - **Calendar tab (optional):** jise aage ka plan chahiye. "Plan the month with AI" poore mahine ke posts banata hai **aur har post ka poora content bhi** (script, caption, editing plan). Calendar ya List view me sab dikhta hai, kisi par click karke edit karo.
+- **Image Designer (Phase 2):** "Design image" button se post, carousel slides, story ya YouTube thumbnail banao. Brand colors + logo + font apne aap lagte hain; 4 templates, apni photo background me, aur PNG download (carousel ki saari slides ek saath). Brand Profile me colors, font aur logo ek baar set karo.
 - Kaam **background me** chalta hai: AI likh raha ho tab tab badal sakte ho. Google busy ho to tool khud dobara try karta hai.
 - Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi.
 - Brand profile (business, audience, tone, language) se AI aapke jaisa likhta hai.
