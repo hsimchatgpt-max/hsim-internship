@@ -11,6 +11,7 @@ import platform
 import re
 import shutil
 import sqlite3
+import subprocess
 import sys
 import threading
 import time
@@ -459,20 +460,280 @@ def call_groq(prompt):
     raise AIError(last)
 
 
-def call_ai(prompt):
-    """Pehle Gemini; na chale to (agar key di ho) backup AI."""
-    has_gemini = bool(get_api_key()) or os.environ.get("SOCIAL_STUDIO_MOCK") == "1"
-    if not has_gemini and get_groq_key():
-        return call_groq(prompt)
+# ---- OpenRouter (free models) ----
+OPENROUTER_ROOT = os.environ.get("OPENROUTER_API_ROOT", "https://openrouter.ai/api/v1")  # env sirf testing ke liye
+OPENROUTER_LIKES = ("llama-3.3-70b", "llama", "gemma", "qwen", "mistral", "deepseek")
+
+
+def get_openrouter_key():
+    return (load_settings().get("openrouter_api_key") or os.environ.get("OPENROUTER_API_KEY", "")).strip()
+
+
+def extract_json(text):
+    """Model ke text jawab se JSON nikalta hai (code fence ya extra baaton ke saath bhi)."""
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=re.M).strip()
     try:
-        return call_gemini(prompt)
-    except AIError as first:
-        if not get_groq_key():
-            raise
+        return json.loads(text)
+    except ValueError:
+        pass
+    m = re.search(r"(\{.*\}|\[.*\])", text, re.S)
+    if m:
         try:
-            return call_groq(prompt)
-        except AIError as second:
-            raise AIError(f"{first} Backup AI: {second}")
+            return json.loads(m.group(1))
+        except ValueError:
+            pass
+    raise ValueError("no json")
+
+
+def openrouter_request(path, key=None, body=None):
+    headers = {"Content-Type": "application/json", "User-Agent": "social-studio", "X-Title": "Social Studio"}
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
+    req = urllib.request.Request(OPENROUTER_ROOT + path, data=json.dumps(body).encode() if body else None,
+                                 method="POST" if body else "GET", headers=headers)
+    with urllib.request.urlopen(req, timeout=180) as resp:
+        return json.loads(resp.read())
+
+
+def openrouter_free_models():
+    try:
+        models = openrouter_request("/models").get("data", [])
+    except (urllib.error.URLError, TimeoutError, ValueError):
+        return []
+    free = []
+    for m in models:
+        price = m.get("pricing") or {}
+        if (m["id"].endswith(":free") or (price.get("prompt") == "0" and price.get("completion") == "0")) \
+                and not any(w in m["id"] for w in ("vision", "image", "audio", "embed")):
+            like = next((i for i, w in enumerate(OPENROUTER_LIKES) if w in m["id"]), len(OPENROUTER_LIKES))
+            free.append((like, -(m.get("context_length") or 0), m["id"]))
+    return [x[2] for x in sorted(free)][:4]
+
+
+def call_openrouter(prompt):
+    key = get_openrouter_key()
+    if not key:
+        raise AIError("No OpenRouter key found.")
+    models = openrouter_free_models() or ["meta-llama/llama-3.3-70b-instruct:free"]
+    last = "OpenRouter free models are at their limit or busy right now."
+    for model in models:
+        body = {"model": model, "temperature": 0.9,
+                "messages": [{"role": "user", "content": prompt + "\nReturn only valid JSON, no explanation, no markdown."}]}
+        try:
+            return extract_json(openrouter_request("/chat/completions", key, body)["choices"][0]["message"]["content"])
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                raise AIError("The OpenRouter key is invalid or not working.")
+        except (urllib.error.URLError, TimeoutError):
+            raise AIError("Could not connect to OpenRouter. Check your internet connection.")
+        except (KeyError, IndexError, ValueError, TypeError):
+            last = "Could not understand the OpenRouter response."
+    raise AIError(last)
+
+
+# ---- Ollama (AI aapke apne computer par: no key, no limit, slow) ----
+OLLAMA_ROOT = os.environ.get("OLLAMA_ROOT", "http://127.0.0.1:11434")
+OLLAMA_MODEL = "llama3.2:3b"
+OLLAMA_PREFERRED = [OLLAMA_MODEL, "qwen2.5:3b", "llama3.2:1b", "qwen2.5:1.5b"]
+
+
+def ollama_json(path, body=None, timeout=5):
+    req = urllib.request.Request(OLLAMA_ROOT + path, data=json.dumps(body).encode() if body else None,
+                                 method="POST" if body else "GET", headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read())
+
+
+def ollama_models():
+    try:
+        return [m["name"] for m in ollama_json("/api/tags", timeout=1.5).get("models", [])]
+    except (OSError, ValueError, KeyError):
+        return []
+
+
+def call_ollama(prompt):
+    installed = ollama_models()
+    if not installed:
+        raise AIError("Local AI (Ollama) is not running or has no model.")
+    model = next((m for m in OLLAMA_PREFERRED if m in installed), installed[0])
+    wrapped = "PLAN_REQUEST" in prompt
+    text = prompt + ('\nReturn {"items": [ ... ]} instead of a bare array.' if wrapped else "")
+    try:
+        out = ollama_json("/api/chat", {"model": model, "stream": False, "format": "json", "options": {"temperature": 0.8, "num_ctx": 4096},
+                                       "messages": [{"role": "user", "content": text}]}, timeout=900)
+        data = extract_json(out["message"]["content"])
+    except (OSError, TimeoutError):
+        raise AIError("The local AI did not answer in time.")
+    except (KeyError, ValueError, TypeError):
+        raise AIError("Could not understand the local AI response.")
+    return data.get("items", data) if wrapped and isinstance(data, dict) else data
+
+
+def find_ollama_exe():
+    exe = shutil.which("ollama")
+    if exe:
+        return exe
+    if platform.system() == "Windows":
+        local = Path(os.environ.get("LOCALAPPDATA", "")) / "Programs" / "Ollama" / "ollama.exe"
+        return str(local) if local.exists() else None
+    return None
+
+
+def install_ollama(progress):
+    """Ollama install (Windows) + chhota model download. progress(stage, done, total)."""
+    if not ollama_models() and not find_ollama_exe():
+        if platform.system() != "Windows":
+            raise AIError("Please install Ollama from ollama.com (Mac: `brew install ollama`), then press Install again.")
+        DATA.mkdir(exist_ok=True)
+        setup = DATA / "tmp" / "OllamaSetup.exe"
+        setup.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with urllib.request.urlopen("https://ollama.com/download/OllamaSetup.exe", timeout=60) as resp, open(setup, "wb") as out:
+                total, done = int(resp.headers.get("Content-Length") or 0), 0
+                while chunk := resp.read(1 << 20):
+                    out.write(chunk)
+                    done += len(chunk)
+                    if total:
+                        progress("downloading", done, total)
+        except OSError as e:
+            raise AIError(f"Could not download Ollama ({e}). Install it from ollama.com and try again.")
+        progress("installing", 0, 0)
+        try:
+            subprocess.run([str(setup), "/VERYSILENT", "/NORESTART"], timeout=1200, creationflags=vid.NO_WINDOW)
+        except (OSError, subprocess.TimeoutExpired) as e:
+            raise AIError(f"Ollama installer failed ({e}). Install it from ollama.com and try again.")
+        setup.unlink(missing_ok=True)
+    started = False
+    for _ in range(40):  # server chalne ka intezaar
+        if ollama_json_ok():
+            break
+        exe = find_ollama_exe()
+        if exe and not started:
+            subprocess.Popen([exe, "serve"], creationflags=vid.NO_WINDOW)
+            started = True
+        time.sleep(1.5)
+    else:
+        raise AIError("Ollama is installed but not running yet. Open the Ollama app once, then press Install again.")
+    if any(m in OLLAMA_PREFERRED for m in ollama_models()):
+        return
+    progress("pulling", 0, 1)
+    try:
+        req = urllib.request.Request(OLLAMA_ROOT + "/api/pull", data=json.dumps({"name": OLLAMA_MODEL, "stream": True}).encode(),
+                                     headers={"Content-Type": "application/json"}, method="POST")
+        with urllib.request.urlopen(req, timeout=3600) as resp:
+            for line in resp:
+                info = json.loads(line)
+                if info.get("error"):
+                    raise AIError("Model download failed: " + str(info["error"])[:150])
+                if info.get("total"):
+                    progress("pulling", info.get("completed", 0), info["total"])
+    except (OSError, ValueError) as e:
+        raise AIError(f"Model download failed: {str(e)[:150]}")
+
+
+def ollama_json_ok():
+    try:
+        ollama_json("/api/tags", timeout=1.5)
+        return True
+    except (OSError, ValueError):
+        return False
+
+
+# ---- the chain ----
+PROVIDERS = ["gemini", "groq", "openrouter", "ollama"]
+PROVIDER_LABELS = {"gemini": "Gemini", "groq": "Groq", "openrouter": "OpenRouter", "ollama": "Local AI"}
+CALLERS = {"gemini": lambda p: call_gemini(p), "groq": lambda p: call_groq(p), "openrouter": lambda p: call_openrouter(p),
+           "ollama": lambda p: call_ollama(p)}
+_prov_cool = {}  # provider -> kab tak skip karna hai
+
+
+def provider_ready(name):
+    return {"gemini": bool(get_api_key()), "groq": bool(get_groq_key()), "openrouter": bool(get_openrouter_key()),
+            "ollama": bool(ollama_models())}[name]
+
+
+def call_ai(prompt):
+    """Ek ke baad ek AI try karta hai (Gemini, Groq, OpenRouter, Local). Jo chal jaye wahi jawab deta hai."""
+    if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
+        usage_add("ai_requests")
+        return call_gemini(prompt)
+    ready = [n for n in PROVIDERS if provider_ready(n)]
+    if not ready:
+        raise AIError("No AI is set up yet. Open Setup and add a free key (or install the local AI).")
+    errors = {}
+    for name in ready:
+        if _prov_cool.get(name, 0) > time.time():
+            errors[name] = "resting after a limit"
+            continue
+        try:
+            data = CALLERS[name](prompt)
+        except AIError as e:
+            msg = str(e)
+            errors[name] = msg
+            low = msg.lower()
+            if "invalid" in low:
+                _prov_cool[name] = time.time() + 3600
+            elif "limit" in low or "busy" in low:
+                _prov_cool[name] = time.time() + 300
+            continue
+        usage_add("ai_requests")
+        usage_add("ai_" + name)
+        return data
+    if len(errors) == 1:
+        raise AIError(next(iter(errors.values())))
+    raise AIError("None of your AI options worked right now. " + " | ".join(f"{PROVIDER_LABELS[n]}: {m[:110]}" for n, m in errors.items()))
+
+
+# ---------- usage meter ----------
+USAGE_LOCK = threading.Lock()
+
+
+def usage_add(key, n=1):
+    path = DATA / "usage.json"
+    day = date.today().isoformat()
+    with USAGE_LOCK:
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, ValueError):
+            data = {}
+        data = {d: v for d, v in data.items() if d >= (date.today().replace(day=1)).isoformat() or d == day}
+        data.setdefault(day, {})
+        data[day][key] = data[day].get(key, 0) + n
+        DATA.mkdir(exist_ok=True)
+        path.write_text(json.dumps(data))
+
+
+def usage_today():
+    try:
+        return json.loads((DATA / "usage.json").read_text()).get(date.today().isoformat(), {})
+    except (OSError, ValueError):
+        return {}
+
+
+def setup_status():
+    voices = vid.list_voices() if os.environ.get("SOCIAL_STUDIO_MOCK_TTS") != "1" else [{"id": "edge:mock"}]
+    brand = get_brand()
+    providers = {n: {"ready": provider_ready(n), "resting": _prov_cool.get(n, 0) > time.time()} for n in PROVIDERS}
+    return {
+        "ffmpeg": bool(vid.find_ffmpeg(DATA)), "edge": vid.edge_available(), "voices": len(voices), "system": platform.system(),
+        "providers": providers, "ollama_installed": bool(find_ollama_exe() or ollama_models()),
+        "brand_filled": bool(brand["business"] or brand["audience"]),
+        "ready_ai": any(v["ready"] for v in providers.values()) or os.environ.get("SOCIAL_STUDIO_MOCK") == "1",
+        "ready_video": bool(vid.find_ffmpeg(DATA)) and len(voices) > 0,
+    }
+
+
+def test_provider(name):
+    if name not in PROVIDERS:
+        raise ValueError("unknown provider")
+    if not provider_ready(name):
+        return {"ok": False, "error": "No key / not installed yet."}
+    try:
+        CALLERS[name]('Reply with JSON {"ok": true}')
+        _prov_cool.pop(name, None)
+        return {"ok": True, "error": ""}
+    except AIError as e:
+        return {"ok": False, "error": str(e)}
 
 
 IMAGES_DIR = DATA / "images"
@@ -823,10 +1084,20 @@ def video_job(post_id, scenes, voice, music, quality):
             with DB_LOCK, db() as con:
                 con.execute("UPDATE posts SET video = ? WHERE id = ?", (name, post_id))
             job_update(job_id, done=100)
+            usage_add("videos")
         except vid.VideoError as e:
             raise AIError(str(e))
         finally:
             shutil.rmtree(folder, ignore_errors=True)
+    return work
+
+
+def ollama_job():
+    def work(job_id):
+        def progress(stage, done, total):
+            job_update(job_id, stage=stage, done=int(done * 100 / total) if total else 0, total=100 if total else 0)
+        install_ollama(progress)
+        _prov_cool.pop("ollama", None)
     return work
 
 
@@ -918,6 +1189,7 @@ def generate_job(post_id, step, note=""):
             set_gen(post_id, "error", str(e))
             raise
         set_gen(post_id, "done")
+        usage_add("contents")
         job_update(job_id, done=job_snapshot(job_id)["total"])
     return work
 
@@ -987,7 +1259,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and path == "/api/config":
                 return self.send_json({
                     "formats": FORMATS, "content_types": CONTENT_TYPES, "platforms": PLATFORMS,
-                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()), "has_groq": bool(get_groq_key()),
+                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()), "has_groq": bool(get_groq_key()), "has_openrouter": bool(get_openrouter_key()),
                 })
             if method == "GET" and path == "/api/diagnose":  # "Test my key": kya-kya chal sakta hai
                 if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
@@ -1012,6 +1284,18 @@ class Handler(BaseHTTPRequestHandler):
                 key = str(self.read_json().get("key", "")).strip()
                 save_settings({"groq_api_key": key})
                 return self.send_json({"has_groq": bool(key)})
+            if method == "POST" and path == "/api/settings/openrouter":
+                key = str(self.read_json().get("key", "")).strip()
+                save_settings({"openrouter_api_key": key})
+                return self.send_json({"has_openrouter": bool(key)})
+            if method == "GET" and path == "/api/setup":
+                return self.send_json(setup_status())
+            if method == "GET" and path == "/api/usage":
+                return self.send_json(usage_today())
+            if method == "POST" and path == "/api/providers/test":
+                return self.send_json(test_provider(str(self.read_json().get("provider", ""))))
+            if method == "POST" and path == "/api/tools/ollama":
+                return self.send_json({"job": start_job("tools", "Local AI", lambda job_id: ollama_job()(job_id))})
             if method == "GET" and path == "/api/tools":
                 return self.send_json(tools_status())
             if method == "POST" and path == "/api/tools/ffmpeg":

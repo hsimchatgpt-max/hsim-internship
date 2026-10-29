@@ -111,6 +111,7 @@
     <button data-tab="settings" data-i18n="tab.settings">Settings</button>
   </nav>
   <div class="spacer"></div>
+  <button class="ghost" id="setupBtn">Setup <span id="setupDot">…</span></button>
   <select id="uiLang" style="width:auto" aria-label="Language"><option value="en">English</option><option value="hi">हिंदी</option></select>
 </header>
 <div id="jobs"></div>
@@ -120,6 +121,7 @@
 
   <!-- Create (quick, no calendar needed) -->
   <section id="tab-create">
+    <p class="hint" id="usageBar" style="margin:0 0 10px"></p>
     <div class="card narrow">
       <h2 style="margin-top:0" data-i18n="create.title">Create content</h2>
       <p class="hint" data-i18n="create.hint">Make one piece of content right now. No calendar needed.</p>
@@ -217,6 +219,11 @@
       <input id="s_groq" type="password" placeholder="gsk_..." autocomplete="off">
       <p class="hint" id="groqState"></p>
       <div class="actions"><button class="primary" id="saveGroq" data-i18n="btn.saveKey">Save key</button></div>
+      <h3 style="margin-bottom:0">OpenRouter (free models)</h3>
+      <p class="hint" data-i18n="or.hint">Another free backup. Key from openrouter.ai/keys (free models only).</p>
+      <input id="s_or" type="password" placeholder="sk-or-..." autocomplete="off">
+      <p class="hint" id="orState"></p>
+      <div class="actions"><button class="primary" id="saveOr" data-i18n="btn.saveKey">Save key</button><button class="ghost" id="openWiz" data-i18n="wiz.open">Open setup guide</button></div>
       <pre id="testOut" class="hint" style="white-space:pre-wrap"></pre>
     </div>
     <div class="card" style="max-width:640px;margin-top:16px">
@@ -273,6 +280,35 @@
     <div class="spacer"></div>
     <button class="ghost danger" id="postDelete" data-i18n="btn.delete">Delete</button>
   </div>
+</div></div>
+
+<!-- Setup wizard -->
+<div class="overlay" id="wizOverlay"><div class="modal wide">
+  <h3 data-i18n="wiz.title">Set up Social Studio (one time)</h3>
+  <p class="hint" data-i18n="wiz.hint">Do this once. After that the tool remembers everything and you only create content.</p>
+  <div class="card" style="margin-bottom:12px">
+    <b data-i18n="wiz.s1">1. Video tools (free)</b>
+    <div style="margin:8px 0"><span id="w_ff_st"></span> &nbsp; <span id="w_voice_st"></span></div>
+    <button class="primary" id="w_all" data-i18n="wiz.all">Set up everything</button>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <b data-i18n="wiz.s2">2. AI for writing (you need at least one; more = fewer limits)</b>
+    <p class="hint" data-i18n="wiz.s2h">The tool tries them one after another, so if one runs out the next one works.</p>
+    <div class="row" style="align-items:end"><div><label>Gemini <span class="hint">aistudio.google.com/apikey</span></label><input id="w_gemini_key" type="password" autocomplete="off"></div><div style="display:flex;gap:8px;align-items:center"><button class="ghost" id="w_gemini_save" data-i18n="wiz.save">Save & test</button><span id="w_gemini_st"></span></div></div>
+    <div class="row" style="align-items:end"><div><label>Groq <span class="hint">console.groq.com/keys</span></label><input id="w_groq_key" type="password" autocomplete="off"></div><div style="display:flex;gap:8px;align-items:center"><button class="ghost" id="w_groq_save" data-i18n="wiz.save">Save & test</button><span id="w_groq_st"></span></div></div>
+    <div class="row" style="align-items:end"><div><label>OpenRouter <span class="hint">openrouter.ai/keys</span></label><input id="w_openrouter_key" type="password" autocomplete="off"></div><div style="display:flex;gap:8px;align-items:center"><button class="ghost" id="w_openrouter_save" data-i18n="wiz.save">Save & test</button><span id="w_openrouter_st"></span></div></div>
+    <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b data-i18n="wiz.local">Local AI</b><span id="w_ollama_st"></span><button class="ghost" id="w_ollama_btn" data-i18n="wiz.localinstall">Install local AI (no key, no limit, slower)</button></div>
+    <p class="hint" data-i18n="wiz.localhint">Local AI downloads about 2 GB and runs on your own computer, so it is slow on a weak laptop. Good as the last backup.</p>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <b data-i18n="wiz.s3">3. About your business (once)</b>
+    <label data-i18n="brand.business">What does your business do?</label><textarea id="w_business" style="min-height:56px"></textarea>
+    <label data-i18n="brand.audience">Who is your audience?</label><textarea id="w_audience" style="min-height:56px"></textarea>
+    <label data-i18n="brand.language">Content language</label><select id="w_lang"><option value="hinglish">Hinglish</option><option value="hindi">Hindi</option><option value="english">English</option></select>
+    <div class="actions"><button class="ghost" id="w_brand_save" data-i18n="btn.save">Save</button></div>
+  </div>
+  <p id="w_sum"></p>
+  <div class="actions"><button class="primary" id="w_start" data-i18n="wiz.start">Start creating</button><button class="ghost" data-close data-i18n="wiz.skip">Skip for now</button></div>
 </div></div>
 
 <!-- Video maker -->
@@ -398,6 +434,19 @@ const I18N = {
     "job.voice": "आवाज़ बन रही है", "job.editing": "वीडियो एडिट हो रहा है", "job.downloading": "डाउनलोड हो रहा है", "job.installing": "इंस्टॉल हो रहा है",
     "groq.title": "बैकअप AI (वैकल्पिक, फ़्री)", "groq.hint": "Gemini की फ़्री लिमिट खत्म होने पर टूल अपने आप इस बैकअप को इस्तेमाल करता है। console.groq.com/keys पर फ़्री key बनाएं (कार्ड नहीं चाहिए)।",
     "All free Gemini models are at their limit right now. Try again later (daily limits reset every day), or add a free backup AI key in Settings.": "सभी फ़्री Gemini मॉडल की लिमिट अभी खत्म है। बाद में कोशिश करें (लिमिट रोज़ रीसेट होती है), या Settings में फ़्री बैकअप AI key जोड़ें।",
+    "wiz.title": "Social Studio सेटअप (सिर्फ़ एक बार)", "wiz.hint": "यह एक बार करें। इसके बाद टूल सब याद रखता है और आप सिर्फ़ कंटेंट बनाते हैं।",
+    "wiz.s1": "1. वीडियो टूल्स (फ़्री)", "wiz.all": "सब कुछ सेटअप करें",
+    "wiz.s2": "2. लिखने के लिए AI (कम से कम एक चाहिए; जितने ज़्यादा, उतनी कम लिमिट)", "wiz.s2h": "टूल एक के बाद एक आज़माता है, इसलिए एक की लिमिट खत्म हो तो अगला चल जाता है।",
+    "wiz.save": "सेव करें और टेस्ट करें", "wiz.local": "लोकल AI", "wiz.localinstall": "लोकल AI इंस्टॉल करें (बिना key, बिना लिमिट, धीमा)",
+    "wiz.localhint": "लोकल AI लगभग 2 GB डाउनलोड होता है और आपके अपने कंप्यूटर पर चलता है, इसलिए कमज़ोर लैपटॉप पर धीमा है। आखिरी बैकअप के तौर पर अच्छा है।",
+    "wiz.s3": "3. आपके बिज़नेस के बारे में (एक बार)", "wiz.start": "बनाना शुरू करें", "wiz.skip": "अभी छोड़ें", "wiz.open": "सेटअप गाइड खोलें",
+    "wiz.notset": "सेट नहीं", "wiz.resting": "थोड़ी देर आराम (लिमिट)", "wiz.ready": "तैयार", "wiz.works": "चल रहा है",
+    "wiz.done": "सब तैयार है! अब कंटेंट बनाएं।", "wiz.needvideo": "AI तैयार है। वीडियो के लिए ऊपर 'सब कुछ सेटअप करें' दबाएं।",
+    "wiz.needai": "वीडियो टूल्स तैयार हैं। अब कम से कम एक AI key जोड़ें।", "wiz.needboth": "पहले वीडियो टूल्स सेटअप करें और एक AI key जोड़ें।",
+    "usage.line": "आज: {v} वीडियो · {c} कंटेंट · {a} AI रिक्वेस्ट · AI तैयार: {p}",
+    "or.hint": "एक और फ़्री बैकअप। openrouter.ai/keys से key (सिर्फ़ फ़्री मॉडल)।",
+    "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
+    "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
     "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
     "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
     "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
@@ -416,6 +465,10 @@ const EN_TEXT = {
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
   "groq.title": "Backup AI (optional, free)",
+  "wiz.notset": "not set", "wiz.resting": "resting (limit)", "wiz.ready": "ready", "wiz.works": "works", "wiz.local": "Local AI",
+  "wiz.done": "All set! Start creating.", "wiz.needvideo": "AI is ready. For video, press 'Set up everything' above.",
+  "wiz.needai": "Video tools are ready. Now add at least one AI key.", "wiz.needboth": "First set up the video tools and add one AI key.",
+  "usage.line": "Today: {v} videos · {c} contents · {a} AI requests · AI ready: {p}",
   "btn.makevideo": "Make video (free)", "btn.dlvideo": "Download video",
   "v.title": "Make video (free)", "v.scenes": "{n} scenes will be made",
   "v.working": "Making the video... this can take a few minutes. You can switch to another tab.", "v.done": "Video is ready!",
@@ -531,7 +584,7 @@ function renderJobs() {
 function trackJob(id, label) {
   return new Promise((resolve, reject) => {
     activeJobs[id] = { label, job: null }; renderJobs();
-    const finish = () => { delete activeJobs[id]; renderJobs(); };
+    const finish = () => { delete activeJobs[id]; renderJobs(); setTimeout(refreshUsage, 300); };
     const tick = async () => {
       let j;
       try { j = await api("GET", "/api/jobs/" + id); } catch (e) { finish(); return reject(e); }
@@ -820,8 +873,9 @@ $("testKey").onclick = (e) => busy(e.target, "busy.save", async () => {
 });
 function renderKeyState() {
   $("keyState").textContent = cfg.has_key ? t("key.saved") : t("key.none");
-  $("keyBanner").hidden = cfg.has_key || cfg.has_groq;
+  $("keyBanner").hidden = cfg.has_key || cfg.has_groq || cfg.has_openrouter;
   $("groqState").textContent = cfg.has_groq ? t("key.saved") : t("key.none");
+  $("orState").textContent = cfg.has_openrouter ? t("key.saved") : t("key.none");
 }
 
 // ----- brand kit (colors, font, logo) -----
@@ -1137,6 +1191,73 @@ $("musicFile").onchange = async () => {
   $("musicFile").value = "";
 };
 
+// ----- setup wizard + usage meter -----
+const PROV = [["gemini", "Gemini", "/api/settings/key", "aistudio.google.com/apikey"],
+  ["groq", "Groq", "/api/settings/groq", "console.groq.com/keys"],
+  ["openrouter", "OpenRouter", "/api/settings/openrouter", "openrouter.ai/keys"]];
+let SETUP = null;
+function provStatus(s, name) {
+  const p = s.providers[name];
+  return !p.ready ? "⬜ " + t("wiz.notset") : p.resting ? "⏸ " + t("wiz.resting") : "✅ " + t("wiz.ready");
+}
+async function refreshSetup() {
+  SETUP = await api("GET", "/api/setup");
+  const s = SETUP, ok = s.ready_ai && s.ready_video;
+  $("setupDot").textContent = ok ? "✓" : "!";
+  $("setupBtn").style.borderColor = ok ? "" : "var(--danger)";
+  if (!$("wizOverlay").classList.contains("show")) return s;
+  $("w_ff_st").textContent = (s.ffmpeg ? "✅ " : "⬜ ") + "FFmpeg";
+  $("w_voice_st").textContent = (s.voices > 0 ? "✅ " : "⬜ ") + t("tools.voices", { n: s.voices });
+  $("w_all").hidden = s.ffmpeg && s.edge;
+  PROV.forEach(([n]) => ($("w_" + n + "_st").textContent = provStatus(s, n)));
+  $("w_ollama_st").textContent = provStatus(s, "ollama") + (s.ollama_installed ? "" : "");
+  $("w_ollama_btn").hidden = s.providers.ollama.ready;
+  $("w_sum").innerHTML = ok ? `<b>✅ ${esc(t("wiz.done"))}</b>` : esc(t(s.ready_ai ? "wiz.needvideo" : s.ready_video ? "wiz.needai" : "wiz.needboth"));
+  return s;
+}
+async function openWizard() {
+  const b = cfg.brand; $("w_business").value = b.business; $("w_audience").value = b.audience; $("w_lang").value = b.language;
+  $("wizOverlay").classList.add("show"); await refreshSetup();
+}
+async function refreshUsage() {
+  try {
+    const [u, s] = [await api("GET", "/api/usage"), await refreshSetup()];
+    const names = { gemini: "Gemini", groq: "Groq", openrouter: "OpenRouter", ollama: t("wiz.local") };
+    const ready = Object.keys(s.providers).filter((n) => s.providers[n].ready).map((n) => names[n] + (s.providers[n].resting ? " ⏸" : ""));
+    $("usageBar").textContent = t("usage.line", { v: u.videos || 0, c: u.contents || 0, a: u.ai_requests || 0, p: ready.join(", ") || "-" });
+  } catch (e) {}
+}
+PROV.forEach(([name, , endpoint]) => ($("w_" + name + "_save").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const key = $("w_" + name + "_key").value.trim(); if (!key) return;
+  await api("POST", endpoint, { key }); $("w_" + name + "_key").value = "";
+  const r = await api("POST", "/api/providers/test", { provider: name });
+  toast(r.ok ? "✅ " + t("wiz.works") : r.error, !r.ok);
+  Object.assign(cfg, await api("GET", "/api/config")); renderKeyState(); refreshUsage();
+})));
+$("w_all").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const st = await api("GET", "/api/setup");
+  for (const [need, url, label] of [[!st.ffmpeg, "/api/tools/ffmpeg", "FFmpeg"], [!st.edge, "/api/tools/voices", t("tools.edge")]]) {
+    if (!need) continue;
+    try { await trackJob((await api("POST", url)).job, label); } catch (err) { toast(err.message, true); }
+  }
+  refreshUsage();
+});
+$("w_ollama_btn").onclick = (e) => busy(e.target, "busy.save", async () => {
+  try { await trackJob((await api("POST", "/api/tools/ollama")).job, t("wiz.local")); } catch (err) { toast(err.message, true); }
+  refreshUsage();
+});
+$("w_brand_save").onclick = (e) => busy(e.target, "busy.save", async () => {
+  cfg.brand = await api("PUT", "/api/brand", { ...cfg.brand, business: $("w_business").value, audience: $("w_audience").value, language: $("w_lang").value });
+  ["business", "audience"].forEach((k) => ($("b_" + k).value = cfg.brand[k])); $("b_language").value = cfg.brand.language; toast(t("toast.brand"));
+});
+$("w_start").onclick = () => { try { localStorage.setItem("wizSeen", "1"); } catch (e) {} $("wizOverlay").classList.remove("show"); showTab("create"); };
+$("setupBtn").onclick = openWizard; $("openWiz").onclick = openWizard;
+$("wizOverlay").querySelectorAll("[data-close]").forEach((b) => (b.onclick = () => { try { localStorage.setItem("wizSeen", "1"); } catch (e) {} $("wizOverlay").classList.remove("show"); }));
+$("saveOr").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const r = await api("POST", "/api/settings/openrouter", { key: $("s_or").value });
+  $("s_or").value = ""; cfg.has_openrouter = r.has_openrouter; renderKeyState(); toast(t("toast.key")); refreshUsage();
+});
+
 // ----- language -----
 function buildOptions() {
   applyStatic(); renderDows();
@@ -1166,6 +1287,9 @@ $("uiLang").onchange = () => {
   $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
   ["primary", "secondary", "text_color"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
   $("b_font").value = cfg.brand.font; brandLogo = cfg.brand.logo || ""; showLogoPreview();
+  const s0 = await refreshSetup(); await refreshUsage();
+  let seen = "0"; try { seen = localStorage.getItem("wizSeen") || "0"; } catch (e) {}
+  if (!(s0.ready_ai && s0.ready_video) && seen !== "1") openWizard();
   // background me chal rahe kaam (page reload ke baad bhi) wapas dikhao
   try {
     (await api("GET", "/api/jobs")).forEach((j) => trackJob(j.id, j.label || "AI").then(() => loadPosts()).catch((e) => toast(e.message, true)));

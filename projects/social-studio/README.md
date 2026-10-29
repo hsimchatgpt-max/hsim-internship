@@ -16,12 +16,13 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 - Tool English me khulta hai; upar right me "English / हिंदी" switch se Hindi.
 - Brand profile (business, audience, tone, language) se AI aapke jaisa likhta hai.
 
-## Free limit (quota) ke baare me
+## Limit-proof AI chain + setup wizard
 - Gemini sirf **text** likhta hai (1 content = 1 request). Video, awaaz, edit sab aapke computer par hota hai, unlimited.
-- Free key ki daily limit hoti hai. Tool pehle woh models try karta hai jinki free limit zyada hai, aur jis model ka quota khatam ho use kuch der skip karta hai.
-- **Backup AI:** Settings me Groq ki free key (console.groq.com/keys) daal do. Gemini ki limit khatam hone par tool apne aap Groq se likhwa lega.
-- **Har user apni key** daale (Gemini aur/ya Groq), to limit sabki alag rahegi.
-- Month plan me "poora content abhi likho" ko band rakho; wo ek saath bahut requests kha jata hai.
+- **AI chain:** tool ek ke baad ek try karta hai: **Gemini -> Groq -> OpenRouter -> Local AI (Ollama)**. Jiski limit khatam ho wo kuch der "rest" karta hai, agla chal jata hai. Kam se kam ek chahiye; jitne zyada, utni kam limit.
+- **Local AI** (Ollama): bina key, bina limit, par dheema (kamzor laptop par). Aakhri bachao ke liye.
+- **Setup wizard:** pehli baar apne aap khulta hai (baad me upar "Setup" button). "Set up everything" se FFmpeg + awaaz install; keys "Save & test"; business ek baar. Sab hamesha ke liye save rehta hai.
+- **Usage meter:** Create tab ke upar: aaj kitne video/content/AI requests aur kaun se AI ready hain.
+- Doosre ko tool dene par `data` folder mat do (usme aapki keys hain). Har user apni free keys daale.
 
 ## Chalane ke steps (Windows)
 1. Python install hona chahiye (`python --version` check karo).
