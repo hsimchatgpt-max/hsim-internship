@@ -4,6 +4,7 @@ Social media content ka planner: **Brand Profile + Monthly Calendar + AI content
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
 ## Kya kar sakte ho
+- **Ek click:** Create tab me bas likho "3 website mistakes pe 30 sec ka video" aur **Create** dabao. Script, awaaz, scenes, music, transitions sab apne aap; tayyar video **Download video (MP4)** se download karo. **Copy caption + hashtags** se caption copy karke khud post karo. (Tool khud kuch post nahi karta, posting aap apne browser se karti ho.)
 - **Create tab (simple):** calendar ke bina, abhi ek content banao. Topic likho (ya khali chhodo, AI chunega), format aur type chuno.
   - **Step by step:** pehle script, dekho/edit karo, phir caption + hashtags, phir editing plan. Har step ke baad aage jao.
   - **Fully automatic:** script, caption, hashtags, editing plan sab ek saath. Phir "Download content pack".
@@ -47,4 +48,4 @@ Command Prompt wali window me `Ctrl + C`, ya window band kar do.
 | `data/` | Aapke posts aur API key (sirf aapke computer par, GitHub par nahi jaata) |
 
 ## Aage ke phases
-Image posts, voice, avatar, auto-edit, direct posting, auto-post scheduler.
+Gateway (team ke liye bina keys), stock B-roll, free image, .exe, avatar. (Auto-posting nahi banayenge.)

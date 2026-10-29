@@ -86,6 +86,7 @@
   .pcard pre { white-space: pre-wrap; font: inherit; background: var(--bg); padding: 8px 10px; border-radius: 8px; margin: 6px 0; }
   .pcard details { margin-top: 6px; }
   .pcard summary { cursor: pointer; color: var(--accent); font-size: 13px; }
+  details.more { margin: 12px 0 0; } details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
   .imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 12px 0; }
   .imgs img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
   .imgs a { margin-top: 6px; }
@@ -124,20 +125,22 @@
     <p class="hint" id="usageBar" style="margin:0 0 10px"></p>
     <div class="card narrow">
       <h2 style="margin-top:0" data-i18n="create.title">Create content</h2>
-      <p class="hint" data-i18n="create.hint">Make one piece of content right now. No calendar needed.</p>
+      <p class="hint" data-i18n="create.hint">Type what you want and press Create. You get the finished video to download.</p>
       <label data-i18n="create.topic">What do you want to make? Describe it like you would to ChatGPT (leave empty and the AI will pick a topic)</label>
       <textarea id="c_topic" data-i18n-ph="create.topic.ph" placeholder="e.g. A 30-second video about 3 mistakes to avoid on a business website" style="min-height:70px"></textarea>
-      <div class="row">
-        <div><label data-i18n="f.format">Format</label><select id="c_format"></select></div>
-        <div><label data-i18n="f.type">Content type</label><select id="c_type"></select></div>
-        <div><label data-i18n="f.duration">Video length</label><select id="c_duration"></select></div>
-      </div>
-      <label data-i18n="f.platforms">Platforms</label><div class="checks" id="c_platforms"></div>
-      <label data-i18n="create.mode">How do you want to work?</label>
-      <div class="modes">
-        <label class="mode"><input type="radio" name="mode" value="step" checked><div><b data-i18n="mode.step">Step by step</b><span data-i18n="mode.step.d">The AI writes the script first. You review it, then continue to the next step.</span></div></label>
-        <label class="mode"><input type="radio" name="mode" value="auto"><div><b data-i18n="mode.auto">Fully automatic</b><span data-i18n="mode.auto.d">Get everything in one go: script, caption, hashtags and editing plan. Then just download and post.</span></div></label>
-      </div>
+      <div class="row"><div><label data-i18n="f.duration">Video length</label><select id="c_duration"></select></div></div>
+      <details class="more"><summary data-i18n="create.more">More options</summary>
+        <div class="row">
+          <div><label data-i18n="f.format">Format</label><select id="c_format"></select></div>
+          <div><label data-i18n="f.type">Content type</label><select id="c_type"></select></div>
+        </div>
+        <label data-i18n="f.platforms">Platforms</label><div class="checks" id="c_platforms"></div>
+        <label data-i18n="create.mode">How do you want to work?</label>
+        <div class="modes">
+          <label class="mode"><input type="radio" name="mode" value="auto" checked><div><b data-i18n="mode.auto">One click (recommended)</b><span data-i18n="mode.auto.d">Script, voice, scenes, music and transitions are all done for you. You just download the video.</span></div></label>
+          <label class="mode"><input type="radio" name="mode" value="step"><div><b data-i18n="mode.step">Step by step</b><span data-i18n="mode.step.d">The AI writes the script first. You review it, then continue to the next step.</span></div></label>
+        </div>
+      </details>
       <div class="actions"><button class="primary" id="createBtn" data-i18n="btn.create">Create</button></div>
       <p class="hint" data-i18n="create.bg">It keeps working in the background. You can switch tabs while the AI writes (keep the black window open).</p>
     </div>
@@ -362,11 +365,11 @@ const I18N = {
   hi: {
     "tab.create": "बनाएं", "tab.calendar": "कैलेंडर", "tab.brand": "ब्रांड प्रोफ़ाइल", "tab.settings": "सेटिंग्स",
     "banner.key": "AI चलाने के लिए पहले Settings में Gemini API key डालें।",
-    "create.title": "कंटेंट बनाएं", "create.hint": "अभी एक कंटेंट बनाएं। कैलेंडर की ज़रूरत नहीं।",
+    "create.title": "कंटेंट बनाएं", "create.hint": "जो चाहिए लिखें और Create दबाएं। तैयार वीडियो डाउनलोड के लिए मिलेगा।",
     "create.topic": "आप क्या बनाना चाहते हैं? ChatGPT की तरह बताएं (खाली छोड़ें तो AI खुद टॉपिक चुन लेगा)", "create.topic.ph": "जैसे: बिज़नेस वेबसाइट पर बचने वाली 3 गलतियों पर 30 सेकंड का वीडियो",
     "create.mode": "आप कैसे काम करना चाहते हैं?", "btn.create": "बनाएं",
     "mode.step": "स्टेप बाय स्टेप", "mode.step.d": "AI पहले स्क्रिप्ट लिखेगा। आप देखकर अगले स्टेप पर जाएंगे।",
-    "mode.auto": "पूरा ऑटोमैटिक", "mode.auto.d": "सब कुछ एक साथ: स्क्रिप्ट, कैप्शन, हैशटैग और एडिटिंग प्लान। फिर बस डाउनलोड करें और पोस्ट करें।",
+    
     "create.bg": "काम बैकग्राउंड में चलता रहता है। AI लिख रहा हो तब आप टैब बदल सकते हैं (काली विंडो खुली रखें)।",
     "cal.optional": "कैलेंडर वैकल्पिक है। इसे तभी इस्तेमाल करें जब आगे का प्लान बनाना हो (जैसे पूरा महीना)।",
     "view.cal": "कैलेंडर", "view.list": "लिस्ट",
@@ -447,6 +450,10 @@ const I18N = {
     "or.hint": "एक और फ़्री बैकअप। openrouter.ai/keys से key (सिर्फ़ फ़्री मॉडल)।",
     "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
     "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
+    "toast.copied": "कॉपी हो गया!", "btn.copy": "कैप्शन + हैशटैग कॉपी करें", "btn.dlvideoMp4": "वीडियो डाउनलोड करें (MP4)", "btn.remake": "वीडियो दोबारा बनाएं",
+    "ws.vidready": "आपका वीडियो तैयार है! डाउनलोड करें और खुद पोस्ट करें।", "ws.edit": "स्क्रिप्ट / कैप्शन एडिट करें (वैकल्पिक)",
+    "v.needsetup": "टेक्स्ट तैयार है, लेकिन वीडियो टूल्स अभी सेट नहीं हैं। ऊपर दाएं 'Setup' खोलें, 'सब कुछ सेटअप करें' दबाएं, फिर 'वीडियो बनाएं (फ़्री)' दबाएं।",
+    "create.more": "और विकल्प", "mode.auto": "एक क्लिक (सुझाया गया)", "mode.auto.d": "स्क्रिप्ट, आवाज़, सीन, म्यूज़िक और ट्रांज़िशन सब अपने आप। आप सिर्फ़ वीडियो डाउनलोड करें।",
     "dow": ["सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि", "रवि"],
     "months": ["जनवरी","फ़रवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"],
     "opt.image": "इमेज", "opt.video": "वीडियो", "opt.carousel": "कैरोसेल", "opt.text": "टेक्स्ट", "opt.story": "स्टोरी",
@@ -465,6 +472,9 @@ const EN_TEXT = {
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
   "groq.title": "Backup AI (optional, free)",
+  "toast.copied": "Copied!", "btn.copy": "Copy caption + hashtags", "btn.dlvideoMp4": "Download video (MP4)", "btn.remake": "Make video again",
+  "ws.vidready": "Your video is ready! Download it and post it yourself.", "ws.edit": "Edit script / caption (optional)",
+  "v.needsetup": "The text is ready, but the video tools are not set up yet. Open Setup (top right), press 'Set up everything', then press 'Make video (free)'.",
   "wiz.notset": "not set", "wiz.resting": "resting (limit)", "wiz.ready": "ready", "wiz.works": "works", "wiz.local": "Local AI",
   "wiz.done": "All set! Start creating.", "wiz.needvideo": "AI is ready. For video, press 'Set up everything' above.",
   "wiz.needai": "Video tools are ready. Now add at least one AI key.", "wiz.needboth": "First set up the video tools and add one AI key.",
@@ -649,13 +659,13 @@ function renderWs() {
   if (!ws) { $("workspace").hidden = true; return; }
   $("workspace").hidden = false;
   $("wsTitle").textContent = ws.post.topic || (uiLang === "hi" ? "नया कंटेंट" : "New content");
-  renderStepper();
+  renderStepper(); $("stepper").style.display = ws.mode === "auto" ? "none" : "";
   const status = $("wsStatus"), body = $("wsBody"), actions = $("wsActions");
   status.innerHTML = ""; body.innerHTML = ""; actions.innerHTML = "";
   const btn = (cls, text, fn) => { const b = document.createElement("button"); b.className = cls; b.textContent = text; b.onclick = fn; actions.appendChild(b); return b; };
 
   if (ws.state === "loading") {
-    status.innerHTML = `<i class="spin"></i> ${esc(t("ws.loading"))}`;
+    status.innerHTML = `<i class="spin"></i> ${esc(ws.msg || t("ws.loading"))}`;
   } else if (ws.state === "error") {
     status.innerHTML = `<span class="err-text">${esc(t("gen.error"))} ${esc(trErr(ws.error))}</span>`;
     btn("primary", t("btn.again"), () => runStep(ws.step, null, ws.note));
@@ -674,26 +684,55 @@ function renderWs() {
       });
     });
   } else if (ws.state === "final") {
-    status.textContent = t("ws.final");
-    const FF = finalFields(ws.post.format);
-    body.innerHTML = videoHTML(ws.post) + imagesHTML(ws.post) + fieldsHTML(FF) + ""; fillFields(FF);
-    if (ws.post.format === "video") btn("primary", t("btn.makevideo"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); await openVideo(ws.post); }));
-    btn(ws.post.format === "video" ? "ghost" : "primary", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); download(ws.post.id); }));
+    const isVid = ["video", "story"].includes(ws.post.format), FF = finalFields(ws.post.format);
+    status.textContent = ws.post.video ? t("ws.vidready") : t("ws.final");
+    if (ws.videoNote) status.innerHTML += `<div class="banner" style="margin-top:8px">${esc(ws.videoNote)}</div>`;
+    if (ws.videoError) status.innerHTML += `<div class="err-text">${esc(trErr(ws.videoError))}</div>`;
+    body.innerHTML = videoHTML(ws.post) + imagesHTML(ws.post) + `<details class="more"><summary>${esc(t("ws.edit"))}</summary>${fieldsHTML(FF)}</details>`; fillFields(FF);
+    if (isVid && ws.post.video) btn("primary", t("btn.dlvideoMp4"), () => { location.href = `/videos/${ws.post.video}?download=1`; });
+    if (isVid && !ws.post.video) btn("primary", t("btn.makevideo"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); await openVideo(ws.post); }));
+    btn("ghost", t("btn.copy"), () => copyText([$("w_caption").value, $("w_hashtags").value].filter(Boolean).join("\n\n")));
+    if (isVid && ws.post.video) btn("ghost", t("btn.remake"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); await openVideo(ws.post); }));
+    btn("ghost", t("btn.download"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); download(ws.post.id); }));
     btn("ghost", t("btn.save"), (e) => busy(e.target, "busy.save", async () => { await saveFields(FF); toast(t("ws.saved")); }));
-    btn("ghost", t("btn.openCal"), () => { cur = new Date(ws.post.date + "T00:00"); cur.setDate(1); showTab("calendar"); });
     btn("ghost", t("btn.another"), () => { ws = null; renderWs(); $("c_topic").value = ""; window.scrollTo(0, 0); });
   }
 }
 
+// script ke scenes browser me banakar server se video banwata hai; naya post wapas deta hai
+async function renderVideoFor(post, o) {
+  const scenes = parseScenes(post), height = o.quality === "high" ? 1920 : 1280, c = document.createElement("canvas");
+  const payload = scenes.map((sc, i) => { drawScene(c, sc, i, scenes.length, height); return { image: c.toDataURL("image/png"), text: sc.spoken }; });
+  const r = await api("POST", `/api/posts/${post.id}/video`, { scenes: payload, voice: o.voice, music: o.music, quality: o.quality });
+  await trackJob(r.job, t("v.title"));
+  return api("GET", "/api/posts/" + post.id);
+}
+async function autoVideo(me) {  // "One click": text ke baad video bhi apne aap
+  const tl = await api("GET", "/api/tools");
+  if (!tl.ffmpeg || !tl.voices.length) { me.videoNote = t("v.needsetup"); return; }
+  me.msg = t("v.working"); renderWs();
+  me.post = await renderVideoFor(me.post, { voice: tl.default_voice || tl.voices[0].id, music: "ambient", quality: "standard" });
+  loadPosts();
+}
 async function runStep(step, jobId, note) {
-  const me = ws; me.state = "loading"; me.step = step; me.note = note || ""; renderWs();
+  const me = ws; me.state = "loading"; me.step = step; me.note = note || ""; me.msg = ""; me.videoNote = ""; me.videoError = ""; renderWs();
   try {
     if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step, note: me.note })).job;
     await trackJob(jobId, me.post.topic || t("tab.create"));
     me.post = await api("GET", "/api/posts/" + me.post.id);
+    if (step === "all" && ["video", "story"].includes(me.post.format)) {
+      try { await autoVideo(me); } catch (e) { me.videoError = e.message; }
+    }
     me.state = step === "all" ? "final" : "step";
   } catch (e) { me.state = "error"; me.error = e.message; }
+  me.msg = "";
   if (ws === me) renderWs();
+}
+async function copyText(txt) {
+  try { await navigator.clipboard.writeText(txt); } catch (e) {
+    const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove();
+  }
+  toast(t("toast.copied"));
 }
 
 $("createBtn").onclick = (e) => busy(e.target, "busy.create", async () => {
@@ -1157,14 +1196,11 @@ $("v_install").onclick = (e) => busy(e.target, "busy.save", async () => {
   await trackJob(r.job, "FFmpeg"); await openVideo(V.post);
 });
 $("v_make").onclick = (e) => busy(e.target, "busy.gen", async () => {
-  const quality = $("v_quality").value, height = quality === "high" ? 1920 : 1280, c = document.createElement("canvas");
-  const scenes = V.scenes.map((sc, i) => { drawScene(c, sc, i, V.scenes.length, height); return { image: c.toDataURL("image/png"), text: sc.spoken }; });
   $("v_status").innerHTML = `<i class="spin"></i> ${esc(t("v.working"))}`;
   try {
-    const r = await api("POST", `/api/posts/${V.post.id}/video`, { scenes, voice: $("v_voice").value, music: $("v_music").value, quality });
-    await trackJob(r.job, t("v.title"));
-    V.post = await api("GET", "/api/posts/" + V.post.id); $("v_result").innerHTML = videoHTML(V.post);
-    $("v_status").textContent = t("v.done"); loadPosts(); if (ws && ws.post.id === V.post.id) ws.post = V.post;
+    V.post = await renderVideoFor(V.post, { voice: $("v_voice").value, music: $("v_music").value, quality: $("v_quality").value });
+    $("v_result").innerHTML = videoHTML(V.post); $("v_status").textContent = t("v.done"); loadPosts();
+    if (ws && ws.post.id === V.post.id) { ws.post = V.post; ws.videoNote = ""; ws.videoError = ""; renderWs(); }
   } catch (err) { $("v_status").innerHTML = `<span class="err-text">${esc(trErr(err.message))}</span>`; }
 });
 $("postVideo").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openVideo(await api("GET", "/api/posts/" + editing.id)); };

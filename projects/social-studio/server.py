@@ -12,6 +12,7 @@ import re
 import shutil
 import sqlite3
 import subprocess
+import unicodedata
 import sys
 import threading
 import time
@@ -40,7 +41,7 @@ CONTENT_TYPES = [
     "behind-the-scenes", "testimonial", "news", "story", "question",
 ]
 PLATFORMS = ["youtube", "linkedin", "instagram", "facebook", "x"]
-STATUSES = ["idea", "draft", "ready", "scheduled", "posted"]
+STATUSES = ["idea", "draft", "ready", "posted"]
 DURATIONS = ["15-30 sec", "30-60 sec", "60-90 sec"]
 MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]  # sirf tab jab model list na mile
 STEPS = ["all", "script", "caption", "edit", "image"]
@@ -1051,6 +1052,12 @@ def save_music(name, b64):
     return clean
 
 
+def file_slug(text):
+    """Download ke liye saaf file naam (sirf a-z, 0-9, hyphen)."""
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")[:40] or "video"
+
+
 def video_job(post_id, scenes, voice, music, quality):
     def work(job_id):
         found = vid.find_ffmpeg(DATA)
@@ -1078,7 +1085,7 @@ def video_job(post_id, scenes, voice, music, quality):
             whoosh = folder / "whoosh.wav"
             vid.make_whoosh(ffmpeg, whoosh)
             VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
-            name = f"post{post_id}-{int(time.time())}.mp4"
+            name = f"{file_slug(get_post(post_id)['topic'])}-{post_id}-{int(time.time())}.mp4"
             vid.compose(ffmpeg, prepared, VIDEOS_DIR / name, music_arg, 1920 if quality == "high" else 1280, str(whoosh),
                         lambda d, n: job_update(job_id, done=d, total=n))
             with DB_LOCK, db() as con:
