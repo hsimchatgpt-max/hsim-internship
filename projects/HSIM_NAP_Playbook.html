@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<title>HSIM NAP Playbook</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one narrow reading column, big NAP card first, then status table, then platform accordion */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --fg:#14202b; --muted:#566574; --line:#d7dee5;
+  --accent:#0b5fa5; --accent-fg:#ffffff; --accent-soft:#e1eef9;
+  --ok:#1d7a46; --ok-soft:#e2f3e9; --warn:#a15c00; --warn-soft:#fdeed3; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'Instrument Sans','Segoe UI',system-ui,sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1820; --surface:#16222d; --fg:#e8eef3; --muted:#9aabba; --line:#2a3a48;
+  --accent:#5db0f0; --accent-fg:#0b1620; --accent-soft:#17324a;
+  --ok:#5fd08b; --ok-soft:#14301f; --warn:#f0b35a; --warn-soft:#3a2a10; --bad:#ff8f87; --bad-soft:#3d1a18; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1820; --surface:#16222d; --fg:#e8eef3; --muted:#9aabba; --line:#2a3a48;
+  --accent:#5db0f0; --accent-fg:#0b1620; --accent-soft:#17324a;
+  --ok:#5fd08b; --ok-soft:#14301f; --warn:#f0b35a; --warn-soft:#3a2a10; --bad:#ff8f87; --bad-soft:#3d1a18; color-scheme:dark}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.6;
+  padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.6rem;font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.label{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+header{display:flex;flex-direction:column;gap:12px}
+header p{color:var(--muted);max-width:60ch}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec>p{color:var(--muted);max-width:65ch}
+.explain{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:20px;display:grid;gap:12px}
+.explain b{color:var(--accent)}
+.nap{background:var(--surface);border:2px solid var(--accent);border-radius:6px;overflow:hidden}
+.nap-head{background:var(--accent);color:var(--accent-fg);padding:12px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.nap-head strong{font-family:var(--f-display);font-size:1.1rem}
+.nap-head span{font-size:.85rem;opacity:.9}
+.row{display:grid;grid-template-columns:140px 1fr auto;gap:12px;align-items:center;padding:14px 20px;border-top:1px solid var(--line)}
+.nap-head+.row{border-top:0}
+.row .k{color:var(--muted);font-size:.85rem}
+.row .v{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.row .v small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+button{font:inherit;cursor:pointer}
+.copy{border:1px solid var(--line);background:var(--bg);color:var(--fg);padding:6px 12px;border-radius:4px;font-size:.8rem}
+.copy:hover{border-color:var(--accent);color:var(--accent)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.pill{display:inline-block;font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.ok{background:var(--ok-soft);color:var(--ok)} .warn{background:var(--warn-soft);color:var(--warn)} .bad{background:var(--bad-soft);color:var(--bad)} .info{background:var(--accent-soft);color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{border:1px solid var(--line);background:var(--surface);padding:14px 16px;border-radius:6px}
+.stat b{display:block;font-family:var(--f-display);font-size:1.9rem;line-height:1.1}
+.stat span{color:var(--muted);font-size:.85rem}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.9rem}
+th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;background:var(--accent-soft);color:var(--accent);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+td.mono{font-family:var(--f-mono);font-size:.82rem;overflow-wrap:anywhere}
+.old{text-decoration:line-through;color:var(--bad)}
+.timeline{display:grid;gap:12px}
+.day{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:16px 20px;display:grid;gap:8px}
+.day ul{margin:0;padding-left:1.1rem;display:grid;gap:4px}
+details{border:1px solid var(--line);background:var(--surface);border-radius:6px}
+details+details{margin-top:8px}
+summary{cursor:pointer;padding:14px 18px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";margin-left:auto;font-family:var(--f-mono);color:var(--accent);font-size:1.2rem}
+details[open] summary::after{content:"–"}
+.body{padding:4px 18px 18px;display:grid;gap:12px}
+.meta{display:grid;gap:4px;font-size:.88rem;color:var(--muted)}
+.meta a{color:var(--accent);overflow-wrap:anywhere}
+ol{margin:0;padding-left:1.3rem;display:grid;gap:8px}
+.callout{border-left:4px solid var(--warn);background:var(--warn-soft);padding:14px 18px;border-radius:0 6px 6px 0;display:grid;gap:6px}
+.dont{border-left-color:var(--bad);background:var(--bad-soft)}
+footer{color:var(--muted);font-size:.85rem}
+@media(max-width:560px){.row{grid-template-columns:1fr auto}.row .k{grid-column:1/-1}}
+@media(prefers-reduced-motion:no-preference){.copy{transition:border-color .15s,color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="label">HSIM · Karnal · Local SEO</span>
+  <h1>NAP Playbook: ek hi naam, ek hi address, ek hi number, har jagah</h1>
+  <p>Ye playbook batata hai NAP kya hai, HSIM ka final NAP kya hai, hum abhi kahan-kahan listed hain, aur har platform par kya-kya theek karna hai. Pehle Karnal, uske baad Chandigarh branch.</p>
+</header>
+
+<section class="sec" id="kya">
+  <span class="label">Part 1</span>
+  <h2>NAP kya hota hai, aur HSIM ka final NAP</h2>
+  <div class="explain">
+    <p><b>N</b>ame = business ka naam. <b>A</b>ddress = pata. <b>P</b>hone = phone number.</p>
+    <p>Google internet par dekhta hai ki HSIM ka naam, address aur number kitni jagah same likha hai. Jitni jagah same, utna Google ko bharosa, aur Google Maps mein upar aane ka chance. Abhi alag-alag sites par alag address aur purane numbers hain, isliye Google confuse hota hai. Isi ko theek karna hai.</p>
+  </div>
+  <div class="nap" role="group" aria-label="Master NAP">
+    <div class="nap-head"><strong>Master NAP: sab jagah yahi copy-paste karo</strong><span>Floor confirm: 2nd Floor</span></div>
+    <div class="row"><span class="k">Naam</span><span class="v" id="n1">HSIM - Hindustan School of Internet Marketing<small>Naam mein "Best", "Top" jaise keywords mat jodo</small></span><button class="copy" data-t="HSIM - Hindustan School of Internet Marketing">Copy</button></div>
+    <div class="row"><span class="k">Address</span><span class="v">SCO-112, 2nd Floor, Old Tehsil Market, GT Road, Karnal, Haryana 132001<small>Landmark: near Haryana Photostate, Dyal Singh Colony</small></span><button class="copy" data-t="SCO-112, 2nd Floor, Old Tehsil Market, GT Road, Karnal, Haryana 132001">Copy</button></div>
+    <div class="row"><span class="k">Phone</span><span class="v">+91 90530 70530<small>Dusra number (83078 78581) sirf website par rehne do, listings mein nahi. Baaki sab numbers galat hain (neeche dekho)</small></span><button class="copy" data-t="+91 90530 70530">Copy</button></div>
+    <div class="row"><span class="k">Email</span><span class="v">support@hsim.in<small>hsimindia@gmail.com aur navn@hsim.in bhi kuch jagah mile, ye listings mein nahi chalenge</small></span><button class="copy" data-t="support@hsim.in">Copy</button></div>
+    <div class="row"><span class="k">Website</span><span class="v">https://hsim.in</span><button class="copy" data-t="https://hsim.in">Copy</button></div>
+    <div class="row"><span class="k">Timing</span><span class="v">Mon–Sat, 9:30 AM – 5:30 PM<small>Confirm ho chuka hai. Abhi listings mein 9:00, 10:00, 6:30, 7:00 aur "24 hours" tak likha hai</small></span><button class="copy" data-t="Mon-Sat, 9:30 AM - 5:30 PM">Copy</button></div>
+  </div>
+  <div class="callout dont">
+    <h3>Ye galtiyan mat karna</h3>
+    <p>Address mein kabhi "3rd Floor" ya purana "SCO-347 Mughal Canal" mat likhna. Naam ki spelling "Hindu Sans" nahi, "Hindustan" hai. Floor ya number badalna ho to pehle Master NAP badlo, phir sab jagah.</p><p><b>Galat phone/email jo listings mein mile:</b> (83078 78581 website ka dusra number hai, wo bas listings mein nahi jaayega.) 89502 15437 (Grotal, Indian Yellow Pages), 80475 46947 (IndiaMART), 70870 83335 aur info@growquik.in (Growquik article, third party), 98023 87131 (LinkedIn, localFROG), 80105 05040 (YouTube), 99887 47070 (band Patiala branch), hsimindia@gmail.com (DialMeNow, GlobalBusiness).</p><p><b>Address ka ek chhota farq:</b> kai listings mein "Old Tehsil Complex" likha hai, jabki Google aur website par "Old Tehsil Market" hai. Ek rakho aur sab jagah wahi daalo.</p>
+  </div>
+</section>
+
+<section class="sec" id="kahan">
+  <span class="label">Part 2</span>
+  <h2>Hum abhi kahan-kahan listed hain</h2>
+  <p>Research aur team ki tracker sheet dono mila kar 64 jagah hain. Pura detail Excel ke "Master Listing Tracker" sheet mein hai. Yahan sirf main-main dikha rahe hain.</p>
+  <div class="stats">
+    <div class="stat"><b>64</b><span>jagah track ho rahi hain</span></div>
+    <div class="stat"><b>43</b><span>galat values (address, phone, email, hours)</span></div>
+    <div class="stat"><b>14</b><span>jagah listing banani hai</span></div>
+    <div class="stat"><b>1</b><span>band branch (Patiala) abhi online</span></div>
+  </div>
+  <div class="tablebox"><table>
+    <thead><tr><th>Platform</th><th>Abhi kya likha hai</th><th>Status</th></tr></thead>
+    <tbody>
+    <tr><td>Google Maps (GBP)</td><td>SCO-112 GT Rd, 90530 70530, 4.9 rating (208)</td><td><span class="pill ok">Sahi, verify karo</span></td></tr>
+    <tr><td>Website hsim.in</td><td>Kahin "2nd Floor", kahin "2nd/3rd Floor"</td><td><span class="pill warn">Floor ek karo</span></td></tr>
+    <tr><td>LinkedIn</td><td>Address SCO 112 Old Tehsil Market sahi, par phone <span class="old">98023 87131</span> (Navneet Sir ka registered number)</td><td><span class="pill warn">Phone badlo (OTP chahiye)</span></td></tr>
+    <tr><td>Justdial (2 listings)</td><td>Karan Gate aur Kunjpura Road (alag pate)</td><td><span class="pill bad">Duplicate</span></td></tr>
+    <tr><td>TradeIndia</td><td><span class="old">SCO-347, Mughal Canal</span></td><td><span class="pill bad">Purana address</span></td></tr>
+    <tr><td>Click.in</td><td><span class="old">Mughal Canal, Sector 13</span></td><td><span class="pill bad">Purana address</span></td></tr>
+    <tr><td>localFROG</td><td><span class="old">Mughal Canal, 98023 87131</span></td><td><span class="pill bad">Purana address + number</span></td></tr>
+        <tr><td>ZoomInfo</td><td>Naam "Haryana School of Internet Marketing"</td><td><span class="pill bad">Naam galat</span></td></tr>
+    <tr><td>Crunchbase</td><td>"For profit", 51–100 employees</td><td><span class="pill warn">Jankari galat</span></td></tr>
+    <tr><td>Tracxn, Economic Times, MyCorporateInfo</td><td>Delhi (Rohini) ka registered address (MCA data)</td><td><span class="pill info">Koi kaam nahi (Sir ka jawab aane tak)</span></td></tr>
+    <tr><td>YouTube (3 channels)</td><td>Purana number 80105 05040 kahin-kahin</td><td><span class="pill warn">Saaf karo</span></td></tr>
+    <tr><td>Instagram</td><td>Profile hai</td><td><span class="pill info">Address/hours add karo</span></td></tr>
+    <tr><td>Bing Maps</td><td>Naam "HSIM #1 Digital Marketing Institute in Karnal", address <span class="old">663 Kaithal Karnal Road</span></td><td><span class="pill bad">Naam + address galat</span></td></tr>
+    <tr><td>Sulekha</td><td><span class="old">Char Chaman Road</span>, hours 9:00–5:00</td><td><span class="pill bad">Address galat</span></td></tr>
+    <tr><td>Indian Yellow Pages, Grotal</td><td>Address sahi, phone <span class="old">89502 15437</span></td><td><span class="pill bad">Phone galat</span></td></tr>
+    <tr><td>IndiaMART</td><td>Naam "Hindustan School Of Internet &amp; Marketing", address sirf "Karnal", phone <span class="old">80475 46947</span></td><td><span class="pill bad">Naam + address + phone</span></td></tr>
+    <tr><td>eKarnal</td><td><span class="old">Sunrise Gallery, Char Chaman</span></td><td><span class="pill warn">Skip (contact nahi mil raha)</span></td></tr>
+    <tr><td>MeraPatiala.com</td><td>Patiala branch (SCO 8-9, Hotel Flyover), phone 99887 47070</td><td><span class="pill bad">Branch band hai, hatao</span></td></tr>
+    <tr><td>DialMeNow, GlobalBusiness, Growquik</td><td>Address sahi, par phone/email/hours alag</td><td><span class="pill warn">Correction</span></td></tr>
+    <tr><td>Pinterest, Facebook</td><td>Address sahi, hours 9:30–6:30 (5:30 hona chahiye)</td><td><span class="pill warn">Hours theek karo</span></td></tr>
+    <tr><td>Sab jagah hours</td><td>9:00–5:00, 9:00–7:00, 10:00–5:30, 9:30–6:30, "24 hours", "all day"</td><td><span class="pill bad">Sab alag</span></td></tr>
+    <tr><td>Apple Maps, UrbanPro, DigiKarnal, AllIndiaSearch, Haryana.com</td><td>Listing nahi hai</td><td><span class="pill bad">Banani hai</span></td></tr>
+    <tr><td>Superprof, Shiksha, Careers360, CollegeDekho, CollegeDunia, GetMyUni, EducationWorld, StudyGuideIndia, Admission24</td><td>Listing nahi hai</td><td><span class="pill bad">Banani hai</span></td></tr>
+    <tr><td>Press (ThePrint, EIN, Freep, KaroStartup, NatLawReview, Des Moines)</td><td>Sirf press release, NAP nahi</td><td><span class="pill info">Koi kaam nahi</span></td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="sec" id="kaise">
+  <span class="label">Part 3</span>
+  <h2>Kaun sa platform, kaise theek karna hai</h2>
+  <p>Har platform par click karke steps dekho. Har ek mein login link aur kaun se documents lagenge, wo bhi likha hai. Hamesha apne hi login se kaam karna.</p>
+
+  <div class="callout">
+    <h3>Pehle ye documents ek folder mein rakh lo</h3>
+    <p>Signboard ke saath office ki photos · logo · rent agreement ya bijli bill (address proof) · ID proof · Section 8 certificate · wo mobile aur email jinse purane accounts bane the (OTP aayega).</p>
+  </div>
+
+  <details open><summary>Claim kaise karte hain (har platform ka common tareeka)</summary><div class="body"><ol>
+    <li><b>Pehle search karo.</b> Platform par "HSIM Karnal" ya "Hindustan School of Internet Marketing" search karo. Listing pehle se hai to nayi mat banao, nahi to duplicate ban jayegi.</li>
+    <li><b>Claim button dhundo.</b> Listing page par "Claim this business", "Is this your business?", "Own this business?" ya "Edit listing" likha hota hai.</li>
+    <li><b>Login ya account banao.</b> Company email (support@hsim.in) ya wo email jisse pehle bana tha. Personal email se mat banao, nahi to baad mein access kho jata hai.</li>
+    <li><b>Verification.</b> Phone OTP, call, email link ya document maangte hain. Verification ke time 90530 70530 wala phone paas rakho.</li>
+    <li><b>NAP bharo.</b> Verify hone ke baad Master NAP copy-paste karo, phir logo, photos, description aur website link daalo.</li>
+    <li><b>Claim ka button na ho</b> to site ke support ko mail ya contact form bhejo. Template: "Hello, I am the owner of HSIM - Hindustan School of Internet Marketing, Karnal. Please let me claim and update this listing. Correct details: SCO-112, 2nd Floor, Old Tehsil Market, GT Road, Karnal 132001, +91 90530 70530, support@hsim.in, Mon-Sat 9:30 AM - 5:30 PM. Listing link: (paste link)."</li>
+    <li><b>Tracker mein likho.</b> Listing ka link, kaun si email ya number se login kiya, aur date. Excel ka "Login Tracker" sheet isi ke liye hai.</li>
+  </ol></div></details>
+
+  <div id="steps"></div>
+</section>
+
+<section class="sec" id="plan">
+  <span class="label">Part 4</span>
+  <h2>Do din ka plan (jo bina atke ho sakta hai)</h2>
+  <div class="timeline">
+    <div class="day"><h3>Din 1: jahan se customer aate hain</h3><ul>
+      <li>Master NAP final karo (upar wala), documents ready karo</li>
+      <li>Google Business Profile theek karo</li>
+      <li>Website: footer, contact page, schema mein same NAP</li>
+      <li>Justdial: ek listing rakho, duplicate hatwao (documents Sir se mil jayein to)</li>
+      <li>Bing Places aur Apple Business Connect par listing</li></ul></div>
+    <div class="day"><h3>Din 2: baaki sab saaf karo</h3><ul>
+      <li>IndiaMART, TradeIndia, Click.in, localFROG, local directories</li>
+      <li>Facebook, LinkedIn, Instagram, YouTube ka About section</li>
+      <li>Crunchbase aur ZoomInfo ko correction request (Tracxn aur MCA wale sites par abhi kuch nahi)</li>
+      <li>Naye citations: Sulekha, Yellow Pages, Hotfrog, Shiksha, Careers360</li>
+      <li>Tracker bharo: Done / Verification pending / Request bheji</li>
+      <li>Jahan login atka hai (Part 3 ka "Jahan login atka hua hai" section), wo team se poochho</li></ul></div>
+  </div>
+  <div class="callout">
+    <h3>Dhyan rakhna</h3>
+    <p>Do din mein wahi submit hoga jahan login aur documents ready hain. Login atke hue, Justdial documents aur paid portals Sir ke jawab ke baad honge. Google aur Bing ki verification mein 1 se 5 din lag sakte hain. 7 din baad sab listings dobara check karo.</p>
+  </div>
+</section>
+
+<section class="sec" id="chandigarh">
+  <span class="label">Part 5</span>
+  <h2>Uske baad: Chandigarh branch</h2>
+  <p>Karnal poora saaf hone ke baad Chandigarh shuru hoga, taaki Google ko brand ek hi dikhe. Chandigarh ka NAP Karnal se alag rahega.</p>
+  <div class="explain">
+    <p>Chandigarh ke liye chahiye: pakka address aur floor, alag phone number, rent agreement ya bijli bill, signboard ke saath photos, aur naam jaise <b>HSIM - Hindustan School of Internet Marketing, Chandigarh</b>.</p>
+    <p>Alag Google Business Profile banegi, website par alag Chandigarh page, aur har directory mein alag listing. Karnal wali listing ko edit karke Chandigarh mat banana.</p>
+  </div>
+  <details><summary>Chandigarh ke steps (Karnal poora hone ke baad)</summary><div class="body"><ol>
+    <li>Sir se Chandigarh ka address, floor, phone, email aur opening date lo (Part 6 ke sawal 27 se 29).</li>
+    <li>Chandigarh ki alag Master NAP row banao. Karnal ki row mat chhedna.</li>
+    <li>Documents: address proof (rent agreement ya bijli bill), signboard ke saath photos, logo.</li>
+    <li>Signboard lagne ka wait karo. Google verification ke liye signboard dikhna zaroori hai.</li>
+    <li>Google Business Profile: business.google.com > Add business > naam "HSIM - Hindustan School of Internet Marketing, Chandigarh" > category > address aur map pin > phone > website (Chandigarh wala page).</li>
+    <li>Verification video branch par hi banao (signboard, andar ka kaam).</li>
+    <li>Website par alag Chandigarh page banao: address, phone, map, courses.</li>
+    <li>Bing Places, Apple Business Connect aur Justdial par Chandigarh ki nayi listing banao.</li>
+    <li>Facebook, LinkedIn, Instagram mein "Locations" ya "Branches" mein Chandigarh jodo.</li>
+    <li>Tracker mein Chandigarh ki alag listing, login aur status likho.</li>
+  </ol></div></details>
+</section>
+
+<section class="sec" id="sawal">
+  <span class="label">Part 6</span>
+  <h2>Sir se poochne wale sawal</h2>
+  <p>Jahan-jahan doubt aa sakta hai, wahan ke sawal. Har sawal ke neeche meri suggestion bhi hai, taaki sir ko sirf haan ya na kehna pade. Jo cheezein Master NAP mein final likhi hain, unke sawal sirf Sir ki ek "haan" ke liye hain. Excel ke "Sir Se Poochne Wale Sawal" sheet mein jawab likhne ki jagah hai.</p>
+  <details><summary>Naam aur pehchaan <span class="pill info">4 sawal</span></summary><div class="body"><ol start="1">
+    <li><b>Hamara official brand naam kaun sa hai: &quot;HSIM - Hindustan School of Internet Marketing&quot; ya sirf &quot;HSIM&quot;?</b><br><span style="color:var(--muted)">Doubt kahan: Team ki kai listings mein sirf &quot;HSIM&quot; likha hai, kahin poora naam<br>Meri suggestion: Poora naam sab jagah</span></li>
+    <li><b>&quot;HSIM Media Federation&quot; aur &quot;Hindu Sans School of Internet Marketing&quot; kya hain? Koi nayi company ya doosra brand hai?</b><br><span style="color:var(--muted)">Doubt kahan: Ye dono naam kisi listing ya press mein nahi mile<br>Meri suggestion: Jab tak pata na chale, inka koi page ya listing mat banao</span></li>
+    <li><b>Legal naam HSIM India Federation aur Serve Vision Pvt Ltd ka kya rishta hai? Listings mein &quot;in collaboration with Serve Vision Pvt Ltd&quot; likhna hai ya nahi?</b><br><span style="color:var(--muted)">Doubt kahan: Facebook aur Justdial ke description mein ye line hai, Instagram aur Bing mein nahi<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>Tracxn, Economic Times aur MyCorporateInfo par Delhi (Rohini) ka registered address hai. Ye waise hi rehne dena hai ya Karnal ka karwana hai? Aur Crunchbase par &quot;for profit&quot; hai, jabki Section 8 non-profit hai, kaun sahi hai?</b><br><span style="color:var(--muted)">Doubt kahan: Company record alag aur listing alag dikhta hai<br>Meri suggestion: Abhi chhod do, sirf Crunchbase ka status sahi karo</span></li>
+  </ol></div></details>
+  <details><summary>Address aur timing <span class="pill info">4 sawal</span></summary><div class="body"><ol start="5">
+    <li><b>Office 2nd Floor par confirm hai. 3rd floor par bhi kuch hai (website par &quot;2nd/3rd Floor&quot; likha hai)?</b><br><span style="color:var(--muted)">Doubt kahan: Website par floor do tarah likha hai<br>Meri suggestion: Sab jagah sirf 2nd Floor</span></li>
+    <li><b>Address mein &quot;Old Tehsil Market&quot; likhun ya &quot;Old Tehsil Complex&quot;?</b><br><span style="color:var(--muted)">Doubt kahan: Google aur website par Market, team ki kai listings mein Complex<br>Meri suggestion: Old Tehsil Market</span></li>
+    <li><b>Landmark &quot;near Haryana Photostate&quot; listings mein likhna hai?</b><br><span style="color:var(--muted)">Doubt kahan: Google Maps par likha hai, kai listings mein nahi<br>Meri suggestion: Haan, likho</span></li>
+    <li><b>Timing Mon-Sat 9:30 AM - 5:30 PM hai. Sunday band hai? Lunch break ya holiday ki timing alag hai?</b><br><span style="color:var(--muted)">Doubt kahan: Listings mein 9:00, 10:00, 6:30, 7:00 aur &quot;24 hours&quot; tak alag-alag hai<br>Meri suggestion: Mon-Sat 9:30-5:30, Sunday band</span></li>
+  </ol></div></details>
+  <details><summary>Phone aur email <span class="pill info">4 sawal</span></summary><div class="body"><ol start="9">
+    <li><b>83078 78581 kiska number hai? Listings mein daalna hai ya sirf website par rehne dena hai?</b><br><span style="color:var(--muted)">Doubt kahan: Website par dono number hain, listings mein 90530 70530 chahiye<br>Meri suggestion: Listings mein sirf 90530 70530</span></li>
+    <li><b>Ye purane numbers kiske hain aur abhi chalu hain: 89502 15437, 80475 46947, 70870 83335, 98023 87131, 80105 05040?</b><br><span style="color:var(--muted)">Doubt kahan: Alag-alag listings mein mile (Grotal, Yellow Pages, IndiaMART, Growquik, LinkedIn, localFROG, YouTube)<br>Meri suggestion: Sab se hatao, sirf 90530 70530</span></li>
+    <li><b>IndiaMART par 80475 46947 enquiry number hai. Isse leads aati hain to isko rakhna hai ya asli number daalna hai?</b><br><span style="color:var(--muted)">Doubt kahan: IndiaMART alag virtual number deta hai<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>support@hsim.in kaun roz dekhta hai? hsimindia@gmail.com aur navn@hsim.in rakhne hain ya hatane hain?</b><br><span style="color:var(--muted)">Doubt kahan: DialMeNow aur GlobalBusiness par gmail, Internshala par navn@hsim.in hai<br>Meri suggestion: Sirf support@hsim.in</span></li>
+  </ol></div></details>
+  <details><summary>Login aur access <span class="pill info">7 sawal</span></summary><div class="body"><ol start="13">
+    <li><b>Google Business Profile ka owner kaun sa Gmail hai? Verification ke liye video kaun dega?</b><br><span style="color:var(--muted)">Doubt kahan: GBP claim aur edit isi par depend karta hai<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>LinkedIn page par Navneet Sir ka number registered hai. OTP kab mil sakta hai, ya kisi aur ko admin bana sakte hain? Job post ka number bhi badalna hai.</b><br><span style="color:var(--muted)">Doubt kahan: Phone badalne ke liye unka OTP chahiye<br>Meri suggestion: Sir OTP de ya admin banaye</span></li>
+    <li><b>Ye accounts kis email ya number se bane the: Click.in, GetBusiness, DialMeNow, Bing, Grotal, AmbitionBox, Foundit, Glassdoor? Kaun help karega (Pankaj Sir, Aman Sir)?</b><br><span style="color:var(--muted)">Doubt kahan: Team ne likha: login nahi hua ya email se login hai<br>Meri suggestion: Sir bataye kaun sa email</span></li>
+    <li><b>Unifers Pankaj Sir ko transfer hua hai, wo kab tak update karenge?</b><br><span style="color:var(--muted)">Doubt kahan: Team ki sheet mein sirf &quot;transferred&quot; likha hai<br>Meri suggestion: Pankaj Sir se date lo</span></li>
+    <li><b>hsim.co.in kya hai? Hamari doosri site hai ya hsim.in par redirect hona chahiye? Iska login aur contact details kya hain?</b><br><span style="color:var(--muted)">Doubt kahan: Team ne likha: Sir se discussion<br>Meri suggestion: Pata chalne tak NAP mein mat daalo</span></li>
+    <li><b>X par HSIM ka apna account hai? Pinterest (hsimindia), Instagram aur linktr.ee ko kaun chalata hai?</b><br><span style="color:var(--muted)">Doubt kahan: X ka link dl_magazine ke post ka hai, HSIM ka apna profile confirm nahi<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>YouTube par 3 channels hain. Purane do ko merge ya band karna hai ya description sahi karke rehne dena hai?</b><br><span style="color:var(--muted)">Doubt kahan: Purane channels mein purana phone 80105 05040 hai<br>Meri suggestion: Description sahi karke rehne do</span></li>
+  </ol></div></details>
+  <details><summary>Documents aur paise <span class="pill info">3 sawal</span></summary><div class="body"><ol start="20">
+    <li><b>Justdial update ke liye kaun se documents dene hain (registration, GST, address proof)? Kaun dega?</b><br><span style="color:var(--muted)">Doubt kahan: Team ne likha: need document for updates<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>Justdial, IndiaMART, AddressGuru jaise paid plans ke liye budget hai ya sirf free listings karni hain?</b><br><span style="color:var(--muted)">Doubt kahan: AddressGuru par paid plan na hone se purana data wapas aa gaya<br>Meri suggestion: Abhi sirf free</span></li>
+    <li><b>Section 8 registration certificate aur GST number kaun sa listings mein daalna hai?</b><br><span style="color:var(--muted)">Doubt kahan: TradeIndia, IndiaMART par GST maangta hai<br>Meri suggestion: Sir bataye</span></li>
+  </ol></div></details>
+  <details><summary>Claims aur description <span class="pill info">3 sawal</span></summary><div class="body"><ol start="23">
+    <li><b>&quot;100% placement guarantee&quot; ya &quot;100% job guarantee&quot; listings mein likhna hai? Iska proof hai?</b><br><span style="color:var(--muted)">Doubt kahan: Bing description mein &quot;best&quot; aur &quot;100%&quot; likha hai, galat claim se listing hat sakti hai<br>Meri suggestion: Claims kam rakho</span></li>
+    <li><b>Students ka number 900+, 1000+ ya 1100+? Reviews 150+, 180+ ya 200+? Kaun sa final?</b><br><span style="color:var(--muted)">Doubt kahan: Alag-alag jagah alag likha hai<br>Meri suggestion: 1000+ students, 200+ reviews (Google 208)</span></li>
+    <li><b>Sab listings ka ek hi short description chahiye. Kaun sa rakhen?</b><br><span style="color:var(--muted)">Doubt kahan: Abhi Justdial, Sulekha, Bing sab par alag description hai<br>Meri suggestion: Hum likh ke Sir se approve karwayenge</span></li>
+  </ol></div></details>
+  <details><summary>Patiala aur Chandigarh <span class="pill info">4 sawal</span></summary><div class="body"><ol start="26">
+    <li><b>Patiala branch band hai (Aman Sir ne confirm kiya). MeraPatiala.com ke alawa kahin aur Patiala ka number ya listing ho to batayein?</b><br><span style="color:var(--muted)">Doubt kahan: MeraPatiala.com par abhi chalu hai<br>Meri suggestion: Pehle MeraPatiala se hatao, baaki jagah search karke dekhenge</span></li>
+    <li><b>Chandigarh branch ka pakka address aur floor kya hai? Phone number, email aur opening date kya hai?</b><br><span style="color:var(--muted)">Doubt kahan: Alag Google profile aur alag NAP banana hai<br>Meri suggestion: Sir bataye</span></li>
+    <li><b>Chandigarh ka naam kaisa rakhen: &quot;HSIM - Hindustan School of Internet Marketing, Chandigarh&quot;? Branch own hai ya franchise?</b><br><span style="color:var(--muted)">Doubt kahan: Google par naam mein sirf location jod sakte hain<br>Meri suggestion: Naam mein location, koi keyword nahi</span></li>
+    <li><b>Chandigarh signboard kab lagega aur Google ki verification ke liye wahan kaun hoga? Chandigarh ki listings kaun manage karega?</b><br><span style="color:var(--muted)">Doubt kahan: Verification branch ke address par hi hoti hai<br>Meri suggestion: Sir bataye</span></li>
+  </ol></div></details>
+</section>
+
+<footer>Version: saaf kiya hua, 29 Oct 2026 (duplicate sections hataye, contradictions theek kiye). Research: 28 Oct 2026, web search, Google aur directories se, plus team ki "HSIM - Local listing SEO" tracker sheet. Students aur placement ke numbers HSIM ke apne claims hain. Login links public sign-in pages hain; koi password use nahi hua.</footer>
+</div>
+
+<script>
+var P=[
+{n:"Google Business Profile",tag:"Sabse pehle",cls:"warn",login:"https://business.google.com/",docs:"Owner Gmail; verification ke liye video ya OTP",s:[
+ "business.google.com par us Gmail se login karo jo profile ka owner hai. Owner nahi ho to Maps par HSIM kholo aur 'Own this business?' dabao.",
+ "Profile chuno, phir Edit profile, phir Business information.",
+ "Naam, address, phone, website aur timing Master NAP se bilkul same karo.",
+ "Primary category 1 rakho, extra 2–3 jodo. Services mein courses daalo.",
+ "Signboard, class aur logo ki photos daalo. Hafte mein 1 post.",
+ "Verification maange to video lo: signboard, office ka andar, aur kaam dikhao. 1–5 din lag sakte hain.",
+ "Naam ya address badalne ke baad profile kuch der review mein rahegi. Dobara edit mat karo."]},
+{n:"Website hsim.in",tag:"Din 1",cls:"bad",login:"https://hsim.in/wp-admin",docs:"WordPress admin login",s:[
+ "Footer mein NAP text mein likho (image mein nahi).",
+ "Contact page par NAP aur Google Map jodo.",
+ "Floor ka conflict hatao: har jagah '2nd Floor'.",
+ "Rank Math ya Yoast Local SEO se EducationalOrganization schema add karo."]},
+{n:"Justdial",tag:"Din 1",cls:"bad",login:"https://business.justdial.com/",docs:"Registered mobile (OTP), address proof",s:[
+ "Registered mobile se OTP login karo.",
+ "Dono listings dhundo: 'Hsim Hindustan School Of Internet Marketing' (Karan Gate) aur 'Hsim India Federation' (Kunjpura Road).",
+ "Jis par zyada reviews hain (4.8 wali), usme naam, address, phone, timing, website Master NAP se karo.",
+ "Doosri ke liye support se duplicate delete ya merge request bhejo. Customer care number site par dekh kar confirm karna.",
+ "Timing 10:00 AM se badal kar 9:30 AM – 5:30 PM karo.",
+ "Team ne bataya hai ki update ke liye Justdial documents maang raha hai. Address proof aur ID taiyaar rakho.",
+ "Edit ke baad verification call ya OTP aayega, utha lena."]},
+{n:"Google Maps par claim (agar profile kisi aur ke naam hai)",tag:"Din 1",cls:"bad",login:"https://business.google.com/",docs:"Gmail, phone paas mein",s:[
+ "maps.google.com par 'HSIM Hindustan School of Internet Marketing Karnal' search karo.",
+ "Left panel mein 'Claim this business' ya 'Own this business?' dabao.",
+ "Gmail se login karo. Pehle se koi owner hai to 'Request access' ka option aayega, 3 din tak wait karo. Owner ka masked email (j***@gmail.com) dikh jata hai, wahi pata chalta hai kisne banaya.",
+ "Owner jawab na de to Google 'Appeal' ka option deta hai. Business ka proof (signboard photo, registration, bijli bill) upload karo.",
+ "Claim hone ke baad verification: video record karo (signboard, office ka andar, kaam karte log). Phone OTP bhi aa sakta hai.",
+ "Verify hone par profile mein Master NAP daalo."]},
+{n:"Pinterest (hsimindia)",tag:"Din 2",cls:"warn",login:"https://www.pinterest.com/login/",docs:"Email, website par kuch badalne ka access",s:[
+ "Login karo, right-top avatar > profile > Edit profile.",
+ "Naam 'HSIM - Hindustan School of Internet Marketing', About mein 2 line description aur website hsim.in daalo.",
+ "Settings > Claimed accounts > Websites mein hsim.in claim karo. Account business type ka hona chahiye, nahi to 'Convert to business' pehle karo.",
+ "Claim ke liye Pinterest ek HTML tag deta hai. Wo hsim.in ke head mein daalna hota hai (developer se karwao)."]},
+{n:"Internshala",tag:"Din 2",cls:"warn",login:"https://internshala.com/login",docs:"navn@hsim.in ka access",s:[
+ "navn@hsim.in se login karo. Password yaad na ho to Forgot password.",
+ "Employer dashboard > Company profile > Edit.",
+ "Naam, address (Master NAP), website, short description daalo.",
+ "Phone aur timing company profile mein add karo agar option ho."]},
+{n:"GetBusiness, DialMeNow, ExportersIndia",tag:"Din 2",cls:"warn",login:"https://www.exportersindia.com/login.php",docs:"Email ya mobile jisse listing bani thi",s:[
+ "ExportersIndia: login karo > My Profile > Company details > address, phone, email, hours sahi karo.",
+ "GetBusiness: listing kholo, Claim/Login dabao. Login na ho to Forgot password, masked email dekho.",
+ "DialMeNow: 'reset par unauthorized request' aa raha hai. support@hsim.in se unke support ko mail bhejo, listing link ke saath, aur claim maango.",
+ "Teeno mein hsimindia@gmail.com, 83078 78581 aur galat hours hatao."]},
+{n:"Glassdoor, AmbitionBox, Foundit (employer)",tag:"Din 2",cls:"info",login:"https://www.glassdoor.com/employers/",docs:"Company email (@hsim.in) se verify",s:[
+ "Glassdoor: Employer Center > 'Get a free employer account'. Company email se sign up karo, verification link aayega.",
+ "Verify hone ke baad Company profile edit karo: website, location Karnal, size, description.",
+ "AmbitionBox: company page par 'Claim' ya 'For employers' ka link dhundo. Na mile to unke support ko likho.",
+ "Foundit: foundit.in/employer par login. Job post ya company page ka contact number 90530 70530 karo."]},
+{n:"Company data sites (Crunchbase, ZoomInfo, MyCorporateInfo, Economic Times, Tracxn)",tag:"Din 2",cls:"info",login:"https://www.crunchbase.com/login",docs:"Company email, Section 8 certificate",s:[
+ "MyCorporateInfo, Economic Times aur Tracxn ka data company registry (MCA) ka hota hai. Isme Rohini (Delhi) registered address hai. Ise badalna ho to company ke CA/CS se poochho (registered office badalne ka form aam taur par INC-22 hota hai).",
+ "Crunchbase: apna account banao, company page par 'Claim this profile' ya 'Suggest an edit' dabao, type 'Non-profit (Section 8)', sahi employees, website aur Karnal address daalo.",
+ "ZoomInfo ka page Deepak Rajput ki personal profile hai, jisme employer 'Haryana School of Internet Marketing' likha hai. Deepak se bolo apna employer naam theek kare, ya ZoomInfo ko correction request bhejo.",
+ "Tracxn, Economic Times aur MyCorporateInfo par abhi koi kaam nahi (Sir ka jawab aane tak, Part 6 ka sawal 4)."]},
+{n:"Education portals (Shiksha, Careers360, CollegeDekho, CollegeDunia, GetMyUni, EducationWorld, StudyGuideIndia, Admission24)",tag:"Din 2",cls:"info",login:"https://www.shiksha.com/",docs:"Registration, address proof, brochure, logo",s:[
+ "Har site ke footer mein 'For Colleges', 'List your institute', 'Institute login' ya 'Partner with us' dhundo.",
+ "Form bharo: institute ka naam, address, phone, email, website, courses.",
+ "Kai portals lead-based ya paid hote hain. Pehle free listing ka option poochho, aur paid plan ka rate Sir ko batao (Sir se poochne wale sawal mein ye hai).",
+ "Jo na mile unke liye support email bhejo (Claim wala template upar hai)."]},
+{n:"Jahan login atka hua hai",tag:"Pehle team se poocho",cls:"warn",login:"-",docs:"Sir / Pankaj Sir / Aman Sir se login ya OTP",s:[
+ "Click.in: mail nahi aa rahi. Forgot password try karo, na ho to support se bolo ya naya ad daalo.",
+ "GetBusiness: login nahi hua. Password reset ya support.",
+ "DialMeNow: reset par 'unauthorized request' aaya. Support ko mail karo.",
+ "Bing, Grotal, AmbitionBox, Foundit, Glassdoor: sab email se login hote hain. Company email se try karo.",
+ "LinkedIn page aur job post: number Navneet Sir ka registered hai, unke OTP se badalna hoga.",
+ "Unifers: Pankaj Sir ko transfer ho chuka hai, wahi update karenge.",
+ "hsim.co.in: Sir se baat karke login aur contact details lena hai. Dhyan: ye hsim.in se alag domain hai.",
+ "AddressGuru: paid plan ke bina purana data wapas aa jata hai. Abhi chhod do.",
+ "eKarnal (contact nahi mil raha) aur Tracxn: skip (Tracxn ka data MCA se aata hai)."]},
+{n:"Patiala (band branch)",tag:"Hatao",cls:"bad",login:"https://www.merapatiala.com/",docs:"Branch band hone ki Aman Sir ki confirmation (ho chuki hai)",s:[
+ "MeraPatiala.com par HSIM Patiala listing hai: SCO 8-9, Ground Floor, adjoining Hotel Flyover, phone 99887 47070. Branch band hai.",
+ "Site se removal ya 'permanently closed' ki request bhejo.",
+ "Dusri jagah Patiala ka naam mile to wahan bhi hatao, nahi to Google ko confusion rehta hai."]},
+{n:"Bing Places",tag:"Din 1",cls:"bad",login:"https://www.bingplaces.com/",docs:"Microsoft ya Google account",s:[
+ "Pehle check karo: Bing par ek purani listing hai 'HSIM #1 Digital Marketing Institute in Karnal' (663 Kaithal Karnal Road). Isko claim karke naam aur address sahi karna hai, nayi mat banao.",
+ "Bing Places mein login karo aur 'Import from Google Business Profile' chuno, phir Google account se profile import karo.",
+ "Phone ya email se verify karo. 1–3 din lagte hain."]},
+{n:"Apple Business Connect",tag:"Din 1",cls:"warn",login:"https://businessconnect.apple.com/",docs:"Apple ID, phone",s:[
+ "Apple ID se login karo, 'Add your business' dabao.",
+ "Master NAP daalo aur phone call se verify karo."]},
+{n:"IndiaMART",tag:"Din 2",cls:"bad",login:"https://seller.indiamart.com/",docs:"Registered mobile ya email. 80475 46947 enquiry number hai, Sir ke jawab tak mat badlo",s:[
+ "Seller login karo (OTP).",
+ "Company Details mein naam 'HSIM - Hindustan School of Internet Marketing' karo aur poora address, phone daalo.",
+ "Services mein Digital Marketing Course aur SEO Training jodo.",
+ "Save karo. Review mein kuch ghante lagte hain."]},
+{n:"TradeIndia",tag:"Din 2",cls:"bad",login:"https://www.tradeindia.com/login/",docs:"Registered mobile ya email",s:[
+ "Login karo, Seller panel, phir Profile.",
+ "'SCO-347 Mughal Canal' hata kar SCO-112, 2nd Floor, Old Tehsil Market likho.",
+ "Company naam, phone aur employees sahi karo.",
+ "Login na chale to TradeIndia support se profile claim maango."]},
+{n:"Click.in aur localFROG",tag:"Din 2",cls:"bad",login:"https://www.click.in/login",docs:"Wo phone ya email jisse ad bana tha",s:[
+ "Click.in: login, My Ads, purana ad edit karo ya delete karke naya daalo.",
+ "localFROG: listing page par Claim ya Edit dhundo, nahi mile to contact form se likho: 'Address SCO-112 2nd Floor Old Tehsil Market karo, number 90530 70530 karo, 9802387131 hatao.'"]},
+{n:"Local directories (KarnalOnline, PoweredIndia, Gbusiness)",tag:"Din 2",cls:"warn",login:"https://www.karnalonline.in/",docs:"Email aur mobile",s:[
+ "Har site par register ya login karo, Master NAP wali email se.",
+ "Listing claim ya edit karke NAP sahi karo.",
+ "Claim ka option na ho to site ke contact form se correction request bhejo."]},
+{n:"Facebook, Instagram, LinkedIn",tag:"Din 2",cls:"warn",login:"https://www.facebook.com/hsimkarnal/",docs:"Page admin access",s:[
+ "Facebook page (hsimkarnal): Edit page info, naam, address, phone, email, hours, website.",
+ "LinkedIn company page: Admin view, Edit page, address aur website, company size sahi karo.",
+ "Instagram (hsim.official): bio mein 'Karnal | Digital Marketing Institute', hsim.in link, contact options mein phone aur address."]},
+{n:"YouTube (3 channels)",tag:"Din 2",cls:"warn",login:"https://studio.youtube.com/",docs:"Google account",s:[
+ "Studio, Customization, Basic info: description mein NAP aur website daalo.",
+ "Purane 2 channels mein se purana number 80105 05040 hatao aur main channel (@HSIM.Official) ka link daalo."]},
+{n:"Sulekha, Indian Yellow Pages, Grotal",tag:"Din 2",cls:"bad",login:"https://www.sulekha.com/",docs:"Email aur OTP",s:[
+ "Sulekha: 'Char Chaman Road' wali listing claim karo, address SCO-112 Old Tehsil Market karo, timing 9:30–5:30.",
+ "Indian Yellow Pages aur Grotal: phone 89502 15437 hatao, 90530 70530 daalo. Grotal par category 'Share Market Training' galat hai.",
+"Timing 9:30–5:30 aur email support@hsim.in sab mein same rakho."]},
+{n:"Nayi listings banani hain (14 jagah)",tag:"Din 2",cls:"info",login:"https://www.shiksha.com/",docs:"Email aur OTP",s:[
+ "Ye sab abhi bani hi nahi: Apple Maps, UrbanPro, DigiKarnal, AllIndiaSearch, Haryana.com, Superprof, Shiksha, Careers360, CollegeDekho, CollegeDunia, GetMyUni, EducationWorld, StudyGuideIndia, Admission24.",
+ "Site par 'Add Business' ya 'Add Institute' dhundo.",
+ "Master NAP bilkul same paste karo, spelling mat badalna.",
+ "Category: digital marketing training institute, city Karnal.",
+ "Har listing ka link tracker mein save karo."]}
+];
+var host=document.getElementById('steps');
+P.forEach(function(p,i){
+  var d=document.createElement('details'); if(i===0)d.open=true;
+  var sm=document.createElement('summary');
+  sm.innerHTML='<span>'+p.n+'</span><span class="pill '+p.cls+'">'+p.tag+'</span>';
+  var b=document.createElement('div'); b.className='body';
+  var meta=document.createElement('div'); meta.className='meta';
+  meta.innerHTML=(p.login&&p.login!=='-'?'<span>Login: <a href="'+p.login+'" target="_blank" rel="noopener">'+p.login+'</a></span>':'')+'<span>Chahiye: '+p.docs+'</span>';
+  var ol=document.createElement('ol');
+  p.s.forEach(function(t){var li=document.createElement('li');li.textContent=t;ol.appendChild(li)});
+  b.appendChild(meta);b.appendChild(ol);d.appendChild(sm);d.appendChild(b);host.appendChild(d);
+});
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var t=btn.getAttribute('data-t');
+    function done(){var o=btn.textContent;btn.textContent='Copied';setTimeout(function(){btn.textContent=o},1200)}
+    function fallback(){var x=document.createElement('textarea');x.value=t;x.style.position='fixed';x.style.opacity='0';document.body.appendChild(x);x.select();try{if(document.execCommand('copy'))done()}catch(e){}document.body.removeChild(x)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done,fallback)}else{fallback()}
+  });
+});
+</script>
+
+</body>
+</html>
