@@ -449,6 +449,7 @@ const I18N = {
     "usage.line": "आज: {v} वीडियो · {c} कंटेंट · {a} AI रिक्वेस्ट · AI तैयार: {p}",
     "or.hint": "एक और फ़्री बैकअप। openrouter.ai/keys से key (सिर्फ़ फ़्री मॉडल)।",
     "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
+    "tip.ai": "सुझाव: Setup खोलकर OpenRouter (फ़्री) जोड़ें या लोकल AI इंस्टॉल करें (बिना लिमिट)।",
     "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
     "toast.copied": "कॉपी हो गया!", "btn.copy": "कैप्शन + हैशटैग कॉपी करें", "btn.dlvideoMp4": "वीडियो डाउनलोड करें (MP4)", "btn.remake": "वीडियो दोबारा बनाएं",
     "ws.vidready": "आपका वीडियो तैयार है! डाउनलोड करें और खुद पोस्ट करें।", "ws.edit": "स्क्रिप्ट / कैप्शन एडिट करें (वैकल्पिक)",
@@ -668,7 +669,8 @@ function renderWs() {
     status.innerHTML = `<i class="spin"></i> ${esc(ws.msg || t("ws.loading"))}`;
   } else if (ws.state === "error") {
     status.innerHTML = `<span class="err-text">${esc(t("gen.error"))} ${esc(trErr(ws.error))}</span>`;
-    btn("primary", t("btn.again"), () => runStep(ws.step, null, ws.note));
+    btn("primary", t("btn.again"), () => runStep(ws.step, null, ws.note, true));
+    if (/AI options|No AI is set up|limit/i.test(ws.error)) btn("ghost", t("wiz.open"), openWizard);
   } else if (ws.state === "step") {
     const def = ws.steps[ws.stepIdx];
     status.textContent = t("step.of", { i: ws.stepIdx + 1, n: ws.steps.length, name: t("step." + def.id) });
@@ -714,10 +716,10 @@ async function autoVideo(me) {  // "One click": text ke baad video bhi apne aap
   me.post = await renderVideoFor(me.post, { voice: tl.default_voice || tl.voices[0].id, music: "ambient", quality: "standard" });
   loadPosts();
 }
-async function runStep(step, jobId, note) {
+async function runStep(step, jobId, note, force) {
   const me = ws; me.state = "loading"; me.step = step; me.note = note || ""; me.msg = ""; me.videoNote = ""; me.videoError = ""; renderWs();
   try {
-    if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step, note: me.note })).job;
+    if (!jobId) jobId = (await api("POST", `/api/posts/${me.post.id}/generate`, { step, note: me.note, force: !!force })).job;
     await trackJob(jobId, me.post.topic || t("tab.create"));
     me.post = await api("GET", "/api/posts/" + me.post.id);
     if (step === "all" && ["video", "story"].includes(me.post.format)) {

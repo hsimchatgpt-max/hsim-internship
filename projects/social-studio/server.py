@@ -653,8 +653,12 @@ def provider_ready(name):
             "ollama": bool(ollama_models())}[name]
 
 
-def call_ai(prompt):
-    """Ek ke baad ek AI try karta hai (Gemini, Groq, OpenRouter, Local). Jo chal jaye wahi jawab deta hai."""
+def call_ai(prompt, force=False):
+    """Ek ke baad ek AI try karta hai (Gemini, Groq, OpenRouter, Local). Jo chal jaye wahi jawab deta hai.
+    force=True: user ne khud "Try again" dabaya, to aaram (cooldown) bhool kar sach me ek koshish karo."""
+    if force:
+        _prov_cool.clear()
+        _cooldown.clear()
     if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
         usage_add("ai_requests")
         return call_gemini(prompt)
@@ -663,8 +667,9 @@ def call_ai(prompt):
         raise AIError("No AI is set up yet. Open Setup and add a free key (or install the local AI).")
     errors = {}
     for name in ready:
-        if _prov_cool.get(name, 0) > time.time():
-            errors[name] = "resting after a limit"
+        left = _prov_cool.get(name, 0) - time.time()
+        if left > 0:
+            errors[name] = f"resting for about {int(left // 60) + 1} more min after a limit"
             continue
         try:
             data = CALLERS[name](prompt)
@@ -674,15 +679,18 @@ def call_ai(prompt):
             low = msg.lower()
             if "invalid" in low:
                 _prov_cool[name] = time.time() + 3600
-            elif "limit" in low or "busy" in low:
+            elif "limit" in low:
                 _prov_cool[name] = time.time() + 300
+            elif "busy" in low:
+                _prov_cool[name] = time.time() + 60
             continue
         usage_add("ai_requests")
         usage_add("ai_" + name)
         return data
     if len(errors) == 1:
         raise AIError(next(iter(errors.values())))
-    raise AIError("None of your AI options worked right now. " + " | ".join(f"{PROVIDER_LABELS[n]}: {m[:110]}" for n, m in errors.items()))
+    tip = "" if provider_ready("openrouter") and provider_ready("ollama") else " Tip: open Setup and add OpenRouter (free) or install the local AI (no limit)."
+    raise AIError("None of your AI options worked right now. " + " | ".join(f"{PROVIDER_LABELS[n]}: {m[:110]}" for n, m in errors.items()) + tip)
 
 
 # ---------- usage meter ----------
@@ -956,12 +964,12 @@ def format_edit_plan(plan):
     return "\n".join(f"{label}: {val(plan[key])}" for key, label in labels if plan.get(key) not in (None, "", []))
 
 
-def ai_generate_post(post_id, step="all"):
+def ai_generate_post(post_id, step="all", force=False):
     """Ek step (ya poora content) likhta hai aur post me save karta hai."""
     post = get_post(post_id)
     if not post:
         raise AIError("post not found")
-    data = call_ai(build_prompt(post, step))
+    data = call_ai(build_prompt(post, step), force)
     if isinstance(data, list) and data and isinstance(data[0], dict):
         data = data[0]
     if not isinstance(data, dict):
@@ -1179,7 +1187,7 @@ def start_job(kind, label, fn):
     return job_id
 
 
-def generate_job(post_id, step, note=""):
+def generate_job(post_id, step, note="", force=False):
     def work(job_id):
         post = get_post(post_id)
         wants_text = step != "image"
@@ -1188,7 +1196,7 @@ def generate_job(post_id, step, note=""):
         set_gen(post_id, "running")
         try:
             if wants_text:
-                ai_generate_post(post_id, step)
+                ai_generate_post(post_id, step, force)
             if wants_image:
                 job_update(job_id, stage="imaging")
                 ai_generate_images(post_id, note, lambda i, n: job_update(job_id, done=i, total=n))
@@ -1376,7 +1384,7 @@ class Handler(BaseHTTPRequestHandler):
                     if step not in STEPS:
                         return self.send_json({"error": "invalid step"}, 400)
                     note = str(body.get("note", ""))[:500]
-                    job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step, note))
+                    job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step, note, bool(body.get("force"))))
                     return self.send_json({"job": job})
                 if action == "/video" and method == "POST":
                     if not get_post(post_id):
