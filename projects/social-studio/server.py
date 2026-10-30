@@ -1085,7 +1085,12 @@ def video_job(post_id, scenes, voice, music, quality):
             prepared = []
             for i, sc in enumerate(scenes):
                 image, audio = folder / f"s{i}.png", folder / f"a{i}.mp3"
-                image.write_bytes(base64.b64decode(sc["image"].split(",", 1)[1]))
+                if sc.get("image"):  # browser ne card banaya
+                    image.write_bytes(base64.b64decode(sc["image"].split(",", 1)[1]))
+                else:  # browser ke bina: FFmpeg se card (Claude / script ke liye)
+                    brand = get_brand()
+                    vid.render_card(ffmpeg, image, sc["card"], i, len(scenes), 1920 if quality == "high" else 1280,
+                                    brand["primary"], brand["secondary"], folder)
                 vid.synth(sc["text"], voice, audio, ffmpeg)
                 prepared.append({"image": str(image), "audio": str(audio), "slot": vid.duration(ffprobe, audio) + vid.PAD_SECS})
                 job_incr(job_id, "done")
@@ -1390,7 +1395,19 @@ class Handler(BaseHTTPRequestHandler):
                     if not get_post(post_id):
                         return self.send_json({"error": "post not found"}, 404)
                     body = self.read_json(limit=60_000_000)
+                    post = get_post(post_id)
                     scenes = body.get("scenes")
+                    if body.get("auto"):  # browser ke bina: script se scenes khud
+                        cards = vid.parse_scenes(post["script"], post["hook"], post["cta"])
+                        if not cards:
+                            return self.send_json({"error": "this post has no script to make a video from"}, 400)
+                        scenes = [{"text": c["spoken"][:1200], "card": c} for c in cards]
+                        clean = scenes
+                        voice = str(body.get("voice") or tools_status()["default_voice"])[:80]
+                        quality = "high" if body.get("quality") == "high" else "standard"
+                        music = str(body.get("music", "ambient"))
+                        job = start_job("video", "Video", video_job(post_id, clean, voice, music, quality))
+                        return self.send_json({"job": job})
                     if not isinstance(scenes, list) or not 1 <= len(scenes) <= 30:
                         return self.send_json({"error": "scenes must be a list of 1 to 30 items"}, 400)
                     clean = []

@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import sys
+import textwrap
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -285,3 +286,107 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress):
     if proc.wait() != 0 or not Path(out_path).exists():
         raise VideoError("Video editing failed: " + err[-400:])
     return total
+
+
+# ---------- scenes without a browser (Claude / scripts ke liye) ----------
+
+def parse_scenes(script, hook="", cta=""):
+    """Script ko scenes me todta hai: [{"spoken": ..., "onscreen": ...}]. (index.html ke parseScenes jaisa)"""
+    parts = [p.strip() for p in re.split(r"(?im)^\s*[*#\s]*scene\s*\d+[*\s]*[:.\-\u2013]?", script or "") if p.strip()]
+    if len(parts) < 2:  # "Scene N" nahi mila: 2-2 vaakya ka ek scene
+        sentences = [x.strip() for x in re.split(r"(?<=[.!?\u0964])\s+", re.sub(r"\[[^\]]*\]", " ", script or "")) if x.strip()]
+        parts = [" ".join(sentences[i:i + 2]) for i in range(0, len(sentences), 2)]
+    scenes = []
+    for part in parts:
+        onscreen = [m.strip() for m in re.findall(r"\[(?:on[- ]?screen text|text|caption|visual)?\s*:?\s*([^\]]+)\]", part, re.I) if m.strip()]
+        spoken = re.sub(r"\[[^\]]*\]|\([^)]*\)", " ", part)
+        spoken = re.sub(r"(?im)^\s*(?:voice[- ]?over|narrator|avatar|speaker|vo)\s*:", "", spoken)
+        spoken = re.sub(r"\s+", " ", re.sub(r'[*_#"\u201c\u201d]', "", spoken)).strip()
+        if spoken:
+            scenes.append({"spoken": spoken, "onscreen": onscreen[0] if onscreen else ""})
+    scenes = scenes[:14]
+    if not scenes:
+        scenes = [{"spoken": x, "onscreen": ""} for x in (hook, cta) if x]
+    return scenes
+
+
+FONT_CANDIDATES = {
+    "Windows": {"latin": ["C:/Windows/Fonts/segoeuib.ttf", "C:/Windows/Fonts/arialbd.ttf"],
+                "deva": ["C:/Windows/Fonts/NirmalaB.ttf", "C:/Windows/Fonts/Nirmala.ttf"]},
+    "Darwin": {"latin": ["/System/Library/Fonts/Supplemental/Arial Bold.ttf", "/System/Library/Fonts/Helvetica.ttc"],
+               "deva": ["/System/Library/Fonts/Supplemental/DevanagariMT.ttc", "/System/Library/Fonts/Kohinoor.ttc"]},
+    "Linux": {"latin": ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf"],
+              "deva": ["/usr/share/fonts/truetype/noto/NotoSansDevanagari-Bold.ttf", "/usr/share/fonts/truetype/lohit-devanagari/Lohit-Devanagari.ttf",
+                       "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"]},
+}
+
+
+def find_font(text):
+    kind = "deva" if re.search(r"[\u0900-\u097F]", text) else "latin"
+    for path in FONT_CANDIDATES.get(platform.system(), FONT_CANDIDATES["Linux"])[kind]:
+        if Path(path).exists():
+            return path
+    raise VideoError("No font found on this computer to draw the scene text.")
+
+
+def _rgb(hex_color):
+    n = int(hex_color.lstrip("#"), 16)
+    return (n >> 16) & 255, (n >> 8) & 255, n & 255
+
+
+def _shade(rgb, amt):
+    return tuple(max(0, min(255, round(c + amt))) for c in rgb)
+
+
+def _filter_path(p):
+    return str(p).replace("\\", "/").replace(":", "\\:")
+
+
+def render_card(ffmpeg, out_png, scene, i, n, height, primary, secondary, folder):
+    """Ek scene ka card (PNG) FFmpeg se banata hai: gradient, headline, neeche subtitle box, progress bar."""
+    h, w = height, height * 9 // 16
+    p, s = _rgb(primary), _rgb(secondary)
+    pairs = [(p, s), (_shade(p, -50), p), (s, _shade(p, -30)), (_shade(s, -60), _shade(p, 20))]
+    c1, c2 = pairs[i % 4]
+    spoken, onscreen = scene["spoken"], scene.get("onscreen", "")
+    sentence = (re.match(r"^.*?[.!?\u0964](?:\s|$)", spoken) or [spoken])[0].strip()
+    head = onscreen or (sentence if len(spoken) > 120 else spoken)
+    font = _filter_path(find_font(head + spoken))
+    margin = int(w * 0.09)
+    box_w = w - 2 * margin
+    parts = [f"geq=r='{c1[0]}+({c2[0]}-{c1[0]})*(0.35*X/W+0.65*Y/H)':g='{c1[1]}+({c2[1]}-{c1[1]})*(0.35*X/W+0.65*Y/H)':b='{c1[2]}+({c2[2]}-{c1[2]})*(0.35*X/W+0.65*Y/H)'",
+             f"drawbox=x={int(w * .08)}:y={int(h * .04)}:w={int(w * .84)}:h={max(4, int(h * .006))}:color=white@0.35:t=fill",
+             f"drawbox=x={int(w * .08)}:y={int(h * .04)}:w={int(w * .84 * (i + 1) / n)}:h={max(4, int(h * .006))}:color=white:t=fill"]
+    counter = [0]
+
+    def text_lines(text, max_px, min_px, box_h, color, y_top):
+        for px in range(max_px, min_px - 1, -4):
+            lines = textwrap.wrap(text, width=max(8, int(box_w / (px * 0.58))), break_long_words=True)
+            if len(lines) * px * 1.25 <= box_h:
+                break
+        lh = px * 1.25
+        top = y_top if y_top is not None else 0
+        out = []
+        for k, line in enumerate(lines):
+            counter[0] += 1
+            tf = Path(folder) / f"line{i}-{counter[0]}.txt"
+            tf.write_text(line, encoding="utf-8")
+            out.append(f"drawtext=fontfile='{font}':textfile='{_filter_path(tf)}':fontsize={px}:fontcolor={color}:x=(w-text_w)/2:y={int(top + k * lh)}:shadowcolor=black@0.3:shadowx=2:shadowy=2")
+        return out, len(lines) * lh, px
+
+    head_box = h * (0.38 if onscreen else 0.55)
+    probe, text_h, _ = text_lines(head, int(w * .105), int(w * .045), head_box, "white", 0)
+    top = h * 0.22 if onscreen else (h - text_h) / 2
+    head_filters, _, _ = text_lines(head, int(w * .105), int(w * .045), head_box, "white", top)
+    parts += head_filters
+    if onscreen:
+        cap_text = spoken if len(spoken) <= 170 else spoken[:167] + "..."
+        _, cap_h, _ = text_lines(cap_text, int(w * .048), int(w * .028), h * 0.2, "white", 0)
+        box_y, box_h = int(h * 0.7), int(cap_h + w * 0.06)
+        parts.append(f"drawbox=x={margin}:y={box_y}:w={box_w}:h={box_h}:color=black@0.35:t=fill")
+        cap_filters, _, _ = text_lines(cap_text, int(w * .048), int(w * .028), h * 0.2, "white", box_y + w * 0.03)
+        parts += cap_filters
+    r = run([ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"color=c=black:s={w}x{h}:d=1,format=rgb24",
+             "-vf", ",".join(parts), "-frames:v", "1", str(out_png)])
+    if r.returncode or not Path(out_png).exists():
+        raise VideoError("Could not draw a scene card: " + r.stderr[-300:])

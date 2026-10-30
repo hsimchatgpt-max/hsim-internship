@@ -47,5 +47,8 @@ Command Prompt wali window me `Ctrl + C`, ya window band kar do.
 | `start.bat` / `start.command` | Double-click se chalane ke liye |
 | `data/` | Aapke posts aur API key (sirf aapke computer par, GitHub par nahi jaata) |
 
+## Claude ke liye skill
+Repo me `.claude/skills/social-studio/` hai. Claude Code me is repo me kaam karte waqt bas bolo "ek video bana do ..." aur Claude tool ko chalakar MP4 + caption + hashtags files de dega; aap download karke khud post karo. Command line se: `python .claude/skills/social-studio/scripts/studio.py "topic" --studio-dir projects/social-studio`.
+
 ## Aage ke phases
 Gateway (team ke liye bina keys), stock B-roll, free image, .exe, avatar. (Auto-posting nahi banayenge.)
