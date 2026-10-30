@@ -107,6 +107,7 @@
   <h1>Social Studio</h1>
   <nav>
     <button data-tab="create" class="active" data-i18n="tab.create">Create</button>
+    <button data-tab="library" data-i18n="tab.library">My videos</button>
     <button data-tab="calendar" data-i18n="tab.calendar">Calendar</button>
     <button data-tab="brand" data-i18n="tab.brand">Brand Profile</button>
     <button data-tab="settings" data-i18n="tab.settings">Settings</button>
@@ -153,6 +154,12 @@
       <div id="wsBody"></div>
       <div class="actions" id="wsActions"></div>
     </div>
+  </section>
+
+  <!-- Library: sab banayi hui videos ek jagah -->
+  <section id="tab-library" hidden>
+    <p class="hint" data-i18n="lib.hint">Everything you made is here. Download it any time.</p>
+    <div id="libList"></div>
   </section>
 
   <!-- Calendar (optional) -->
@@ -310,6 +317,7 @@
     <div class="row" style="align-items:end"><div><label>Groq <span class="hint">console.groq.com/keys</span></label><input id="w_groq_key" type="password" autocomplete="off"></div><div style="display:flex;gap:8px;align-items:center"><button class="ghost" id="w_groq_save" data-i18n="wiz.save">Save & test</button><span id="w_groq_st"></span></div></div>
     <div class="row" style="align-items:end"><div><label>OpenRouter <span class="hint">openrouter.ai/keys</span></label><input id="w_openrouter_key" type="password" autocomplete="off"></div><div style="display:flex;gap:8px;align-items:center"><button class="ghost" id="w_openrouter_save" data-i18n="wiz.save">Save & test</button><span id="w_openrouter_st"></span></div></div>
     <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><b data-i18n="wiz.local">Local AI</b><span id="w_ollama_st"></span><button class="ghost" id="w_ollama_btn" data-i18n="wiz.localinstall">Install local AI (no key, no limit, slower)</button></div>
+    <div style="margin-top:8px"><b data-i18n="wiz.free">Free AI (no key)</b> <span id="w_free_st"></span> <span class="hint" data-i18n="wiz.freehint">always on as the very last backup; works without any key but is slower and can be busy.</span></div>
     <p class="hint" data-i18n="wiz.localhint">Local AI downloads about 2 GB and runs on your own computer, so it is slow on a weak laptop. Good as the last backup.</p>
   </div>
   <div class="card" style="margin-bottom:12px">
@@ -451,6 +459,7 @@ const I18N = {
     "wiz.save": "सेव करें और टेस्ट करें", "wiz.local": "लोकल AI", "wiz.localinstall": "लोकल AI इंस्टॉल करें (बिना key, बिना लिमिट, धीमा)",
     "wiz.localhint": "लोकल AI लगभग 2 GB डाउनलोड होता है और आपके अपने कंप्यूटर पर चलता है, इसलिए कमज़ोर लैपटॉप पर धीमा है। आखिरी बैकअप के तौर पर अच्छा है।",
     "wiz.s3": "3. आपके बिज़नेस के बारे में (एक बार)", "wiz.start": "बनाना शुरू करें", "wiz.skip": "अभी छोड़ें", "wiz.open": "सेटअप गाइड खोलें",
+    "wiz.free": "फ़्री AI (बिना key)", "wiz.freehint": "सबसे आखिरी बैकअप के तौर पर हमेशा चालू; बिना key चलता है पर धीमा है और बिज़ी हो सकता है।",
     "wiz.notset": "सेट नहीं", "wiz.resting": "थोड़ी देर आराम (लिमिट)", "wiz.ready": "तैयार", "wiz.works": "चल रहा है",
     "wiz.done": "सब तैयार है! अब कंटेंट बनाएं।", "wiz.needvideo": "AI तैयार है। वीडियो के लिए ऊपर 'सब कुछ सेटअप करें' दबाएं।",
     "wiz.needai": "वीडियो टूल्स तैयार हैं। अब कम से कम एक AI key जोड़ें।", "wiz.needboth": "पहले वीडियो टूल्स सेटअप करें और एक AI key जोड़ें।",
@@ -459,6 +468,7 @@ const I18N = {
     "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
     "tip.ai": "सुझाव: Setup खोलकर OpenRouter (फ़्री) जोड़ें या लोकल AI इंस्टॉल करें (बिना लिमिट)।",
     "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
+    "tab.library": "मेरी वीडियो", "lib.hint": "आपकी बनाई हर चीज़ यहाँ है। कभी भी डाउनलोड करें।", "lib.empty": "अभी कुछ नहीं है। Create टैब में अपना पहला वीडियो बनाएं।",
     "media.title": "मेरी फ़ोटो और क्लिप", "media.hint": "अपने काम, प्रोडक्ट या जगह की फ़ोटो या छोटे वीडियो अपलोड करें। टूल इन्हें रील के बैकग्राउंड में एक के बाद एक लगाता है। अपलोड न हो तो रंगीन ग्रेडिएंट सीन बनते हैं।",
     "media.rights": "सिर्फ़ वही फ़ोटो और क्लिप इस्तेमाल करें जो आपकी हों या जिनका इस्तेमाल करने की इजाज़त हो।", "media.none": "अभी कोई फ़ोटो या क्लिप नहीं।", "media.uploading": "{n} अपलोड हो रहा है...",
     "create.preset": "किसके लिए बनाना है", "toast.copied": "कॉपी हो गया!", "btn.copy": "कैप्शन + हैशटैग कॉपी करें", "btn.dlvideoMp4": "वीडियो डाउनलोड करें (MP4)", "btn.remake": "वीडियो दोबारा बनाएं",
@@ -478,15 +488,17 @@ const I18N = {
 const EN_DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const EN_TEXT = {
-  "tab.create": "Create", "tab.calendar": "Calendar", "btn.save": "Save",
+  "tab.create": "Create", "tab.calendar": "Calendar", "tab.library": "My videos", "btn.save": "Save",
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
   "groq.title": "Backup AI (optional, free)",
+  "lib.hint": "Everything you made is here. Download it any time.", "lib.empty": "Nothing here yet. Make your first video in the Create tab.",
   "media.none": "No photos or clips yet.", "media.uploading": "Uploading {n}...",
   "toast.copied": "Copied!", "btn.copy": "Copy caption + hashtags", "btn.dlvideoMp4": "Download video (MP4)", "btn.remake": "Make video again",
   "ws.vidready": "Your video is ready! Download it and post it yourself.", "ws.edit": "Edit script / caption (optional)",
   "v.needsetup": "The text is ready, but the video tools are not set up yet. Open Setup (top right), press 'Set up everything', then press 'Make video (free)'.",
+  "wiz.free": "Free AI (no key)",
   "wiz.notset": "not set", "wiz.resting": "resting (limit)", "wiz.ready": "ready", "wiz.works": "works", "wiz.local": "Local AI",
   "wiz.done": "All set! Start creating.", "wiz.needvideo": "AI is ready. For video, press 'Set up everything' above.",
   "wiz.needai": "Video tools are ready. Now add at least one AI key.", "wiz.needboth": "First set up the video tools and add one AI key.",
@@ -581,7 +593,8 @@ async function busy(btn, labelKey, fn) {
 // ----- tabs -----
 function showTab(name) {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
-  ["create", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
+  ["create", "library", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
+  if (name === "library") loadLibrary();
   if (name === "calendar") loadPosts();
   if (name === "settings") { loadTools(); loadMedia(); }
 }
@@ -1174,6 +1187,23 @@ $("v_make").onclick = (e) => busy(e.target, "busy.gen", async () => {
 });
 $("postVideo").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openVideo(await api("GET", "/api/posts/" + editing.id)); };
 
+// ----- library -----
+async function loadLibrary() {
+  const items = await api("GET", "/api/library");
+  $("libList").innerHTML = items.length ? "" : `<p class="hint">${esc(t("lib.empty"))}</p>`;
+  items.forEach((p) => {
+    const card = document.createElement("div"); card.className = "card pcard";
+    card.innerHTML = `<div class="ptop"><b>${esc(p.date)}</b><span class="badge">${esc(opt(p.format))}</span>${p.platforms.map((x) => `<span class="badge">${esc(opt(x))}</span>`).join("")}</div>
+      <div class="ptitle">${esc(p.topic || p.hook || "-")}</div>${videoHTML(p)}${imagesHTML(p)}
+      <div class="actions">${p.video ? `<a class="ghost" href="/videos/${esc(p.video)}?download=1" download>${esc(t("btn.dlvideoMp4"))}</a>` : ""}
+        <button class="ghost" data-copy>${esc(t("btn.copy"))}</button><button class="ghost" data-open>${esc(t("post.edit"))}</button><button class="ghost danger" data-rm>${esc(t("btn.delete"))}</button></div>`;
+    card.querySelector("[data-copy]").onclick = () => copyText([p.caption, p.hashtags].filter(Boolean).join("\n\n"));
+    card.querySelector("[data-open]").onclick = () => openPost(p);
+    card.querySelector("[data-rm]").onclick = async () => { if (confirm(t("confirm.delete"))) { await api("DELETE", "/api/posts/" + p.id); loadLibrary(); } };
+    $("libList").appendChild(card);
+  });
+}
+
 // ----- settings: free tools setup -----
 async function loadTools() {
   const tl = await api("GET", "/api/tools");
@@ -1230,6 +1260,7 @@ async function refreshSetup() {
   PROV.forEach(([n]) => ($("w_" + n + "_st").textContent = provStatus(s, n)));
   $("w_ollama_st").textContent = provStatus(s, "ollama") + (s.ollama_installed ? "" : "");
   $("w_ollama_btn").hidden = s.providers.ollama.ready;
+  $("w_free_st").textContent = provStatus(s, "free");
   $("w_sum").innerHTML = ok ? `<b>✅ ${esc(t("wiz.done"))}</b>` : esc(t(s.ready_ai ? "wiz.needvideo" : s.ready_video ? "wiz.needai" : "wiz.needboth"));
   return s;
 }
@@ -1240,7 +1271,7 @@ async function openWizard() {
 async function refreshUsage() {
   try {
     const [u, s] = [await api("GET", "/api/usage"), await refreshSetup()];
-    const names = { gemini: "Gemini", groq: "Groq", openrouter: "OpenRouter", ollama: t("wiz.local") };
+    const names = { gemini: "Gemini", groq: "Groq", openrouter: "OpenRouter", ollama: t("wiz.local"), free: t("wiz.free") };
     const ready = Object.keys(s.providers).filter((n) => s.providers[n].ready).map((n) => names[n] + (s.providers[n].resting ? " ⏸" : ""));
     $("usageBar").textContent = t("usage.line", { v: u.videos || 0, c: u.contents || 0, a: u.ai_requests || 0, p: ready.join(", ") || "-" });
   } catch (e) {}

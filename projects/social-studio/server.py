@@ -209,7 +209,19 @@ def get_post(post_id):
     return row_to_post(row) if row else None
 
 
+def list_library(limit=200):
+    """Jin posts ki video ya image ban chuki hai (naye pehle)."""
+    with DB_LOCK, db() as con:
+        rows = con.execute("SELECT * FROM posts WHERE video != '' OR images != '[]' ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+    return [row_to_post(r) for r in rows]
+
+
 def delete_post(post_id):
+    post = get_post(post_id)
+    if post:  # disk bharne se bachane ke liye uski files bhi hatao
+        for folder, name in [(VIDEOS_DIR, post["video"])] + [(IMAGES_DIR, n) for n in post["images"]]:
+            if name:
+                (folder / Path(name).name).unlink(missing_ok=True)
     with DB_LOCK, db() as con:
         con.execute("DELETE FROM posts WHERE id = ?", (post_id,))
 
@@ -641,17 +653,44 @@ def ollama_json_ok():
         return False
 
 
+# ---- Free AI (no key): aakhri raasta ----
+FREE_AI_ROOT = os.environ.get("FREE_AI_ROOT", "https://text.pollinations.ai/openai")  # env sirf testing ke liye
+
+
+def call_free(prompt):
+    """Bina key wala public free AI (Pollinations). Limit chhoti ho sakti hai; isliye sabse aakhir me."""
+    body = {"model": "openai", "temperature": 0.9, "messages": [
+        {"role": "system", "content": "You reply with valid JSON only, no markdown."},
+        {"role": "user", "content": prompt + "\nReturn only valid JSON."}]}
+    for attempt in range(2):
+        req = urllib.request.Request(FREE_AI_ROOT, data=json.dumps(body).encode(), method="POST",
+                                     headers={"Content-Type": "application/json", "User-Agent": "social-studio"})
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                return extract_json(json.loads(resp.read())["choices"][0]["message"]["content"])
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt == 0:
+                time.sleep(16)  # bina-key service ek baar me ek hi request leti hai
+                continue
+            raise AIError("The free no-key AI is busy or at its limit right now.")
+        except (urllib.error.URLError, TimeoutError):
+            raise AIError("Could not connect to the free AI. Check your internet connection.")
+        except (KeyError, IndexError, ValueError, TypeError):
+            raise AIError("Could not understand the free AI response.")
+    raise AIError("The free no-key AI is busy or at its limit right now.")
+
+
 # ---- the chain ----
-PROVIDERS = ["gemini", "groq", "openrouter", "ollama"]
-PROVIDER_LABELS = {"gemini": "Gemini", "groq": "Groq", "openrouter": "OpenRouter", "ollama": "Local AI"}
+PROVIDERS = ["gemini", "groq", "openrouter", "ollama", "free"]
+PROVIDER_LABELS = {"gemini": "Gemini", "groq": "Groq", "openrouter": "OpenRouter", "ollama": "Local AI", "free": "Free AI (no key)"}
 CALLERS = {"gemini": lambda p: call_gemini(p), "groq": lambda p: call_groq(p), "openrouter": lambda p: call_openrouter(p),
-           "ollama": lambda p: call_ollama(p)}
+           "ollama": lambda p: call_ollama(p), "free": lambda p: call_free(p)}
 _prov_cool = {}  # provider -> kab tak skip karna hai
 
 
 def provider_ready(name):
     return {"gemini": bool(get_api_key()), "groq": bool(get_groq_key()), "openrouter": bool(get_openrouter_key()),
-            "ollama": bool(ollama_models())}[name]
+            "ollama": bool(ollama_models()), "free": os.environ.get("NO_FREE_AI") != "1"}[name]
 
 
 def call_ai(prompt, force=False):
@@ -1374,6 +1413,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(test_provider(str(self.read_json().get("provider", ""))))
             if method == "POST" and path == "/api/tools/ollama":
                 return self.send_json({"job": start_job("tools", "Local AI", lambda job_id: ollama_job()(job_id))})
+            if method == "GET" and path == "/api/library":
+                return self.send_json(list_library())
             if method == "GET" and path == "/api/tools":
                 return self.send_json(tools_status())
             if method == "POST" and path == "/api/tools/ffmpeg":

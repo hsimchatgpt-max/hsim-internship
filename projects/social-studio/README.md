@@ -3,6 +3,9 @@
 Social media content ka planner: **Brand Profile + Monthly Calendar + AI content writer**.
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
+## My videos (library)
+Jo bhi video/image banti hai wo **My videos** tab me ek jagah jama hoti hai: wahin se dekho, **Download**, caption copy, edit ya delete (delete karne par file bhi hat jati hai). Jitni chaho utni alag-alag videos banao.
+
 ## Reel engine
 - **Platform preset:** Create tab me "Instagram Reel / YouTube Short / LinkedIn video" chuno. Script ka style, caption aur hashtags usi platform ke hisaab se likhe jate hain.
 - **Reel style:** pehle second me hook, har 2-4 second me naya cut, awaaz ke saath badalte **yellow captions**, har scene par chhota on-screen headline, transitions, whoosh sound, halka music, end me CTA.
@@ -26,6 +29,7 @@ Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 ## Limit-proof AI chain + setup wizard
 - Gemini sirf **text** likhta hai (1 content = 1 request). Video, awaaz, edit sab aapke computer par hota hai, unlimited.
 - **AI chain:** tool ek ke baad ek try karta hai: **Gemini -> Groq -> OpenRouter -> Local AI (Ollama)**. Jiski limit khatam ho wo kuch der "rest" karta hai, agla chal jata hai. Kam se kam ek chahiye; jitne zyada, utni kam limit.
+- **Free AI (bina key):** sabse aakhir me ek public free AI, jise koi key nahi chahiye. Tool bina kisi setup ke bhi text likh sakta hai (limit chhoti ho sakti hai, aur prompt ek public service par jata hai).
 - **Local AI** (Ollama): bina key, bina limit, par dheema (kamzor laptop par). Aakhri bachao ke liye.
 - **Setup wizard:** pehli baar apne aap khulta hai (baad me upar "Setup" button). "Set up everything" se FFmpeg + awaaz install; keys "Save & test"; business ek baar. Sab hamesha ke liye save rehta hai.
 - **Usage meter:** Create tab ke upar: aaj kitne video/content/AI requests aur kaun se AI ready hain.
