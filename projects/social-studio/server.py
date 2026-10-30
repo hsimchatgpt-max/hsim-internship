@@ -13,6 +13,7 @@ import shutil
 import sqlite3
 import subprocess
 import unicodedata
+import urllib.parse
 import sys
 import threading
 import time
@@ -748,6 +749,7 @@ def test_provider(name):
 IMAGES_DIR = DATA / "images"
 VIDEOS_DIR = DATA / "videos"
 MUSIC_DIR = DATA / "music"
+MEDIA_DIR = DATA / "media"
 MUSIC_EXT = (".mp3", ".wav", ".m4a", ".ogg")
 IMAGE_LIMIT_ERROR = ("Image generation limit reached. Image models usually need billing enabled on your Gemini API key "
                      "(Google AI Studio, your key, Set up billing).")
@@ -838,9 +840,12 @@ def mock_ai(prompt):
     """Test ke liye: asli AI ke bina nakli jawab."""
     time.sleep(float(os.environ.get("MOCK_DELAY", "0")))
     plan = {"topic": "Mock topic"}
-    script = {"hook": "Mock hook", "script": "Scene 1: Stop losing customers. [on-screen text: 3 website mistakes] Most business websites lose visitors every day.\n"
-                                              "Scene 2: Mistake one is no mobile version. Most people browse on their phones.\n"
-                                              "Scene 3: Fix these today and watch your enquiries grow. Follow us for more."}
+    script = {"hook": "Mock hook", "script": "Scene 1: Your website is losing customers. [on-screen text: STOP LOSING CLIENTS]\n"
+                                              "Scene 2: Mistake one is no mobile version. [on-screen text: NO MOBILE SITE]\n"
+                                              "Scene 3: Mistake two is a very slow page. [on-screen text: SLOW PAGE]\n"
+                                              "Scene 4: Mistake three is no clear call to action. [on-screen text: NO CALL TO ACTION]\n"
+                                              "Scene 5: Fix these today and watch enquiries grow. [on-screen text: FIX IT TODAY]\n"
+                                              "Scene 6: Follow us for more tips like this. [on-screen text: FOLLOW US]"}
     caption = {"caption": "Mock caption", "hashtags": ["#mock", "#test"], "cta": "Follow us!"}
     edit = {"edit_plan": {"duration_seconds": 45, "aspect_ratio": "9:16", "broll": ["city", "laptop"],
                           "music_mood": "upbeat", "sound_effects": ["whoosh"], "transitions": "quick cuts",
@@ -907,12 +912,32 @@ Spread days evenly across the whole month. No duplicate days."""
 
 
 SCRIPT_RULES = {
-    "video": "a spoken script for a talking-avatar video, scene by scene (Scene 1, Scene 2...), spoken lines plus short [on-screen text] notes, fitting the video length",
-    "story": "a very short spoken script for a story video, scene by scene, fitting the video length",
     "carousel": "slide-by-slide text (Slide 1: ..., Slide 2: ...), 5 to 8 slides",
     "image": "the exact short text to place on the image (a headline and a sub-line)",
     "text": "an empty string",
 }
+PLATFORM_STYLE = {  # (naam, caption ka tareeka, hashtags kitne)
+    "instagram": ("Instagram Reel", "a short caption: a hook line, 1-2 lines of value, then a question that gets comments", "5 to 8"),
+    "youtube": ("YouTube Short", "a YouTube Shorts description: a search-friendly first line and 2 lines of context", "3 to 5"),
+    "linkedin": ("LinkedIn video", "a LinkedIn caption: a strong first line, short paragraphs, a question at the end, very few emojis", "3 to 5"),
+}
+SCENE_COUNT = {"15-30 sec": "6 to 8", "30-60 sec": "10 to 14", "60-90 sec": "14 to 18"}
+
+
+def platform_style(post):
+    return PLATFORM_STYLE.get(post["platforms"][0] if post["platforms"] else "instagram", PLATFORM_STYLE["instagram"])
+
+
+def script_rule(post):
+    if post["format"] in ("video", "story"):
+        name = platform_style(post)[0]
+        return (f"a spoken script for a {name}. Scene 1 is a scroll-stopping hook of at most 8 words (a bold claim, a question or a surprising number). "
+                f"Then {SCENE_COUNT[post['duration']]} scenes in total, each ONE short punchy sentence of at most 12 words, so the video cuts every 2-4 seconds. "
+                "The last scene is a clear call to action. Format every scene exactly as: Scene N: <spoken sentence> [on-screen text: 2-5 words]. "
+                "Use simple spoken language, no stage directions")
+    return SCRIPT_RULES[post["format"]]
+
+
 EDIT_KEYS = (
     '"edit_plan" (an object with keys: "duration_seconds" (number), "aspect_ratio" (string), "broll" (array of 4-8 specific '
     'stock-footage search ideas, in order), "music_mood" (string), "sound_effects" (array of effect + where to use it), '
@@ -933,18 +958,19 @@ def build_prompt(post, step):
     brand = brand_context(get_brand())
     head = f"You are an expert social media content creator and video editor.\n{brand}\n{post_context(post)}\n"
     tail = "Write in the brand language and tone. Return ONLY a JSON object with these keys: "
-    rule = SCRIPT_RULES[post["format"]]
+    rule = script_rule(post)
+    _, cap_rule, tag_count = platform_style(post)
     if step == "script":
         return (f"SCRIPT_REQUEST\n{head}{tail}"
                 f'"topic" (string), "hook" (attention-grabbing first line), "script" ({rule}).')
     known = f"\nHook: {post['hook']}\nScript: {post['script']}\n"
     if step == "caption":
         return (f"CAPTION_REQUEST\n{head}{known}{tail}"
-                '"caption" (full caption with line breaks), "hashtags" (array of 8-12), "cta" (one call-to-action line).')
+                f'"caption" ({cap_rule}), "hashtags" (array of {tag_count}), "cta" (one call-to-action line).')
     if step == "edit":
         return f"EDIT_REQUEST\n{head}{known}{tail}{EDIT_KEYS}."
     return (f"ALL_REQUEST\n{head}{tail}"
-            f'"topic" (string), "hook", "script" ({rule}), "caption", "hashtags" (array of 8-12), "cta", {EDIT_KEYS}.')
+            f'"topic" (string), "hook", "script" ({rule}), "caption" ({cap_rule}), "hashtags" (array of {tag_count}), "cta", {EDIT_KEYS}.')
 
 
 def format_edit_plan(plan):
@@ -1060,17 +1086,44 @@ def save_music(name, b64):
     return clean
 
 
+IMAGE_EXT = (".jpg", ".jpeg", ".png", ".webp")
+VIDEO_EXT = (".mp4", ".mov", ".m4v", ".webm")
+
+
+def list_media():
+    if not MEDIA_DIR.exists():
+        return []
+    return sorted(f for f in MEDIA_DIR.iterdir() if f.is_file() and f.suffix.lower() in IMAGE_EXT + VIDEO_EXT)
+
+
+def save_media(name, stream, length):
+    clean = re.sub(r"[^\w.\- ]", "_", Path(name).name)
+    if Path(clean).suffix.lower() not in IMAGE_EXT + VIDEO_EXT:
+        raise ValueError("use jpg, png, webp, mp4, mov or webm files")
+    MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+    left = length
+    with open(MEDIA_DIR / clean, "wb") as out:
+        while left > 0:
+            chunk = stream.read(min(1 << 20, left))
+            if not chunk:
+                break
+            out.write(chunk)
+            left -= len(chunk)
+    return clean
+
+
 def file_slug(text):
     """Download ke liye saaf file naam (sirf a-z, 0-9, hyphen)."""
     ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")[:40] or "video"
 
 
-def video_job(post_id, scenes, voice, music, quality):
+def video_job(post_id, cards, voice, music, quality):
+    """Script ke scenes -> awaaz -> cards (+ aapki photos/clips peeche) -> reel-style captions -> final MP4."""
     def work(job_id):
         found = vid.find_ffmpeg(DATA)
         if not found:
-            raise AIError("FFmpeg is not installed. Open Settings and click 'Install FFmpeg'.")
+            raise AIError("FFmpeg is not installed. Open Setup and press 'Set up everything'.")
         ffmpeg, ffprobe = found
         music_arg = None
         if music == "ambient":
@@ -1078,29 +1131,34 @@ def video_job(post_id, scenes, voice, music, quality):
         elif music and music != "none":
             path = MUSIC_DIR / Path(music).name
             music_arg = str(path) if path.is_file() else None
+        media, brand, height = list_media(), get_brand(), 1920 if quality == "high" else 1280
         folder = DATA / "tmp" / job_id
         folder.mkdir(parents=True, exist_ok=True)
         try:
-            job_update(job_id, post_ids=[post_id], stage="voice", total=len(scenes), done=0)
-            prepared = []
-            for i, sc in enumerate(scenes):
-                image, audio = folder / f"s{i}.png", folder / f"a{i}.mp3"
-                if sc.get("image"):  # browser ne card banaya
-                    image.write_bytes(base64.b64decode(sc["image"].split(",", 1)[1]))
-                else:  # browser ke bina: FFmpeg se card (Claude / script ke liye)
-                    brand = get_brand()
-                    vid.render_card(ffmpeg, image, sc["card"], i, len(scenes), 1920 if quality == "high" else 1280,
-                                    brand["primary"], brand["secondary"], folder)
-                vid.synth(sc["text"], voice, audio, ffmpeg)
-                prepared.append({"image": str(image), "audio": str(audio), "slot": vid.duration(ffprobe, audio) + vid.PAD_SECS})
+            job_update(job_id, post_ids=[post_id], stage="voice", total=len(cards), done=0)
+            scenes, spoken = [], []
+            for i, card in enumerate(cards):
+                audio, png = folder / f"a{i}.mp3", folder / f"card{i}.png"
+                vid.synth(card["spoken"], voice, audio, ffmpeg)
+                adur = vid.duration(ffprobe, audio)
+                scene = {"audio": str(audio), "slot": adur + vid.PAD_SECS}
+                vid.render_card(ffmpeg, png, card, i, len(cards), height, brand["primary"], brand["secondary"], folder, transparent=bool(media))
+                if media:  # aapki photo/clip peeche, card upar
+                    m = media[i % len(media)]
+                    scene.update(bg=str(m), bg_kind="video" if m.suffix.lower() in VIDEO_EXT else "image", overlay=str(png))
+                else:
+                    scene["image"] = str(png)
+                scenes.append(scene)
+                spoken.append({"spoken": card["spoken"], "slot": scene["slot"], "adur": adur})
                 job_incr(job_id, "done")
+            captions = vid.plan_captions(spoken, folder)
             job_update(job_id, stage="editing", done=0, total=100)
             whoosh = folder / "whoosh.wav"
             vid.make_whoosh(ffmpeg, whoosh)
             VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
             name = f"{file_slug(get_post(post_id)['topic'])}-{post_id}-{int(time.time())}.mp4"
-            vid.compose(ffmpeg, prepared, VIDEOS_DIR / name, music_arg, 1920 if quality == "high" else 1280, str(whoosh),
-                        lambda d, n: job_update(job_id, done=d, total=n))
+            vid.compose(ffmpeg, scenes, VIDEOS_DIR / name, music_arg, height, str(whoosh),
+                        lambda d, n: job_update(job_id, done=d, total=n), captions)
             with DB_LOCK, db() as con:
                 con.execute("UPDATE posts SET video = ? WHERE id = ?", (name, post_id))
             job_update(job_id, done=100)
@@ -1322,6 +1380,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"job": start_job("tools", "FFmpeg", lambda job_id: ffmpeg_job()(job_id))})
             if method == "POST" and path == "/api/tools/voices":
                 return self.send_json({"job": start_job("tools", "Voices", lambda job_id: voices_job()(job_id))})
+            if method == "GET" and path == "/api/media":
+                return self.send_json([{"name": f.name, "kind": "video" if f.suffix.lower() in VIDEO_EXT else "image", "mb": round(f.stat().st_size / 1e6, 1)} for f in list_media()])
+            if method == "POST" and path == "/api/media":  # seedhi file (base64 nahi), badi videos ke liye
+                length = int(self.headers.get("Content-Length") or 0)
+                if length > 400_000_000:
+                    return self.send_json({"error": "file is too big (max 400 MB)"}, 400)
+                name = urllib.parse.parse_qs(query).get("name", [""])[0]
+                return self.send_json({"name": save_media(name, self.rfile, length)})
+            m = re.fullmatch(r"/api/media/([\w.\- %]+)", path)
+            if m and method == "DELETE":
+                (MEDIA_DIR / Path(urllib.parse.unquote(m.group(1))).name).unlink(missing_ok=True)
+                return self.send_json({"ok": True})
             if method == "POST" and path == "/api/music":
                 body = self.read_json(limit=30_000_000)
                 return self.send_json({"name": save_music(str(body.get("name", "")), str(body.get("data", "")))})
@@ -1392,33 +1462,16 @@ class Handler(BaseHTTPRequestHandler):
                     job = start_job("generate", post["topic"] or "Content", generate_job(post_id, step, note, bool(body.get("force"))))
                     return self.send_json({"job": job})
                 if action == "/video" and method == "POST":
-                    if not get_post(post_id):
-                        return self.send_json({"error": "post not found"}, 404)
-                    body = self.read_json(limit=60_000_000)
                     post = get_post(post_id)
-                    scenes = body.get("scenes")
-                    if body.get("auto"):  # browser ke bina: script se scenes khud
-                        cards = vid.parse_scenes(post["script"], post["hook"], post["cta"])
-                        if not cards:
-                            return self.send_json({"error": "this post has no script to make a video from"}, 400)
-                        scenes = [{"text": c["spoken"][:1200], "card": c} for c in cards]
-                        clean = scenes
-                        voice = str(body.get("voice") or tools_status()["default_voice"])[:80]
-                        quality = "high" if body.get("quality") == "high" else "standard"
-                        music = str(body.get("music", "ambient"))
-                        job = start_job("video", "Video", video_job(post_id, clean, voice, music, quality))
-                        return self.send_json({"job": job})
-                    if not isinstance(scenes, list) or not 1 <= len(scenes) <= 30:
-                        return self.send_json({"error": "scenes must be a list of 1 to 30 items"}, 400)
-                    clean = []
-                    for sc in scenes:
-                        text, image = str(sc.get("text", "")).strip()[:1200], str(sc.get("image", ""))
-                        if not text or not image.startswith("data:image/png;base64,"):
-                            return self.send_json({"error": "each scene needs text and a PNG image"}, 400)
-                        clean.append({"text": text, "image": image})
-                    voice = str(body.get("voice", ""))[:80]
+                    if not post:
+                        return self.send_json({"error": "post not found"}, 404)
+                    body = self.read_json()
+                    cards = vid.parse_scenes(post["script"], post["hook"], post["cta"])
+                    if not cards:
+                        return self.send_json({"error": "this post has no script to make a video from"}, 400)
+                    voice = str(body.get("voice") or tools_status()["default_voice"])[:80]
                     quality = "high" if body.get("quality") == "high" else "standard"
-                    job = start_job("video", "Video", video_job(post_id, clean, voice, str(body.get("music", "none")), quality))
+                    job = start_job("video", "Video", video_job(post_id, cards, voice, str(body.get("music", "ambient")), quality))
                     return self.send_json({"job": job})
                 if action == "/export" and method == "GET":
                     post = get_post(post_id)

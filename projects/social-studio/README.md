@@ -3,6 +3,12 @@
 Social media content ka planner: **Brand Profile + Monthly Calendar + AI content writer**.
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
+## Reel engine
+- **Platform preset:** Create tab me "Instagram Reel / YouTube Short / LinkedIn video" chuno. Script ka style, caption aur hashtags usi platform ke hisaab se likhe jate hain.
+- **Reel style:** pehle second me hook, har 2-4 second me naya cut, awaaz ke saath badalte **yellow captions**, har scene par chhota on-screen headline, transitions, whoosh sound, halka music, end me CTA.
+- **Meri photos & clips** (Settings): apni photos/clips upload karo, wo reel ke background me ek ke baad ek lagti hain. Upload nahi to rangeen gradient scenes.
+- Sab FFmpeg se aapke computer par banta hai, browser band ho to bhi chalta hai.
+
 ## Kya kar sakte ho
 - **Ek click:** Create tab me bas likho "3 website mistakes pe 30 sec ka video" aur **Create** dabao. Script, awaaz, scenes, music, transitions sab apne aap; tayyar video **Download video (MP4)** se download karo. **Copy caption + hashtags** se caption copy karke khud post karo. (Tool khud kuch post nahi karta, posting aap apne browser se karti ho.)
 - **Create tab (simple):** calendar ke bina, abhi ek content banao. Topic likho (ya khali chhodo, AI chunega), format aur type chuno.
