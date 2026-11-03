@@ -1,0 +1,5 @@
+edge-tts>=6.1.9      # free Microsoft neural voices (Hindi / English / en-IN)
+numpy>=1.24          # music + sound-effect synthesis, audio analysis
+Pillow>=10.0         # avatar + background graphics
+# optional: faster-whisper  (exact word timings when you use --face-video)
+# system requirement: ffmpeg + ffprobe (with libass) on PATH
