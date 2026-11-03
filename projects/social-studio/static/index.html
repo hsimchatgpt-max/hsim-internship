@@ -266,6 +266,13 @@
       <pre id="testOut" class="hint" style="white-space:pre-wrap"></pre>
     </div>
     <div class="card" style="max-width:640px;margin-top:16px">
+      <h2 style="margin-top:0" data-i18n="px.title">Stock footage (B-roll), free</h2>
+      <p class="hint" data-i18n="px.hint">With a free Pexels key the tool finds real video clips that match every line of your script and uses them as B-roll. Get the key in 1 minute at pexels.com/api (just sign up).</p>
+      <input id="s_px" type="password" placeholder="Pexels API key" autocomplete="off">
+      <p class="hint" id="pxState"></p>
+      <div class="actions"><button class="primary" id="savePx" data-i18n="btn.saveKey">Save key</button></div>
+    </div>
+    <div class="card" style="max-width:640px;margin-top:16px">
       <h2 style="margin-top:0" data-i18n="media.title">My photos & clips</h2>
       <p class="hint" data-i18n="media.hint">Upload photos or short videos of your work, product or place. The tool uses them as the background of your reels, one after another. Without uploads you get colourful gradient scenes.</p>
       <input type="file" id="mediaFile" multiple accept="image/*,video/*">
@@ -497,6 +504,7 @@ const I18N = {
     "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
     "tip.ai": "सुझाव: Setup खोलकर OpenRouter (फ़्री) जोड़ें या लोकल AI इंस्टॉल करें (बिना लिमिट)।",
     "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
+    "px.title": "स्टॉक फ़ुटेज (B-roll), फ़्री", "px.hint": "फ़्री Pexels key से टूल आपकी स्क्रिप्ट की हर लाइन से मेल खाती असली वीडियो क्लिप ढूँढकर B-roll बना देता है। key 1 मिनट में pexels.com/api पर साइन-अप करके मिलती है।",
     "tab.avatars": "अवतार", "av.title": "अवतार", "av.hint": "एक प्रेज़ेंटर चुनें। आपके वीडियो में अवतार आपकी स्क्रिप्ट बोलता है: आवाज़ के साथ उसका मुँह हिलता है और पलकें झपकती हैं। जो पसंद आएं उन्हें जोड़ें, फिर वीडियो बनाते समय एक चुनें।",
     "av.mine": "मेरे अवतार", "av.photo": "अपनी फ़ोटो इस्तेमाल करें", "av.photohint": "आपकी फ़ोटो गोल फ्रेम में दिखती है जो आपकी आवाज़ के साथ चमकता और धड़कता है (पॉडकास्ट स्टाइल)। मुँह नहीं हिलता, क्योंकि असली लिप-सिंक के लिए बहुत ताक़तवर कंप्यूटर चाहिए।",
     "av.name": "नाम", "av.voice": "आवाज़", "av.create": "मेरी फ़ोटो जोड़ें", "av.pick": "अवतार (प्रेज़ेंटर)", "av.none": "कोई अवतार नहीं", "av.none.yet": "अभी कोई अवतार नहीं। ऊपर से जोड़ें।",
@@ -777,7 +785,7 @@ async function autoVideo(me) {  // "One click": text ke baad video bhi apne aap
   const tl = await api("GET", "/api/tools");
   if (!tl.ffmpeg || !tl.voices.length) { me.videoNote = t("v.needsetup"); return; }
   me.msg = t("v.working"); renderWs();
-  me.post = await renderVideoFor(me.post, { music: "ambient", quality: "standard" });
+  me.post = await renderVideoFor(me.post, { music: "ambient", quality: "high" });
   loadPosts();
 }
 async function runStep(step, jobId, note, force) {
@@ -982,6 +990,7 @@ function renderKeyState() {
   $("keyBanner").hidden = cfg.has_key || cfg.has_groq || cfg.has_openrouter;
   $("groqState").textContent = cfg.has_groq ? t("key.saved") : t("key.none");
   $("orState").textContent = cfg.has_openrouter ? t("key.saved") : t("key.none");
+  $("pxState").textContent = cfg.has_pexels ? t("key.saved") : t("key.none");
 }
 
 // ----- brand kit (colors, font, logo) -----
@@ -1188,7 +1197,7 @@ $("dSave").onclick = (e) => busy(e.target, "busy.save", async () => {
 $("postDesign").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openDesign(await api("GET", "/api/posts/" + editing.id)); };
 
 // ----- free video maker -----
-const VIDEO_QUALITY = { standard: ["Standard 720p (faster)", "स्टैंडर्ड 720p (तेज़)"], high: ["High 1080p (slower)", "हाई 1080p (धीमा)"] };
+const VIDEO_QUALITY = { high: ["Full HD 1080x1920 (best)", "फुल HD 1080x1920 (सबसे अच्छा)"], standard: ["HD 720p (faster)", "HD 720p (तेज़)"] };
 let V = null;
 function videoHTML(post) {
   if (!post.video) return "";
@@ -1205,6 +1214,7 @@ async function openVideo(post) {
     .map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
   $("v_music").value = "ambient";
   $("v_quality").innerHTML = Object.keys(VIDEO_QUALITY).map((k) => `<option value="${k}">${esc(VIDEO_QUALITY[k][uiLang === "hi" ? 1 : 0])}</option>`).join("");
+  $("v_quality").value = "high";
   const need = !tl.ffmpeg ? t("v.needff") : !tl.voices.length ? t("v.novoice") : "";
   $("v_setup").hidden = !need; $("v_setup").firstChild.textContent = need; $("v_install").hidden = tl.ffmpeg;
   $("v_make").disabled = !!need; $("v_status").innerHTML = "";
@@ -1381,6 +1391,10 @@ $("w_brand_save").onclick = (e) => busy(e.target, "busy.save", async () => {
 $("w_start").onclick = () => { try { localStorage.setItem("wizSeen", "1"); } catch (e) {} $("wizOverlay").classList.remove("show"); showTab("create"); };
 $("setupBtn").onclick = openWizard; $("openWiz").onclick = openWizard;
 $("wizOverlay").querySelectorAll("[data-close]").forEach((b) => (b.onclick = () => { try { localStorage.setItem("wizSeen", "1"); } catch (e) {} $("wizOverlay").classList.remove("show"); }));
+$("savePx").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const r = await api("POST", "/api/settings/pexels", { key: $("s_px").value });
+  $("s_px").value = ""; cfg.has_pexels = r.has_pexels; renderKeyState(); toast(t("toast.key"));
+});
 $("saveOr").onclick = (e) => busy(e.target, "busy.save", async () => {
   const r = await api("POST", "/api/settings/openrouter", { key: $("s_or").value });
   $("s_or").value = ""; cfg.has_openrouter = r.has_openrouter; renderKeyState(); toast(t("toast.key")); refreshUsage();

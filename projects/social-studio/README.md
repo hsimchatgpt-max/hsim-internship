@@ -3,6 +3,13 @@
 Social media content ka planner: **Brand Profile + Monthly Calendar + AI content writer**.
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
+## Pro editing (Full HD 1080x1920 default)
+- **Script:** creator jaisa bolchaal ka andaaz, hook, har 2-3 scene me micro-hook, kahani/example, end me CTA; har scene ke saath on-screen text, B-roll ka search-phrase aur bhavna (excited/serious/...).
+- **Awaaz:** bhavna ke hisaab se speed aur pitch badalti hai (Edge voices me).
+- **B-roll:** free Pexels key (Settings) se har line se match karti asli stock footage. Key na ho to aapki photos/clips, warna gradient.
+- **Editing:** zoom-in/zoom-out/pan baari-baari se, ek jaisa color grade + vignette, transitions, reel-style captions (zaroori shabd peele), SFX (whoosh, pop, impact, ding), music jo awaaz ke neeche apne aap dheema hoti hai (ducking), loudness cleanup.
+- Full HD render dheema hota hai (kamzor laptop par kai minute). Tez chahiye to video banate waqt "HD 720p" chuno.
+
 ## Avatars
 **Avatars** tab: 12 cartoon presenters (alag chehre, baal, chashme, kapde). Jo pasand aaye **Add** karo, phir Create me "Avatar" chuno. Video me avatar neeche bolta hai: **awaaz ke saath muh khulta-band hota hai aur palkein jhapakti hain**, aur uske upar captions aate hain. Voice avatar ke hisaab se (female/male) khud chunti hai. **"Use my own photo"**: aapki photo gol frame me, awaaz ke saath chamakti aur dhadakti hai (asli lip-sync nahi, wo bhaari AI maangta hai).
 

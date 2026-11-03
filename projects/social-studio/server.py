@@ -5,6 +5,7 @@ Chalane ke liye:  python server.py   (phir browser me http://localhost:8000)
 """
 import base64
 import calendar
+import hashlib
 import json
 import os
 import platform
@@ -884,12 +885,12 @@ def mock_ai(prompt):
     """Test ke liye: asli AI ke bina nakli jawab."""
     time.sleep(float(os.environ.get("MOCK_DELAY", "0")))
     plan = {"topic": "Mock topic"}
-    script = {"hook": "Mock hook", "script": "Scene 1: Your website is losing customers. [on-screen text: STOP LOSING CLIENTS]\n"
-                                              "Scene 2: Mistake one is no mobile version. [on-screen text: NO MOBILE SITE]\n"
-                                              "Scene 3: Mistake two is a very slow page. [on-screen text: SLOW PAGE]\n"
-                                              "Scene 4: Mistake three is no clear call to action. [on-screen text: NO CALL TO ACTION]\n"
-                                              "Scene 5: Fix these today and watch enquiries grow. [on-screen text: FIX IT TODAY]\n"
-                                              "Scene 6: Follow us for more tips like this. [on-screen text: FOLLOW US]"}
+    script = {"hook": "Mock hook", "script": "Scene 1: Your website is losing customers every day. [on-screen text: STOP LOSING CLIENTS] [broll: frustrated man laptop] [emotion: urgent]\n"
+                                              "Scene 2: Mistake one... no mobile version. [on-screen text: NO MOBILE SITE] [broll: phone scrolling] [emotion: serious]\n"
+                                              "Scene 3: Mistake two, a very slow page. [on-screen text: SLOW PAGE] [broll: loading screen] [emotion: curious]\n"
+                                              "Scene 4: But here is the catch, no clear call to action. [on-screen text: NO CALL TO ACTION] [broll: office meeting] [emotion: serious]\n"
+                                              "Scene 5: Fix these today and watch enquiries grow. [on-screen text: FIX IT TODAY] [broll: team celebrating] [emotion: excited]\n"
+                                              "Scene 6: Follow us for more tips like this. [on-screen text: FOLLOW US] [broll: smiling woman phone] [emotion: warm]"}
     caption = {"caption": "Mock caption", "hashtags": ["#mock", "#test"], "cta": "Follow us!"}
     edit = {"edit_plan": {"duration_seconds": 45, "aspect_ratio": "9:16", "broll": ["city", "laptop"],
                           "music_mood": "upbeat", "sound_effects": ["whoosh"], "transitions": "quick cuts",
@@ -975,10 +976,15 @@ def platform_style(post):
 def script_rule(post):
     if post["format"] in ("video", "story"):
         name = platform_style(post)[0]
-        return (f"a spoken script for a {name}. Scene 1 is a scroll-stopping hook of at most 8 words (a bold claim, a question or a surprising number). "
-                f"Then {SCENE_COUNT[post['duration']]} scenes in total, each ONE short punchy sentence of at most 12 words, so the video cuts every 2-4 seconds. "
-                "The last scene is a clear call to action. Format every scene exactly as: Scene N: <spoken sentence> [on-screen text: 2-5 words]. "
-                "Use simple spoken language, no stage directions")
+        return (f"a spoken script for a {name}, written the way a real creator talks to the camera: conversational, warm and natural, short sentences, "
+                "a little humour or surprise, rhetorical questions, never robotic or like an advert. "
+                "Structure: Scene 1 is the hook (at most 8 words: a bold claim, a question or a surprising number). Add a micro-hook every 2 or 3 scenes "
+                "(for example 'But here is the catch...', 'And it gets worse.', 'Here is the part nobody tells you.'). "
+                "The middle goes problem, then a tiny story or concrete example, then the solution. The last scene is one clear call to action. "
+                f"Use {SCENE_COUNT[post['duration']]} scenes in total, each ONE short punchy line of at most 14 words, so the video cuts every 2-4 seconds. "
+                "Use commas and ellipses for natural pauses and write numbers as digits. "
+                "Format every scene exactly as: Scene N: <spoken line> [on-screen text: 2-5 words] "
+                "[broll: 2-4 English words describing a stock-footage shot that matches the line] [emotion: one of excited, serious, curious, calm, urgent, warm]")
     return SCRIPT_RULES[post["format"]]
 
 
@@ -1200,6 +1206,49 @@ def default_voice_for(gender):
     return vid.default_voice(get_brand()["language"], tools_status()["voices"], gender)
 
 
+PEXELS_ROOT = os.environ.get("PEXELS_API_ROOT", "https://api.pexels.com")  # env sirf testing ke liye
+BROLL_DIR = DATA / "broll"
+
+
+def get_pexels_key():
+    return (load_settings().get("pexels_api_key") or os.environ.get("PEXELS_API_KEY", "")).strip()
+
+
+def fetch_broll(query, pick=0):
+    """Scene ke dialogue se match karti asli stock footage (Pexels, free key). Na mile to None (gradient scene)."""
+    key = get_pexels_key()
+    if not key or not query.strip():
+        return None
+    BROLL_DIR.mkdir(parents=True, exist_ok=True)
+    target = BROLL_DIR / (hashlib.sha1(f"{query.lower().strip()}|{pick}".encode()).hexdigest()[:16] + ".mp4")
+    if target.exists():
+        return target
+    try:
+        url = f"{PEXELS_ROOT}/videos/search?" + urllib.parse.urlencode({"query": query, "orientation": "portrait", "size": "medium", "per_page": 8})
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"Authorization": key, "User-Agent": "social-studio"}), timeout=20) as resp:
+            videos = [v for v in json.loads(resp.read()).get("videos", []) if (v.get("duration") or 0) >= 3]
+        if not videos:
+            return None
+        files = [f for f in videos[pick % len(videos)].get("video_files", []) if f.get("file_type") == "video/mp4" and f.get("width") and f.get("height")]
+        good = [f for f in files if f["height"] >= 1280 and f["width"] <= 1440] or files
+        if not good:
+            return None
+        best = min(good, key=lambda f: abs(f["height"] - 1920))
+        tmp = target.with_suffix(".part")
+        with urllib.request.urlopen(urllib.request.Request(best["link"], headers={"User-Agent": "social-studio"}), timeout=60) as resp, open(tmp, "wb") as out:
+            size = 0
+            while chunk := resp.read(1 << 20):
+                size += len(chunk)
+                if size > 60_000_000:
+                    raise ValueError("clip too big")
+                out.write(chunk)
+        tmp.rename(target)
+        return target
+    except (OSError, ValueError, KeyError, TypeError):
+        (target.with_suffix(".part")).unlink(missing_ok=True)
+        return None
+
+
 def file_slug(text):
     """Download ke liye saaf file naam (sirf a-z, 0-9, hyphen)."""
     ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
@@ -1227,17 +1276,19 @@ def video_job(post_id, cards, voice, music, quality, avatar_id=""):
             scenes, spoken, rms_per_scene = [], [], []
             for i, card in enumerate(cards):
                 audio, png = folder / f"a{i}.mp3", folder / f"card{i}.png"
-                vid.synth(card["spoken"], voice, audio, ffmpeg)
+                vid.synth(card["spoken"], voice, audio, ffmpeg, card.get("emotion", ""))
                 adur = vid.duration(ffprobe, audio)
                 scene = {"audio": str(audio), "slot": adur + vid.PAD_SECS}
-                vid.render_card(ffmpeg, png, card, i, len(cards), height, brand["primary"], brand["secondary"], folder, transparent=bool(media))
-                if media:  # aapki photo/clip peeche, card upar
-                    m = media[i % len(media)]
-                    scene.update(bg=str(m), bg_kind="video" if m.suffix.lower() in VIDEO_EXT else "image", overlay=str(png))
+                clip = fetch_broll(card.get("broll") or card.get("onscreen") or card["spoken"][:40], i)  # dialogue se match karti footage
+                m = clip or (media[i % len(media)] if media else None)  # warna aapki photo/clip, warna gradient
+                vid.render_card(ffmpeg, png, card, i, len(cards), height, brand["primary"], brand["secondary"], folder, transparent=bool(m))
+                if m:  # footage peeche, card upar
+                    scene.update(bg=str(m), bg_kind="video" if Path(m).suffix.lower() in VIDEO_EXT else "image", overlay=str(png))
                 else:
                     scene["image"] = str(png)
                 scenes.append(scene)
-                spoken.append({"spoken": card["spoken"], "slot": scene["slot"], "adur": adur})
+                spoken.append({"spoken": card["spoken"], "slot": scene["slot"], "adur": adur,
+                               "keywords": {w for w in re.findall(r"\w{3,}", card.get("onscreen", ""))}})
                 if avatar_id:
                     rms_per_scene.append({"rms": vid.audio_rms(ffmpeg, audio), "slot": scene["slot"]})
                 job_incr(job_id, "done")
@@ -1247,11 +1298,10 @@ def video_job(post_id, cards, voice, music, quality, avatar_id=""):
                 avatar_list = str(folder / "avatar.txt")
                 vid.build_avatar_list(AVATARS_DIR / avatar_id, rms_per_scene, avatar_list)
             job_update(job_id, stage="editing", done=0, total=100)
-            whoosh = folder / "whoosh.wav"
-            vid.make_whoosh(ffmpeg, whoosh)
+            sfx = vid.make_sfx(ffmpeg, folder)
             VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
             name = f"{file_slug(get_post(post_id)['topic'])}-{post_id}-{int(time.time())}.mp4"
-            vid.compose(ffmpeg, scenes, VIDEOS_DIR / name, music_arg, height, str(whoosh),
+            vid.compose(ffmpeg, scenes, VIDEOS_DIR / name, music_arg, height, sfx,
                         lambda d, n: job_update(job_id, done=d, total=n), captions, avatar_list)
             with DB_LOCK, db() as con:
                 con.execute("UPDATE posts SET video = ? WHERE id = ?", (name, post_id))
@@ -1431,7 +1481,7 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and path == "/api/config":
                 return self.send_json({
                     "formats": FORMATS, "content_types": CONTENT_TYPES, "platforms": PLATFORMS,
-                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()), "has_groq": bool(get_groq_key()), "has_openrouter": bool(get_openrouter_key()),
+                    "statuses": STATUSES, "durations": DURATIONS, "brand": get_brand(), "has_key": bool(get_api_key()), "has_groq": bool(get_groq_key()), "has_openrouter": bool(get_openrouter_key()), "has_pexels": bool(get_pexels_key()),
                 })
             if method == "GET" and path == "/api/diagnose":  # "Test my key": kya-kya chal sakta hai
                 if os.environ.get("SOCIAL_STUDIO_MOCK") == "1":
@@ -1460,6 +1510,10 @@ class Handler(BaseHTTPRequestHandler):
                 key = str(self.read_json().get("key", "")).strip()
                 save_settings({"openrouter_api_key": key})
                 return self.send_json({"has_openrouter": bool(key)})
+            if method == "POST" and path == "/api/settings/pexels":
+                key = str(self.read_json().get("key", "")).strip()
+                save_settings({"pexels_api_key": key})
+                return self.send_json({"has_pexels": bool(key)})
             if method == "GET" and path == "/api/setup":
                 return self.send_json(setup_status())
             if method == "GET" and path == "/api/usage":
@@ -1578,7 +1632,7 @@ class Handler(BaseHTTPRequestHandler):
                     if avatar_id and not meta:
                         return self.send_json({"error": "avatar not found, add it in the Avatars tab"}, 400)
                     voice = str(body.get("voice") or default_voice_for(meta["gender"] if meta else None))[:80]
-                    quality = "high" if body.get("quality") == "high" else "standard"
+                    quality = "standard" if body.get("quality") == "standard" else "high"  # default Full HD 1080x1920
                     update_post(post_id, {"avatar": avatar_id})
                     job = start_job("video", "Video", video_job(post_id, cards, voice, str(body.get("music", "ambient")), quality, avatar_id))
                     return self.send_json({"job": job})

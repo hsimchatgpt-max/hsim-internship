@@ -160,8 +160,14 @@ def default_voice(language, voices, gender=None):
     return voices[0]["id"] if voices else ""
 
 
-def synth(text, voice, out_path, ffmpeg):
-    """Text ko bolkar audio file (out_path) me save karta hai."""
+EMOTIONS = {  # (speed, pitch): awaaz me bhavna
+    "excited": ("+10%", "+4Hz"), "urgent": ("+14%", "+2Hz"), "curious": ("+2%", "+3Hz"),
+    "serious": ("-6%", "-3Hz"), "calm": ("-8%", "+0Hz"), "warm": ("-2%", "+1Hz"),
+}
+
+
+def synth(text, voice, out_path, ffmpeg, emotion=""):
+    """Text ko bolkar audio file (out_path) me save karta hai. emotion se speed/pitch badalti hai (sirf Edge voices me)."""
     out_path = str(out_path)
     if os.environ.get("SOCIAL_STUDIO_MOCK_TTS") == "1":  # sirf testing: nakli awaaz (tone)
         secs = max(1.2, len(text) / 14)
@@ -173,11 +179,12 @@ def synth(text, voice, out_path, ffmpeg):
     try:
         if kind == "edge":
             import edge_tts
-            asyncio.run(edge_tts.Communicate(text, name).save(out_path))
+            rate, pitch = EMOTIONS.get(emotion.lower().strip(), ("+0%", "+0Hz"))
+            asyncio.run(edge_tts.Communicate(text, name, rate=rate, pitch=pitch).save(out_path))
         elif kind == "sys":
             system_speak(text, name, out_path, ffmpeg)
         else:
-            raise VideoError("No voice is available. Open Settings and install the voice engine.")
+            raise VideoError("No voice is available. Open Setup and press 'Set up everything'.")
     except VideoError:
         raise
     except Exception as e:  # network / service error
@@ -217,25 +224,50 @@ def duration(ffprobe, path):
 
 # ---------- editing ----------
 
-def make_whoosh(ffmpeg, path):
-    if Path(path).exists():
-        return
-    r = run([ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anoisesrc=d=0.7:c=pink:a=0.6", "-af",
-             "bandpass=f=1300:width_type=h:w=2200,afade=t=in:d=0.3,afade=t=out:st=0.3:d=0.4,volume=0.8", str(path)])
-    if r.returncode:
-        raise VideoError(r.stderr[-300:])
+def make_sfx(ffmpeg, folder):
+    """Chhote sound effects (khud synth): whoosh (transition), pop (headline), impact (shuru), ding (end me CTA)."""
+    folder = Path(folder)
+    recipes = {
+        "whoosh": ["anoisesrc=d=0.7:c=pink:a=0.6", "bandpass=f=1300:width_type=h:w=2200,afade=t=in:d=0.3,afade=t=out:st=0.3:d=0.4,volume=0.8"],
+        "pop": ["sine=f=1000:d=0.12", "afade=t=out:st=0.03:d=0.09,volume=0.9"],
+        "impact": ["sine=f=55:d=0.8", "afade=t=in:d=0.01,afade=t=out:st=0.08:d=0.7,volume=1.0"],
+        "ding": ["aevalsrc='0.5*sin(2*PI*1318*t)+0.3*sin(2*PI*1975*t)':d=0.7:s=44100", "afade=t=out:st=0.05:d=0.65,volume=0.7"],
+    }
+    out = {}
+    for name, (src, af) in recipes.items():
+        path = folder / f"sfx_{name}.wav"
+        if not path.exists():
+            r = run([ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", src, "-af", af, str(path)])
+            if r.returncode:
+                raise VideoError(r.stderr[-300:])
+        out[name] = str(path)
+    return out
 
 
 AMBIENT = ("aevalsrc='0.5*sin(2*PI*196*t)+0.4*sin(2*PI*246.9*t)+0.35*sin(2*PI*293.7*t)+0.25*sin(2*PI*392*t)':d={d}:s=44100,"
            "tremolo=f=0.2:d=0.5,lowpass=f=1200")
 
 
+def motion_filter(i, d, width, height):
+    """Har scene ko halki camera-chaal: zoom-in, zoom-out ya pan, baari-baari se (dekhne walo ka dhyaan bana rehta hai)."""
+    cover = f"scale={int(width * 1.06) // 2 * 2}:{int(height * 1.06) // 2 * 2}:force_original_aspect_ratio=increase"
+    if i % 3 == 0:
+        return f"{cover},scale=w='trunc(iw*(1+0.06*t/{d})/2)*2':h=-2:eval=frame,crop={width}:{height}"
+    if i % 3 == 1:
+        return f"{cover},scale=w='trunc(iw*(1.06-0.06*t/{d})/2)*2':h=-2:eval=frame,crop={width}:{height}"
+    return f"{cover},crop={width}:{height}:x='(in_w-out_w)*t/{d}':y='(in_h-out_h)/2'"
+
+
+GRADE = "eq=contrast=1.06:saturation=1.12:gamma=0.98,vignette=angle=PI/7"  # ek jaisa "cinematic" rang
+
+
 def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=None, avatar=None):
     """
     scenes: [{"audio", "slot", and either "image" (opaque card)  or  "bg" + "bg_kind" ("image"|"video") + "overlay" (transparent card)}]
-    captions: [{"start", "end", "textfile", "font"}]  reel-style captions (2-3 shabd, bade pile akshar)
+    captions: [{"start", "end", "textfile", "font", "color"}]  reel-style captions (2-3 shabd; zaroori shabd peele)
     avatar: path of an ffconcat list of avatar frames (muh awaaz ke saath hilta hai) ya None
-    music: None | "ambient" | path ; height: 1280 (HD) ya 1920 (full HD) ; sfx: whoosh file ya None
+    music: None | "ambient" | path ; height: 1280 (HD) ya 1920 (full HD)
+    sfx: {"whoosh", "pop", "impact", "ding"} (make_sfx) ya None
     """
     n, T = len(scenes), TRANSITION_SECS
     width = height * 9 // 16
@@ -247,23 +279,19 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=Non
         count[0] += 1
         return count[0] - 1
 
-    ow, oh = int(width * 1.06) // 2 * 2, int(height * 1.06) // 2 * 2
     for i, s in enumerate(scenes):
         dur = s["slot"] + (T if i < n - 1 else 0.0)
         d = f"{dur:.3f}"
-        x = f"(in_w-out_w)*t/{d}" if i % 2 == 0 else f"(in_w-out_w)*(1-t/{d})"  # pan: left->right, phir right->left
-        if s.get("bg") and s.get("bg_kind") == "video":
+        if s.get("bg") and s.get("bg_kind") == "video":  # B-roll / aapki clip
             b = add("-stream_loop", "-1", "-t", d, "-i", s["bg"])
             filters.append(f"[{b}:v]setpts=PTS-STARTPTS,scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height},"
                            f"fps=30,eq=brightness=-0.2,format=yuv420p,setsar=1[b{i}]")
-        elif s.get("bg"):
+        elif s.get("bg"):  # aapki photo
             b = add("-loop", "1", "-framerate", "30", "-t", d, "-i", s["bg"])
-            filters.append(f"[{b}:v]scale={ow}:{oh}:force_original_aspect_ratio=increase,crop={width}:{height}:x='{x}':y='(in_h-out_h)/2',"
-                           f"fps=30,eq=brightness=-0.2,format=yuv420p,setsar=1[b{i}]")
+            filters.append(f"[{b}:v]{motion_filter(i, d, width, height)},fps=30,eq=brightness=-0.2,format=yuv420p,setsar=1[b{i}]")
         else:
             b = add("-loop", "1", "-framerate", "30", "-t", d, "-i", s["image"])
-            filters.append(f"[{b}:v]scale={ow}:{oh}:force_original_aspect_ratio=increase,crop={width}:{height}:x='{x}':y='(in_h-out_h)/2',"
-                           f"fps=30,format=yuv420p,setsar=1[v{i}]")
+            filters.append(f"[{b}:v]{motion_filter(i, d, width, height)},fps=30,format=yuv420p,setsar=1[v{i}]")
         if s.get("bg"):
             o = add("-loop", "1", "-framerate", "30", "-t", d, "-i", s["overlay"])
             filters.append(f"[{o}:v]fps=30,format=rgba[o{i}]")
@@ -271,19 +299,23 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=Non
     audio_idx = [add("-i", s["audio"]) for s in scenes]
     # video: xfade chain
     last, offset = "v0", 0.0
+    starts = [0.0]
     for k in range(1, n):
         offset += scenes[k - 1]["slot"]
+        starts.append(offset)
         filters.append(f"[{last}][v{k}]xfade=transition={TRANSITIONS[(k - 1) % len(TRANSITIONS)]}:duration={T}:offset={offset:.3f}[x{k}]")
         last = f"x{k}"
+    filters.append(f"[{last}]{GRADE}[vgr]")
+    last = "vgr"
     if avatar:  # avatar neeche, halka sa upar-neeche hilta hua
         ai = add("-f", "concat", "-safe", "0", "-i", avatar)
         aw = int(width * 0.66) // 2 * 2
         filters.append(f"[{ai}:v]fps=30,format=rgba,scale={aw}:-1[av]")
         filters.append(f"[{last}][av]overlay=x=(W-w)/2:y='H-h+{max(3, int(height * 0.004))}*sin(2*PI*t*1.3)':format=auto,format=yuv420p[vav]")
         last = "vav"
-    if captions:  # reel-style captions: pile akshar, kaala border, awaaz ke saath badalte hue
+    if captions:  # reel-style captions: pile/safed akshar, kaala border, awaaz ke saath badalte hue
         fs = int(width * 0.078)
-        chain = [f"drawtext=fontfile='{_filter_path(c['font'])}':textfile='{_filter_path(c['textfile'])}':fontsize={fs}:fontcolor=0xFFD400:"
+        chain = [f"drawtext=fontfile='{_filter_path(c['font'])}':textfile='{_filter_path(c['textfile'])}':fontsize={fs}:fontcolor={c.get('color', '0xFFD400')}:"
                  f"borderw={max(3, int(fs * 0.09))}:bordercolor=black:x=(w-text_w)/2:y=h*{0.52 if avatar else 0.64}:enable='between(t,{c['start']:.2f},{c['end']:.2f})'"
                  for c in captions]
         filters.append(f"[{last}]" + ",".join(chain) + "[vcap]")
@@ -293,29 +325,38 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=Non
     for i, s in enumerate(scenes):
         filters.append(f"[{audio_idx[i]}:a]aresample=44100,aformat=channel_layouts=stereo,apad=whole_dur={s['slot']:.3f},atrim=0:{s['slot']:.3f}[a{i}]")
     filters.append("".join(f"[a{i}]" for i in range(n)) + f"concat=n={n}:v=0:a=1[voice]")
-    mix = ["[voice]"]
-    if sfx and n > 1:
-        offset = 0.0
-        for k in range(1, n):
-            offset += scenes[k - 1]["slot"]
-            si = add("-i", sfx)
-            ms = max(0, int((offset - 0.05) * 1000))
-            filters.append(f"[{si}:a]aresample=44100,aformat=channel_layouts=stereo,adelay={ms}|{ms},volume=0.45[sfx{k}]")
+    mix = []
+    if music:  # music awaaz ke neeche dheema ho jata hai (ducking), taaki dialogue hamesha saaf rahe
+        filters.append("[voice]asplit=2[voice1][voice2]")
+        mix.append("[voice1]")
+    else:
+        mix.append("[voice]")
+    if sfx:
+        events = [(0.05, "impact", 0.5)]
+        events += [(starts[k] + 0.1, "pop", 0.3) for k in range(n)]
+        events += [(starts[k] - 0.02, "whoosh", 0.4) for k in range(1, n)]
+        if n > 2:
+            events.append((starts[-1] + 0.25, "ding", 0.35))
+        for k, (at, kind, vol) in enumerate(events):
+            si = add("-i", sfx[kind])
+            ms = max(0, int(at * 1000))
+            filters.append(f"[{si}:a]aresample=44100,aformat=channel_layouts=stereo,adelay={ms}|{ms},volume={vol}[sfx{k}]")
             mix.append(f"[sfx{k}]")
     if music:
         fade_out = f"afade=t=out:st={max(0, total - 2):.2f}:d=2"
         if music == "ambient":
             mi = add("-f", "lavfi", "-i", AMBIENT.format(d=f"{total + 1:.2f}"))
-            filters.append(f"[{mi}:a]aformat=channel_layouts=stereo,volume=0.07,afade=t=in:d=1.5,{fade_out}[music]")
+            filters.append(f"[{mi}:a]aformat=channel_layouts=stereo,volume=0.12,afade=t=in:d=1.5,{fade_out}[mraw]")
         else:
             mi = add("-stream_loop", "-1", "-i", music)
-            filters.append(f"[{mi}:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:{total:.2f},asetpts=N/SR/TB,volume=0.16,afade=t=in:d=1.5,{fade_out}[music]")
+            filters.append(f"[{mi}:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:{total:.2f},asetpts=N/SR/TB,volume=0.3,afade=t=in:d=1.5,{fade_out}[mraw]")
+        filters.append("[mraw][voice2]sidechaincompress=threshold=0.03:ratio=10:attack=15:release=350[music]")
         mix.append("[music]")
     filters.append("".join(mix) + f"amix=inputs={len(mix)}:duration=first:dropout_transition=0:normalize=0,loudnorm=I=-16:TP=-1.5:LRA=11[aout]")
     cmd = [ffmpeg, "-y", "-loglevel", "error", "-progress", "pipe:1", "-nostats", *inputs,
            "-filter_complex", ";".join(filters), "-map", f"[{video_label}]", "-map", "[aout]",
-           "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
-           "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", "-t", f"{total:.3f}", str(out_path)]
+           "-c:v", "libx264", "-preset", "veryfast", "-crf", "19", "-pix_fmt", "yuv420p",
+           "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", "-t", f"{total:.3f}", str(out_path)]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=NO_WINDOW)
     for line in proc.stdout:
         m = re.match(r"out_time_(?:us|ms)=(\d+)", line)
@@ -378,11 +419,13 @@ def build_avatar_list(avatar_dir, scenes, out_list, seed=7):
 
 def plan_captions(scenes, folder):
     """
-    scenes: [{"spoken", "slot", "adur"}]  -> reel-style caption chunks (2-3 shabd) ka time-table.
+    scenes: [{"spoken", "slot", "adur", "keywords": set}]  -> reel-style caption chunks (2-3 shabd) ka time-table.
     Har chunk ka time shabdon ki lambai ke hisaab se baanta jata hai (awaaz ke andaaze se).
+    Zaroori shabdon (on-screen text ke shabd, ankdey) wale chunk peele, baaki safed.
     """
     caps, start_of_scene, n = [], 0.0, 0
     for sc in scenes:
+        keys = {k.lower() for k in sc.get("keywords", ())}
         chunks, cur = [], []
         for word in sc["spoken"].split():
             if cur and len(" ".join(cur + [word])) > 18:
@@ -400,36 +443,46 @@ def plan_captions(scenes, folder):
             a, b = begin + sc["adur"] * acc / whole, begin + sc["adur"] * (acc + w) / whole
             acc += w
             text = chunk.rstrip(".,;:!?") or chunk
+            important = any(re.sub(r"\W", "", x).lower() in keys or any(ch.isdigit() for ch in x) for x in text.split())
             text = text.upper() if text.isascii() else text
             tf = Path(folder) / f"cap{n}.txt"
             n += 1
             tf.write_text(text, encoding="utf-8")
-            caps.append({"start": a, "end": b + (0.2 if k == len(chunks) - 1 else 0), "textfile": tf, "font": find_font(text)})
+            caps.append({"start": a, "end": b + (0.2 if k == len(chunks) - 1 else 0), "textfile": tf, "font": find_font(text),
+                         "color": "0xFFD400" if important else "white"})
         start_of_scene += sc["slot"]
     return caps
 
 
-# ---------- scenes without a browser (Claude / scripts ke liye) ----------
+TAG_RE = re.compile(r"\[\s*([A-Za-z][A-Za-z\- ]*?)\s*:\s*([^\]]*)\]")
+
 
 def parse_scenes(script, hook="", cta=""):
-    """Script ko scenes me todta hai: [{"spoken": ..., "onscreen": ...}]. (index.html ke parseScenes jaisa)"""
+    """
+    Script ko scenes me todta hai: [{"spoken", "onscreen", "broll", "emotion"}].
+    Script ka format:  Scene N: <bolne wali line> [on-screen text: ..] [broll: ..] [emotion: excited]
+    """
     parts = [p.strip() for p in re.split(r"(?im)^\s*[*#\s]*scene\s*\d+[*\s]*[:.\-\u2013]?", script or "") if p.strip()]
     if len(parts) < 2:  # "Scene N" nahi mila: 2-2 vaakya ka ek scene
         sentences = [x.strip() for x in re.split(r"(?<=[.!?\u0964])\s+", re.sub(r"\[[^\]]*\]", " ", script or "")) if x.strip()]
         parts = [" ".join(sentences[i:i + 2]) for i in range(0, len(sentences), 2)]
     scenes = []
     for part in parts:
-        onscreen = [m.strip() for m in re.findall(r"\[(?:on[- ]?screen text|text|caption|visual)?\s*:?\s*([^\]]+)\]", part, re.I) if m.strip()]
+        tags = {re.sub(r"[\s\-]", "", k).lower(): val.strip() for k, val in TAG_RE.findall(part)}
+        bare = [x.strip() for x in re.findall(r"\[([^\]:]+)\]", part) if x.strip()]  # [sirf text] bhi chalega
         spoken = re.sub(r"\[[^\]]*\]|\([^)]*\)", " ", part)
         spoken = re.sub(r"(?im)^\s*(?:voice[- ]?over|narrator|avatar|speaker|vo)\s*:", "", spoken)
         spoken = re.sub(r"\s+", " ", re.sub(r'[*_#"\u201c\u201d]', "", spoken)).strip()
         if spoken:
-            scenes.append({"spoken": spoken, "onscreen": onscreen[0] if onscreen else ""})
+            scenes.append({"spoken": spoken,
+                           "onscreen": tags.get("onscreentext") or tags.get("text") or tags.get("caption") or (bare[0] if bare else ""),
+                           "broll": tags.get("broll") or tags.get("footage") or tags.get("visual") or "",
+                           "emotion": tags.get("emotion") or tags.get("tone") or ""})
     scenes = scenes[:20]
-    if cta and scenes and cta.lower().strip(' .!') not in scenes[-1]["spoken"].lower():
-        scenes.append({"spoken": cta, "onscreen": ""})  # end me CTA
+    if cta and scenes and cta.lower().strip(" .!") not in scenes[-1]["spoken"].lower():
+        scenes.append({"spoken": cta, "onscreen": "", "broll": "", "emotion": "warm"})  # end me CTA
     if not scenes:
-        scenes = [{"spoken": x, "onscreen": ""} for x in (hook, cta) if x]
+        scenes = [{"spoken": x, "onscreen": "", "broll": "", "emotion": ""} for x in (hook, cta) if x]
     return scenes
 
 
