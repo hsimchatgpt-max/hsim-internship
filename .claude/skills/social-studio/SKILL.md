@@ -17,7 +17,7 @@ python .claude/skills/social-studio/scripts/studio.py "3 website mistakes small 
   --studio-dir projects/social-studio --out ./social-studio-output
 ```
 
-Options: `--format video|image|carousel|story|text` (default video), `--length "15-30 sec"|"30-60 sec"|"60-90 sec"`, `--type educational|tips|motivational|promotional|...`, `--no-video` (text only). Leave the topic empty if the user has no idea; the AI picks one.
+Options: `--format video|image|carousel|story|text` (default video), `--length "15-30 sec"|"30-60 sec"|"60-90 sec"`, `--type educational|tips|motivational|promotional|...`, `--avatar aarav-c` (a presenter whose mouth moves with the voice; the user adds avatars once in the tool's Avatars tab, ids look like `aarav-c` or `my-photo-p`), `--no-video` (text only). Leave the topic empty if the user has no idea; the AI picks one.
 
 A video takes a few minutes (voice + editing), so run it in the background and tell the user it is working. Progress lines go to stderr; the final JSON goes to stdout.
 

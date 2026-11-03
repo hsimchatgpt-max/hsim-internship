@@ -84,6 +84,7 @@ def main():
     ap.add_argument("--out", default="./social-studio-output")
     ap.add_argument("--studio-dir", default=os.environ.get("STUDIO_DIR", ""))
     ap.add_argument("--url", default="http://127.0.0.1:8000")
+    ap.add_argument("--avatar", default="", help="avatar id from the Avatars tab (for example aarav-c); empty = no avatar")
     ap.add_argument("--no-video", action="store_true", help="only write the text (script, caption, hashtags)")
     args = ap.parse_args()
     base = args.url.rstrip("/")
@@ -95,7 +96,7 @@ def main():
     if make_video and not setup["ready_video"]:
         fail("no_video_tools", "Video tools are missing. Ask the user to open Setup and press 'Set up everything' (installs FFmpeg + voices). Retry with --no-video to get only the text.")
 
-    made = call(base, "POST", "/api/quick", {"mode": "auto", "format": args.format, "content_type": args.type, "duration": args.length, "topic": args.topic})
+    made = call(base, "POST", "/api/quick", {"mode": "auto", "format": args.format, "content_type": args.type, "duration": args.length, "topic": args.topic, "avatar": args.avatar})
     if made.get("_http_error"):
         fail("bad_request", made.get("error", "request failed"))
     post_id = made["post"]["id"]
@@ -107,7 +108,7 @@ def main():
         fail("ai_failed", "The AI could not write the content. Free AI limits may be used up: wait, or add OpenRouter / the local AI in Setup.", detail=job["error"])
 
     if make_video:
-        started = call(base, "POST", f"/api/posts/{post_id}/video", {"auto": True})
+        started = call(base, "POST", f"/api/posts/{post_id}/video", {"avatar": args.avatar})
         if started.get("_http_error"):
             fail("video_failed", started.get("error", "could not start the video"))
         job = wait_job(base, started["job"], "video")

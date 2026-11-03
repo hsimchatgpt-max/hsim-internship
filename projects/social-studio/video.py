@@ -4,10 +4,12 @@ Sirf Python ki built-in libraries use hui hain. Bahar ke tools:
   - FFmpeg (zaroori; Settings se download ho jata hai)
   - edge-tts (optional, behtar voices; `pip install edge-tts`), warna computer ki apni voice
 """
+import array
 import asyncio
 import importlib
 import os
 import platform
+import random
 import re
 import shutil
 import subprocess
@@ -142,9 +144,13 @@ def list_voices():
     return voices
 
 
-def default_voice(language, voices):
-    """Brand language ke hisaab se voice. Hinglish (Roman Hindi) ke liye Indian English voice behtar padhti hai."""
-    wanted = ["hi-IN-SwaraNeural", "hi"] if language == "hindi" else ["en-IN-NeerjaNeural", "en"]
+def default_voice(language, voices, gender=None):
+    """Brand language (aur avatar ke gender) ke hisaab se voice. Hinglish (Roman Hindi) ke liye Indian English voice behtar padhti hai."""
+    male = gender == "m"
+    if language == "hindi":
+        wanted = ["hi-IN-MadhurNeural" if male else "hi-IN-SwaraNeural", "hi"]
+    else:
+        wanted = ["en-IN-PrabhatNeural" if male else "en-IN-NeerjaNeural", "en"]
     for v in voices:
         if v["id"] == "edge:" + wanted[0]:
             return v["id"]
@@ -159,7 +165,7 @@ def synth(text, voice, out_path, ffmpeg):
     out_path = str(out_path)
     if os.environ.get("SOCIAL_STUDIO_MOCK_TTS") == "1":  # sirf testing: nakli awaaz (tone)
         secs = max(1.2, len(text) / 14)
-        r = run([ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"sine=f=220:d={secs}", out_path])
+        r = run([ffmpeg, "-y", "-loglevel", "error", "-f", "lavfi", "-i", f"sine=f=220:d={secs}", "-af", "tremolo=f=4:d=0.95", out_path])
         if r.returncode:
             raise VideoError(r.stderr[-300:])
         return
@@ -224,10 +230,11 @@ AMBIENT = ("aevalsrc='0.5*sin(2*PI*196*t)+0.4*sin(2*PI*246.9*t)+0.35*sin(2*PI*29
            "tremolo=f=0.2:d=0.5,lowpass=f=1200")
 
 
-def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=None):
+def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=None, avatar=None):
     """
     scenes: [{"audio", "slot", and either "image" (opaque card)  or  "bg" + "bg_kind" ("image"|"video") + "overlay" (transparent card)}]
     captions: [{"start", "end", "textfile", "font"}]  reel-style captions (2-3 shabd, bade pile akshar)
+    avatar: path of an ffconcat list of avatar frames (muh awaaz ke saath hilta hai) ya None
     music: None | "ambient" | path ; height: 1280 (HD) ya 1920 (full HD) ; sfx: whoosh file ya None
     """
     n, T = len(scenes), TRANSITION_SECS
@@ -268,10 +275,16 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=Non
         offset += scenes[k - 1]["slot"]
         filters.append(f"[{last}][v{k}]xfade=transition={TRANSITIONS[(k - 1) % len(TRANSITIONS)]}:duration={T}:offset={offset:.3f}[x{k}]")
         last = f"x{k}"
+    if avatar:  # avatar neeche, halka sa upar-neeche hilta hua
+        ai = add("-f", "concat", "-safe", "0", "-i", avatar)
+        aw = int(width * 0.66) // 2 * 2
+        filters.append(f"[{ai}:v]fps=30,format=rgba,scale={aw}:-1[av]")
+        filters.append(f"[{last}][av]overlay=x=(W-w)/2:y='H-h+{max(3, int(height * 0.004))}*sin(2*PI*t*1.3)':format=auto,format=yuv420p[vav]")
+        last = "vav"
     if captions:  # reel-style captions: pile akshar, kaala border, awaaz ke saath badalte hue
         fs = int(width * 0.078)
         chain = [f"drawtext=fontfile='{_filter_path(c['font'])}':textfile='{_filter_path(c['textfile'])}':fontsize={fs}:fontcolor=0xFFD400:"
-                 f"borderw={max(3, int(fs * 0.09))}:bordercolor=black:x=(w-text_w)/2:y=h*0.64:enable='between(t,{c['start']:.2f},{c['end']:.2f})'"
+                 f"borderw={max(3, int(fs * 0.09))}:bordercolor=black:x=(w-text_w)/2:y=h*{0.52 if avatar else 0.64}:enable='between(t,{c['start']:.2f},{c['end']:.2f})'"
                  for c in captions]
         filters.append(f"[{last}]" + ",".join(chain) + "[vcap]")
         last = "vcap"
@@ -312,6 +325,55 @@ def compose(ffmpeg, scenes, out_path, music, height, sfx, progress, captions=Non
     if proc.wait() != 0 or not Path(out_path).exists():
         raise VideoError("Video editing failed: " + err[-400:])
     return total
+
+
+AV_STEP = 0.08  # muh ki chaal har 0.08 second me badalti hai
+
+
+def audio_rms(ffmpeg, audio):
+    """Awaaz ki taakat (loudness) har AV_STEP second ke liye."""
+    r = subprocess.run([ffmpeg, "-v", "error", "-i", str(audio), "-ac", "1", "-ar", "8000", "-f", "s16le", "-"],
+                       capture_output=True, creationflags=NO_WINDOW)
+    samples = array.array("h")
+    samples.frombytes(r.stdout[: len(r.stdout) // 2 * 2])
+    n = int(8000 * AV_STEP)
+    return [(sum(x * x for x in samples[i:i + n]) / max(1, len(samples[i:i + n]))) ** 0.5 for i in range(0, len(samples), n)]
+
+
+def build_avatar_list(avatar_dir, scenes, out_list, seed=7):
+    """
+    scenes: [{"rms": [...], "slot": seconds}]  ->  ffconcat file: kaun sa avatar frame kab dikhana hai.
+    Muh ke 4 levels (band, thoda, aadha, poora khula) awaaz ki taakat se; palkein har 3-5 second me.
+    Frame ke naam: m<muh 0-3>e<aankh 0 khuli / 1 band>.png
+    """
+    ranked = sorted(x for sc in scenes for x in sc["rms"])
+    peak = max(ranked[max(0, int(len(ranked) * 0.95) - 1)] if ranked else 1, 1)  # sabse zor ki awaaz ke aas-paas
+    mouth = []
+    for sc in scenes:
+        steps = max(1, round(sc["slot"] / AV_STEP))
+        rms = sc["rms"][:steps] + [0] * max(0, steps - len(sc["rms"]))  # bolne ke baad ki khamoshi me muh band
+        for x in rms:
+            r = x / peak
+            mouth.append(0 if r < 0.1 else 1 if r < 0.3 else 2 if r < 0.6 else 3)
+    eyes = [0] * len(mouth)
+    rng, i = random.Random(seed), 0
+    i = int(rng.uniform(25, 50))
+    while i < len(eyes) - 2:  # palak: 2 step (0.16 s)
+        eyes[i] = eyes[i + 1] = 1
+        i += int(rng.uniform(40, 62))
+    merged = []
+    for m, e in zip(mouth, eyes):
+        name = f"m{m}e{e}"
+        if merged and merged[-1][0] == name:
+            merged[-1][1] += AV_STEP
+        else:
+            merged.append([name, AV_STEP])
+    base = str(Path(avatar_dir).resolve()).replace("\\", "/").replace("'", "'\\''")
+    lines = []
+    for name, d in merged:
+        lines += [f"file '{base}/{name}.png'", f"duration {d:.3f}"]
+    lines.append(f"file '{base}/{merged[-1][0]}.png'")  # ffconcat: aakhri frame dobara likhna padta hai
+    Path(out_list).write_text("\n".join(lines), encoding="utf-8")
 
 
 def plan_captions(scenes, folder):

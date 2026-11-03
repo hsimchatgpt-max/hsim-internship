@@ -67,6 +67,7 @@ NEW_COLUMNS = [  # purane data wale users ke liye migration
     ("design", "TEXT NOT NULL DEFAULT ''"),  # manual image designer ki settings (JSON)
     ("images", "TEXT NOT NULL DEFAULT '[]'"),  # AI se bani image files ke naam (JSON list)
     ("video", "TEXT NOT NULL DEFAULT ''"),  # bani hui video file ka naam
+    ("avatar", "TEXT NOT NULL DEFAULT ''"),  # kaun sa avatar (id)
 ]
 
 
@@ -143,7 +144,7 @@ def row_to_post(row):
 
 POST_FIELDS = [
     "date", "format", "content_type", "topic", "platforms", "status", "time", "duration",
-    "hook", "caption", "hashtags", "cta", "script", "image_idea", "edit_plan", "design",
+    "hook", "caption", "hashtags", "cta", "script", "image_idea", "edit_plan", "design", "avatar",
 ]
 
 
@@ -167,6 +168,8 @@ def clean_post_fields(data, partial):
             date.fromisoformat(str(val))  # galat date par ValueError -> 400
         elif key == "design":
             val = str(val)[:4000]
+        elif key == "avatar":
+            val = re.sub(r"[^\w\-]", "", str(val))[:40]
         elif key == "time":
             if not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", str(val)):
                 val = "10:00"
@@ -789,6 +792,8 @@ IMAGES_DIR = DATA / "images"
 VIDEOS_DIR = DATA / "videos"
 MUSIC_DIR = DATA / "music"
 MEDIA_DIR = DATA / "media"
+AVATARS_DIR = DATA / "avatars"
+FRAME_KEYS = [f"m{m}e{e}" for m in range(4) for e in range(2)]  # muh 4 level x aankh 2
 MUSIC_EXT = (".mp3", ".wav", ".m4a", ".ogg")
 IMAGE_LIMIT_ERROR = ("Image generation limit reached. Image models usually need billing enabled on your Gemini API key "
                      "(Google AI Studio, your key, Set up billing).")
@@ -1151,13 +1156,57 @@ def save_media(name, stream, length):
     return clean
 
 
+def avatar_meta(avatar_id):
+    path = AVATARS_DIR / re.sub(r"[^\w\-]", "", avatar_id) / "meta.json"
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def list_avatars():
+    if not AVATARS_DIR.exists():
+        return []
+    out = []
+    for folder in sorted(AVATARS_DIR.iterdir()):
+        meta = avatar_meta(folder.name) if folder.is_dir() else None
+        if meta:
+            out.append({**meta, "id": folder.name})
+    return out
+
+
+def save_avatar(data):
+    """Browser ne avatar ke 8 frames (PNG) banaye hain; unhe save karta hai."""
+    name = str(data.get("name", "")).strip()[:40] or "Avatar"
+    gender = "m" if data.get("gender") == "m" else "f"
+    kind = "photo" if data.get("kind") == "photo" else "cartoon"
+    frames = data.get("frames") or {}
+    if sorted(frames) != sorted(FRAME_KEYS):
+        raise ValueError("an avatar needs exactly 8 frames")
+    avatar_id = re.sub(r"[^a-z0-9\-]+", "-", unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode().lower()).strip("-")[:30] or "avatar"
+    avatar_id = f"{avatar_id}-{kind[0]}"
+    folder = AVATARS_DIR / avatar_id
+    folder.mkdir(parents=True, exist_ok=True)
+    prefix = "data:image/png;base64,"
+    for key in FRAME_KEYS:
+        if not str(frames[key]).startswith(prefix):
+            raise ValueError("frames must be PNG images")
+        (folder / f"{key}.png").write_bytes(base64.b64decode(frames[key][len(prefix):]))
+    (folder / "meta.json").write_text(json.dumps({"name": name, "gender": gender, "kind": kind}))
+    return {"id": avatar_id, "name": name, "gender": gender, "kind": kind}
+
+
+def default_voice_for(gender):
+    return vid.default_voice(get_brand()["language"], tools_status()["voices"], gender)
+
+
 def file_slug(text):
     """Download ke liye saaf file naam (sirf a-z, 0-9, hyphen)."""
     ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "-", ascii_text).strip("-")[:40] or "video"
 
 
-def video_job(post_id, cards, voice, music, quality):
+def video_job(post_id, cards, voice, music, quality, avatar_id=""):
     """Script ke scenes -> awaaz -> cards (+ aapki photos/clips peeche) -> reel-style captions -> final MP4."""
     def work(job_id):
         found = vid.find_ffmpeg(DATA)
@@ -1175,7 +1224,7 @@ def video_job(post_id, cards, voice, music, quality):
         folder.mkdir(parents=True, exist_ok=True)
         try:
             job_update(job_id, post_ids=[post_id], stage="voice", total=len(cards), done=0)
-            scenes, spoken = [], []
+            scenes, spoken, rms_per_scene = [], [], []
             for i, card in enumerate(cards):
                 audio, png = folder / f"a{i}.mp3", folder / f"card{i}.png"
                 vid.synth(card["spoken"], voice, audio, ffmpeg)
@@ -1189,15 +1238,21 @@ def video_job(post_id, cards, voice, music, quality):
                     scene["image"] = str(png)
                 scenes.append(scene)
                 spoken.append({"spoken": card["spoken"], "slot": scene["slot"], "adur": adur})
+                if avatar_id:
+                    rms_per_scene.append({"rms": vid.audio_rms(ffmpeg, audio), "slot": scene["slot"]})
                 job_incr(job_id, "done")
             captions = vid.plan_captions(spoken, folder)
+            avatar_list = None
+            if avatar_id and avatar_meta(avatar_id):  # muh ki chaal awaaz se
+                avatar_list = str(folder / "avatar.txt")
+                vid.build_avatar_list(AVATARS_DIR / avatar_id, rms_per_scene, avatar_list)
             job_update(job_id, stage="editing", done=0, total=100)
             whoosh = folder / "whoosh.wav"
             vid.make_whoosh(ffmpeg, whoosh)
             VIDEOS_DIR.mkdir(parents=True, exist_ok=True)
             name = f"{file_slug(get_post(post_id)['topic'])}-{post_id}-{int(time.time())}.mp4"
             vid.compose(ffmpeg, scenes, VIDEOS_DIR / name, music_arg, height, str(whoosh),
-                        lambda d, n: job_update(job_id, done=d, total=n), captions)
+                        lambda d, n: job_update(job_id, done=d, total=n), captions, avatar_list)
             with DB_LOCK, db() as con:
                 con.execute("UPDATE posts SET video = ? WHERE id = ?", (name, post_id))
             job_update(job_id, done=100)
@@ -1421,6 +1476,14 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"job": start_job("tools", "FFmpeg", lambda job_id: ffmpeg_job()(job_id))})
             if method == "POST" and path == "/api/tools/voices":
                 return self.send_json({"job": start_job("tools", "Voices", lambda job_id: voices_job()(job_id))})
+            if method == "GET" and path == "/api/avatars":
+                return self.send_json(list_avatars())
+            if method == "POST" and path == "/api/avatars":
+                return self.send_json(save_avatar(self.read_json(limit=40_000_000)))
+            m = re.fullmatch(r"/api/avatars/([\w\-]+)", path)
+            if m and method == "DELETE":
+                shutil.rmtree(AVATARS_DIR / m.group(1), ignore_errors=True)
+                return self.send_json({"ok": True})
             if method == "GET" and path == "/api/media":
                 return self.send_json([{"name": f.name, "kind": "video" if f.suffix.lower() in VIDEO_EXT else "image", "mb": round(f.stat().st_size / 1e6, 1)} for f in list_media()])
             if method == "POST" and path == "/api/media":  # seedhi file (base64 nahi), badi videos ke liye
@@ -1461,7 +1524,7 @@ class Handler(BaseHTTPRequestHandler):
                     "format": body.get("format", "video"),
                     "content_type": body.get("content_type", "educational"),
                     "topic": str(body.get("topic", ""))[:600],
-                    "duration": body.get("duration", "30-60 sec"),
+                    "duration": body.get("duration", "30-60 sec"), "avatar": body.get("avatar", ""),
                     "platforms": body.get("platforms", brand["platforms"]),
                 })
                 result = {"post": post, "job": None}
@@ -1510,9 +1573,14 @@ class Handler(BaseHTTPRequestHandler):
                     cards = vid.parse_scenes(post["script"], post["hook"], post["cta"])
                     if not cards:
                         return self.send_json({"error": "this post has no script to make a video from"}, 400)
-                    voice = str(body.get("voice") or tools_status()["default_voice"])[:80]
+                    avatar_id = re.sub(r"[^\w\-]", "", str(body.get("avatar", post["avatar"])))[:40]
+                    meta = avatar_meta(avatar_id) if avatar_id else None
+                    if avatar_id and not meta:
+                        return self.send_json({"error": "avatar not found, add it in the Avatars tab"}, 400)
+                    voice = str(body.get("voice") or default_voice_for(meta["gender"] if meta else None))[:80]
                     quality = "high" if body.get("quality") == "high" else "standard"
-                    job = start_job("video", "Video", video_job(post_id, cards, voice, str(body.get("music", "ambient")), quality))
+                    update_post(post_id, {"avatar": avatar_id})
+                    job = start_job("video", "Video", video_job(post_id, cards, voice, str(body.get("music", "ambient")), quality, avatar_id))
                     return self.send_json({"job": job})
                 if action == "/export" and method == "GET":
                     post = get_post(post_id)
@@ -1583,6 +1651,20 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/files/"):
             return self.serve_media(IMAGES_DIR, "png", "image/png")
+        m = re.fullmatch(r"/avatar-files/([\w\-]+)/(m[0-3]e[01])\.png", self.path.split("?")[0])
+        if m:
+            target = AVATARS_DIR / m.group(1) / f"{m.group(2)}.png"
+            if not target.is_file():
+                self.send_response(404)
+                self.end_headers()
+                return
+            body = target.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path.startswith("/videos/"):
             return self.serve_media(VIDEOS_DIR, "mp4", "video/mp4")
         self.handle_api("GET") if self.path.startswith("/api/") else self.serve_static()

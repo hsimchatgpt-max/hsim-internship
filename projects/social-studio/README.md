@@ -3,6 +3,9 @@
 Social media content ka planner: **Brand Profile + Monthly Calendar + AI content writer**.
 Free hai, aapke apne computer par chalta hai, Windows aur Mac dono par.
 
+## Avatars
+**Avatars** tab: 12 cartoon presenters (alag chehre, baal, chashme, kapde). Jo pasand aaye **Add** karo, phir Create me "Avatar" chuno. Video me avatar neeche bolta hai: **awaaz ke saath muh khulta-band hota hai aur palkein jhapakti hain**, aur uske upar captions aate hain. Voice avatar ke hisaab se (female/male) khud chunti hai. **"Use my own photo"**: aapki photo gol frame me, awaaz ke saath chamakti aur dhadakti hai (asli lip-sync nahi, wo bhaari AI maangta hai).
+
 ## My videos (library)
 Jo bhi video/image banti hai wo **My videos** tab me ek jagah jama hoti hai: wahin se dekho, **Download**, caption copy, edit ya delete (delete karne par file bhi hat jati hai). Jitni chaho utni alag-alag videos banao.
 

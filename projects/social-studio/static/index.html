@@ -87,6 +87,10 @@
   .pcard details { margin-top: 6px; }
   .pcard summary { cursor: pointer; color: var(--accent); font-size: 13px; }
   details.more { margin: 12px 0 0; } details.more summary { cursor: pointer; color: var(--accent); font-size: 14px; }
+  .avgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .avcard { text-align: center; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: var(--bg); }
+  .avcard canvas, .avcard img { width: 100%; height: auto; border-radius: 8px; background: #fff; display: block; }
+  .avcard b { display: block; margin: 6px 0 2px; }
   .imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 12px 0; }
   .imgs img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
   .imgs a { margin-top: 6px; }
@@ -107,6 +111,7 @@
   <h1>Social Studio</h1>
   <nav>
     <button data-tab="create" class="active" data-i18n="tab.create">Create</button>
+    <button data-tab="avatars" data-i18n="tab.avatars">Avatars</button>
     <button data-tab="library" data-i18n="tab.library">My videos</button>
     <button data-tab="calendar" data-i18n="tab.calendar">Calendar</button>
     <button data-tab="brand" data-i18n="tab.brand">Brand Profile</button>
@@ -132,6 +137,7 @@
       <div class="row">
         <div><label data-i18n="create.preset">Make it for</label><select id="c_preset"></select></div>
         <div><label data-i18n="f.duration">Video length</label><select id="c_duration"></select></div>
+        <div><label data-i18n="av.pick">Avatar (presenter)</label><select id="c_avatar"></select></div>
       </div>
       <details class="more"><summary data-i18n="create.more">More options</summary>
         <div class="row">
@@ -153,6 +159,27 @@
       <div id="wsStatus" class="hint"></div>
       <div id="wsBody"></div>
       <div class="actions" id="wsActions"></div>
+    </div>
+  </section>
+
+  <!-- Avatars -->
+  <section id="tab-avatars" hidden>
+    <div class="card" style="margin-bottom:16px">
+      <h2 style="margin-top:0" data-i18n="av.title">Avatars</h2>
+      <p class="hint" data-i18n="av.hint">Pick a presenter. In your videos the avatar speaks your script: its mouth moves with the voice and it blinks. Add the ones you like, then choose one when you create a video.</p>
+      <div class="avgrid" id="avPresets"></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <h3 style="margin-top:0" data-i18n="av.mine">My avatars</h3>
+      <div class="avgrid" id="avMine"></div>
+    </div>
+    <div class="card" style="max-width:640px">
+      <h3 style="margin-top:0" data-i18n="av.photo">Use my own photo</h3>
+      <p class="hint" data-i18n="av.photohint">Your photo appears in a round frame that glows and pulses with your voice (podcast style). The mouth does not move, because real lip-sync needs a very powerful computer.</p>
+      <input type="file" id="avPhotoFile" accept="image/*">
+      <div class="row"><div><label data-i18n="av.name">Name</label><input id="avPhotoName" placeholder="My photo"></div>
+        <div><label data-i18n="av.voice">Voice</label><select id="avPhotoGender"><option value="f">Female</option><option value="m">Male</option></select></div></div>
+      <div class="actions"><button class="primary" id="avPhotoSave" data-i18n="av.create">Add my photo</button></div>
     </div>
   </section>
 
@@ -340,6 +367,7 @@
     <div><label data-i18n="v.voice">Voice</label><select id="v_voice"></select></div>
     <div><label data-i18n="v.music">Background music</label><select id="v_music"></select></div>
     <div><label data-i18n="v.quality">Quality</label><select id="v_quality"></select></div>
+    <div><label data-i18n="av.pick">Avatar (presenter)</label><select id="v_avatar"></select></div>
   </div>
   <div class="actions"><button class="primary" id="v_make" data-i18n="v.make">Make video</button><button class="ghost" data-close data-i18n="btn.close">Close</button></div>
   <p class="hint" id="v_status"></p>
@@ -375,6 +403,7 @@
 
 <div id="toast"></div>
 
+<script src="/avatars.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const I18N = {
@@ -468,6 +497,10 @@ const I18N = {
     "None of your AI options worked right now.": "आपके कोई भी AI अभी काम नहीं कर पाए।",
     "tip.ai": "सुझाव: Setup खोलकर OpenRouter (फ़्री) जोड़ें या लोकल AI इंस्टॉल करें (बिना लिमिट)।",
     "No AI is set up yet. Open Setup and add a free key (or install the local AI).": "अभी कोई AI सेट नहीं है। Setup खोलकर फ़्री key जोड़ें (या लोकल AI इंस्टॉल करें)।",
+    "tab.avatars": "अवतार", "av.title": "अवतार", "av.hint": "एक प्रेज़ेंटर चुनें। आपके वीडियो में अवतार आपकी स्क्रिप्ट बोलता है: आवाज़ के साथ उसका मुँह हिलता है और पलकें झपकती हैं। जो पसंद आएं उन्हें जोड़ें, फिर वीडियो बनाते समय एक चुनें।",
+    "av.mine": "मेरे अवतार", "av.photo": "अपनी फ़ोटो इस्तेमाल करें", "av.photohint": "आपकी फ़ोटो गोल फ्रेम में दिखती है जो आपकी आवाज़ के साथ चमकता और धड़कता है (पॉडकास्ट स्टाइल)। मुँह नहीं हिलता, क्योंकि असली लिप-सिंक के लिए बहुत ताक़तवर कंप्यूटर चाहिए।",
+    "av.name": "नाम", "av.voice": "आवाज़", "av.create": "मेरी फ़ोटो जोड़ें", "av.pick": "अवतार (प्रेज़ेंटर)", "av.none": "कोई अवतार नहीं", "av.none.yet": "अभी कोई अवतार नहीं। ऊपर से जोड़ें।",
+    "av.add": "जोड़ें", "av.added": "जुड़ गया ✓", "av.needphoto": "पहले एक फ़ोटो चुनें।", "v.autovoice": "ऑटो (अवतार के हिसाब से)",
     "tab.library": "मेरी वीडियो", "lib.hint": "आपकी बनाई हर चीज़ यहाँ है। कभी भी डाउनलोड करें।", "lib.empty": "अभी कुछ नहीं है। Create टैब में अपना पहला वीडियो बनाएं।",
     "media.title": "मेरी फ़ोटो और क्लिप", "media.hint": "अपने काम, प्रोडक्ट या जगह की फ़ोटो या छोटे वीडियो अपलोड करें। टूल इन्हें रील के बैकग्राउंड में एक के बाद एक लगाता है। अपलोड न हो तो रंगीन ग्रेडिएंट सीन बनते हैं।",
     "media.rights": "सिर्फ़ वही फ़ोटो और क्लिप इस्तेमाल करें जो आपकी हों या जिनका इस्तेमाल करने की इजाज़त हो।", "media.none": "अभी कोई फ़ोटो या क्लिप नहीं।", "media.uploading": "{n} अपलोड हो रहा है...",
@@ -488,11 +521,13 @@ const I18N = {
 const EN_DOW = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const EN_TEXT = {
-  "tab.create": "Create", "tab.calendar": "Calendar", "tab.library": "My videos", "btn.save": "Save",
+  "tab.create": "Create", "tab.calendar": "Calendar", "tab.library": "My videos", "tab.avatars": "Avatars", "btn.save": "Save",
   "f.hook": "Hook", "f.script": "Script / on-screen text", "f.caption": "Caption", "f.hashtags": "Hashtags",
   "f.cta": "Call to action", "f.image_idea": "Image / visual idea",
   "f.edit_plan": "Editing plan (B-roll, music, sound effects, transitions)",
   "groq.title": "Backup AI (optional, free)",
+  "btn.delete": "Delete", "av.none": "No avatar", "av.none.yet": "No avatars yet. Add one above.", "av.add": "Add", "av.added": "Added ✓", "av.needphoto": "Choose a photo first.",
+  "v.autovoice": "Auto (best for the avatar)",
   "lib.hint": "Everything you made is here. Download it any time.", "lib.empty": "Nothing here yet. Make your first video in the Create tab.",
   "media.none": "No photos or clips yet.", "media.uploading": "Uploading {n}...",
   "toast.copied": "Copied!", "btn.copy": "Copy caption + hashtags", "btn.dlvideoMp4": "Download video (MP4)", "btn.remake": "Make video again",
@@ -593,8 +628,9 @@ async function busy(btn, labelKey, fn) {
 // ----- tabs -----
 function showTab(name) {
   document.querySelectorAll("nav button").forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
-  ["create", "library", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
+  ["create", "avatars", "library", "calendar", "brand", "settings"].forEach((n) => ($("tab-" + n).hidden = n !== name));
   if (name === "library") loadLibrary();
+  if (name === "avatars") loadAvatars();
   if (name === "calendar") loadPosts();
   if (name === "settings") { loadTools(); loadMedia(); }
 }
@@ -733,7 +769,7 @@ function renderWs() {
 
 // server script ke scenes, awaaz, captions aur edit sab khud banata hai (browser band ho to bhi chalta hai)
 async function renderVideoFor(post, o) {
-  const r = await api("POST", `/api/posts/${post.id}/video`, { voice: o.voice, music: o.music, quality: o.quality });
+  const r = await api("POST", `/api/posts/${post.id}/video`, { voice: o.voice || "", music: o.music, quality: o.quality, avatar: o.avatar === undefined ? post.avatar : o.avatar });
   await trackJob(r.job, t("v.title"));
   return api("GET", "/api/posts/" + post.id);
 }
@@ -741,7 +777,7 @@ async function autoVideo(me) {  // "One click": text ke baad video bhi apne aap
   const tl = await api("GET", "/api/tools");
   if (!tl.ffmpeg || !tl.voices.length) { me.videoNote = t("v.needsetup"); return; }
   me.msg = t("v.working"); renderWs();
-  me.post = await renderVideoFor(me.post, { voice: tl.default_voice || tl.voices[0].id, music: "ambient", quality: "standard" });
+  me.post = await renderVideoFor(me.post, { music: "ambient", quality: "standard" });
   loadPosts();
 }
 async function runStep(step, jobId, note, force) {
@@ -765,11 +801,12 @@ async function copyText(txt) {
   toast(t("toast.copied"));
 }
 
+$("c_avatar").onchange = () => { try { localStorage.setItem("avatarPref", $("c_avatar").value); } catch (e) {} };
 $("createBtn").onclick = (e) => busy(e.target, "busy.create", async () => {
   const mode = document.querySelector("input[name=mode]:checked").value;
   const r = await api("POST", "/api/quick", {
     topic: $("c_topic").value, format: $("c_format").value, content_type: $("c_type").value,
-    duration: $("c_duration").value, platforms: [$("c_preset").value], mode,
+    duration: $("c_duration").value, platforms: [$("c_preset").value], avatar: $("c_avatar").value, mode,
   });
   ws = { post: r.post, mode, stepIdx: 0, state: "loading", step: "script", steps: stepsFor(r.post.format) };
   if (mode === "auto") runStep("all", r.job); else runStep("script");
@@ -1161,8 +1198,9 @@ function videoHTML(post) {
 async function openVideo(post) {
   V = { post, tools: await api("GET", "/api/tools") };
   const tl = V.tools;
-  $("v_voice").innerHTML = tl.voices.map((v) => `<option value="${esc(v.id)}">${esc(v.label)}</option>`).join("");
-  if (tl.default_voice) $("v_voice").value = tl.default_voice;
+  $("v_voice").innerHTML = `<option value="">${esc(t("v.autovoice"))}</option>` + tl.voices.map((v) => `<option value="${esc(v.id)}">${esc(v.label)}</option>`).join("");
+  $("v_voice").value = "";
+  $("v_avatar").innerHTML = avatarOptions(); $("v_avatar").value = post.avatar || "";
   $("v_music").innerHTML = [["none", t("music.none")], ["ambient", t("music.ambient")], ...tl.music.map((m) => [m, m])]
     .map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join("");
   $("v_music").value = "ambient";
@@ -1180,12 +1218,53 @@ $("v_install").onclick = (e) => busy(e.target, "busy.save", async () => {
 $("v_make").onclick = (e) => busy(e.target, "busy.gen", async () => {
   $("v_status").innerHTML = `<i class="spin"></i> ${esc(t("v.working"))}`;
   try {
-    V.post = await renderVideoFor(V.post, { voice: $("v_voice").value, music: $("v_music").value, quality: $("v_quality").value });
+    V.post = await renderVideoFor(V.post, { voice: $("v_voice").value, music: $("v_music").value, quality: $("v_quality").value, avatar: $("v_avatar").value });
     $("v_result").innerHTML = videoHTML(V.post); $("v_status").textContent = t("v.done"); loadPosts();
     if (ws && ws.post.id === V.post.id) { ws.post = V.post; ws.videoNote = ""; ws.videoError = ""; renderWs(); }
   } catch (err) { $("v_status").innerHTML = `<span class="err-text">${esc(trErr(err.message))}</span>`; }
 });
 $("postVideo").onclick = async () => { await api("PUT", "/api/posts/" + editing.id, readForm()); openVideo(await api("GET", "/api/posts/" + editing.id)); };
+
+// ----- avatars -----
+let AVATARS = [];
+function avatarOptions() {
+  return `<option value="">${esc(t("av.none"))}</option>` + AVATARS.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}${a.kind === "photo" ? " 📷" : ""}</option>`).join("");
+}
+function refreshAvatarSelect() {
+  const keep = $("c_avatar").value; let pref = "";
+  try { pref = localStorage.getItem("avatarPref") || ""; } catch (e) {}
+  $("c_avatar").innerHTML = avatarOptions();
+  const want = keep || pref; $("c_avatar").value = AVATARS.some((a) => a.id === want) ? want : "";
+}
+async function loadAvatars() {
+  AVATARS = await api("GET", "/api/avatars"); refreshAvatarSelect();
+  $("avMine").innerHTML = AVATARS.length ? "" : `<p class="hint">${esc(t("av.none.yet"))}</p>`;
+  AVATARS.forEach((a) => {
+    const d = document.createElement("div"); d.className = "avcard";
+    d.innerHTML = `<img src="/avatar-files/${esc(a.id)}/m1e0.png" alt=""><b>${esc(a.name)}</b><button class="ghost danger">${esc(t("btn.delete"))}</button>`;
+    d.querySelector("button").onclick = async () => { await api("DELETE", "/api/avatars/" + a.id); loadAvatars(); };
+    $("avMine").appendChild(d);
+  });
+  $("avPresets").innerHTML = "";
+  AVATAR_PRESETS.forEach((sp, i) => {
+    const has = AVATARS.some((a) => a.id === sp.id + "-c"), d = document.createElement("div"); d.className = "avcard";
+    const c = document.createElement("canvas"); drawAvatarCartoon(c, sp, 1, false); d.appendChild(c);
+    d.insertAdjacentHTML("beforeend", `<b>${esc(sp.name)}</b><button class="${has ? "ghost" : "primary"}">${esc(t(has ? "av.added" : "av.add"))}</button>`);
+    d.querySelector("button").onclick = (e) => has ? 0 : busy(e.target, "busy.save", async () => {
+      await api("POST", "/api/avatars", { name: sp.name, gender: sp.gender, kind: "cartoon", frames: renderAvatarFrames((cv, m, bl) => drawAvatarCartoon(cv, sp, m, bl)) });
+      try { localStorage.setItem("avatarPref", sp.id + "-c"); } catch (err) {}
+      await loadAvatars(); toast(t("toast.saved"));
+    });
+    $("avPresets").appendChild(d);
+  });
+}
+$("avPhotoSave").onclick = (e) => busy(e.target, "busy.save", async () => {
+  const f = $("avPhotoFile").files[0]; if (!f) { toast(t("av.needphoto"), true); return; }
+  const img = await new Promise((res) => { const i = new Image(); i.onload = () => res(i); i.src = URL.createObjectURL(f); });
+  const accent = cfg.brand.secondary;
+  await api("POST", "/api/avatars", { name: $("avPhotoName").value || "My photo", gender: $("avPhotoGender").value, kind: "photo", frames: renderAvatarFrames((cv, m) => drawAvatarPhoto(cv, img, m, accent)) });
+  $("avPhotoFile").value = ""; await loadAvatars(); toast(t("toast.saved"));
+});
 
 // ----- library -----
 async function loadLibrary() {
@@ -1335,6 +1414,7 @@ $("uiLang").onchange = () => {
   $("b_tone").value = cfg.brand.tone; $("b_language").value = cfg.brand.language;
   ["primary", "secondary", "text_color"].forEach((k) => ($("b_" + k).value = cfg.brand[k]));
   $("b_font").value = cfg.brand.font; brandLogo = cfg.brand.logo || ""; showLogoPreview();
+  await loadAvatars().catch(() => {});
   const s0 = await refreshSetup(); await refreshUsage();
   let seen = "0"; try { seen = localStorage.getItem("wizSeen") || "0"; } catch (e) {}
   if (!(s0.ready_ai && s0.ready_video) && seen !== "1") openWizard();
