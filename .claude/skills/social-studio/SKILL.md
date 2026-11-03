@@ -7,13 +7,16 @@ description: Make a ready-to-post social media video (or image / carousel) with 
 
 Social Studio is a small local tool (Python + FFmpeg, no accounts) that turns one sentence into a finished post. The user is busy and does the posting themselves: your job is to hand over files that are ready to download, and a caption ready to paste. Never try to post anything for them.
 
+## Team of agents
+For a complete reel (best quality, no AI-key limits because Claude writes the script itself) use the `reel-builder` skill: it runs the agents `reel-script-writer`, `reel-editor` and `reel-delivery`. This skill is the low-level tool driver they all use.
+
 ## Make something
 
 1. Find the tool folder (the one with `server.py`): normally `projects/social-studio` in this repo. If it is not there, search for `social-studio/server.py`.
 2. Run the helper. It starts the tool if needed, waits for the AI and the video, and downloads the results:
 
 ```bash
-python .claude/skills/social-studio/scripts/studio.py "3 website mistakes small businesses make" \
+python .claude/skills/social-studio/scripts/studio.py make "3 website mistakes small businesses make" \
   --studio-dir projects/social-studio --out ./social-studio-output
 ```
 

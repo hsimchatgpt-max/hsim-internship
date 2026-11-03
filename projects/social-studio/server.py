@@ -969,6 +969,32 @@ PLATFORM_STYLE = {  # (naam, caption ka tareeka, hashtags kitne)
 SCENE_COUNT = {"15-30 sec": "6 to 8", "30-60 sec": "10 to 14", "60-90 sec": "14 to 18"}
 
 
+def check_script(script, duration):
+    """Agent ke likhe script ki jaanch: scenes, lambai, tags. Problems ki list lautata hai."""
+    scenes = vid.parse_scenes(script, "", "")
+    lo, hi = [int(x) for x in re.findall(r"\d+", SCENE_COUNT.get(duration, "10 to 14"))]
+    problems = []
+    if not scenes:
+        return {"scenes": 0, "problems": ["no scenes found: write 'Scene N: <line> [on-screen text: ..] [broll: ..] [emotion: ..]'"], "list": []}
+    if not lo - 2 <= len(scenes) <= hi + 2:
+        problems.append(f"{len(scenes)} scenes, but {duration} needs about {lo} to {hi}")
+    if len(scenes[0]["spoken"].split()) > 10:
+        problems.append("the hook (scene 1) is longer than 10 words")
+    for i, sc in enumerate(scenes, 1):
+        words = len(sc["spoken"].split())
+        if words > 16:
+            problems.append(f"scene {i} has {words} words (max about 14)")
+        if not sc["onscreen"]:
+            problems.append(f"scene {i} has no [on-screen text: ...]")
+        if not sc["broll"]:
+            problems.append(f"scene {i} has no [broll: ...]")
+        if sc["emotion"].lower() not in vid.EMOTIONS and sc["emotion"]:
+            problems.append(f"scene {i} emotion '{sc['emotion']}' is not one of {', '.join(vid.EMOTIONS)}")
+    spoken_words = sum(len(sc["spoken"].split()) for sc in scenes)
+    return {"scenes": len(scenes), "spoken_words": spoken_words, "approx_seconds": round(spoken_words / 2.6),
+            "problems": problems, "list": scenes}
+
+
 def platform_style(post):
     return PLATFORM_STYLE.get(post["platforms"][0] if post["platforms"] else "instagram", PLATFORM_STYLE["instagram"])
 
@@ -1530,6 +1556,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json({"job": start_job("tools", "FFmpeg", lambda job_id: ffmpeg_job()(job_id))})
             if method == "POST" and path == "/api/tools/voices":
                 return self.send_json({"job": start_job("tools", "Voices", lambda job_id: voices_job()(job_id))})
+            if method == "POST" and path == "/api/script/check":
+                body = self.read_json()
+                return self.send_json(check_script(str(body.get("script", "")), str(body.get("duration", "30-60 sec"))))
             if method == "GET" and path == "/api/avatars":
                 return self.send_json(list_avatars())
             if method == "POST" and path == "/api/avatars":

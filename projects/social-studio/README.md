@@ -67,6 +67,9 @@ Command Prompt wali window me `Ctrl + C`, ya window band kar do.
 | `start.bat` / `start.command` | Double-click se chalane ke liye |
 | `data/` | Aapke posts aur API key (sirf aapke computer par, GitHub par nahi jaata) |
 
+## Agents ki team (Claude Code me)
+Repo me `.claude/agents/` me 3 agents hain: **reel-script-writer** (script, caption, hashtags: Claude khud likhta hai, to AI-key ki limit nahi), **reel-editor** (video banwata hai aur frames dekhkar quality check karta hai), **reel-delivery** (video + caption + thumbnail + "kaise post karein" ek folder me). Inhe **reel-builder** skill ek ke baad ek chalati hai. Bas bolo: "30 second ki reel banao, har business ko website kyu chahiye".
+
 ## Claude ke liye skill
 Repo me `.claude/skills/social-studio/` hai. Claude Code me is repo me kaam karte waqt bas bolo "ek video bana do ..." aur Claude tool ko chalakar MP4 + caption + hashtags files de dega; aap download karke khud post karo. Command line se: `python .claude/skills/social-studio/scripts/studio.py "topic" --studio-dir projects/social-studio`.
 
