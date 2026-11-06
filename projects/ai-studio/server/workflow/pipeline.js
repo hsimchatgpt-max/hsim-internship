@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 import * as A from '../agents/agents.js';
 import { getProject, saveProject, projectDir, getBrand, getAsset, assetPath, addAsset } from '../lib/store.js';
@@ -310,7 +311,7 @@ async function renderDesign(p) {
   const [w, h] = R.dims(p.brief.aspect, 'final'); const c = p.brandSnapshot.colors; const cp = p.copy;
   const logo = p.brandSnapshot.logoAssetId && getAsset(p.brandSnapshot.logoAssetId);
   const esc = (s) => String(s || '').replace(/[&<>"]/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]));
-  const fu = (f) => 'file://' + f;
+  const fu = (f) => pathToFileURL(f).href;
   const hasBgImage = p.assets.bgOrigin !== 'local-gradient';
   const html = `<!doctype html><meta charset=utf-8><style>
 @font-face{font-family:N;src:url(${fu(path.join(FONTS_DIR, 'NotoSans_700Bold.ttf'))});font-weight:700}
@@ -331,7 +332,7 @@ p{font-size:1em;margin:0;line-height:1.4;opacity:.95;max-width:92%}
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: w, height: h } });
-    await page.goto('file://' + htmlFile); await page.evaluate(() => document.fonts.ready);
+    await page.goto(pathToFileURL(htmlFile).href); await page.evaluate(() => document.fonts.ready);
     // Auto-fit: shrink the type until the copy fits the safe area, so text can never overlap the brand bar or be cut off.
     const fit = await page.evaluate(() => { const el = document.querySelector('.wrap'); const base = parseFloat(getComputedStyle(el).fontSize); let k = 1; while (el.scrollHeight > el.clientHeight + 1 && k > 0.4) { k -= 0.04; el.style.fontSize = base * k + 'px'; } return { k, fits: el.scrollHeight <= el.clientHeight + 1 }; });
     if (!fit.fits) p.assets.designWarning = 'Copy is too long for this canvas even at the smallest size — shorten it.'; else delete p.assets.designWarning;

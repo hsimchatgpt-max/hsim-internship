@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 
 const hasDevanagari = (s) => /[\u0900-\u097F]/.test(s);
-export const FONTS_DIR = new URL('../assets/fonts', import.meta.url).pathname;
+import { fileURLToPath } from 'node:url';
+export const FONTS_DIR = fileURLToPath(new URL('../assets/fonts', import.meta.url));
 const FONT_LATIN = 'Noto Sans';
 const FONT_DEVA = 'Noto Sans Devanagari';
 

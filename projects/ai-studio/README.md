@@ -32,3 +32,10 @@ The app counts usage, detects daily/zero quotas, remembers them, and falls throu
 ## Layout
 `server/lib` client, guard, ledger, TTS · `server/agents` the 8 Gemini agents · `server/avatar` providers + verification · `server/video` FFmpeg engine · `server/workflow` resumable pipeline · `web/` UI.
 Caveats: no login (binds to 127.0.0.1); caption word timing is estimated (TTS returns no timestamps); the Research agent has no web access unless you enable Search grounding.
+
+## Windows quick start
+1. Install Node.js 22+ (nodejs.org) and FFmpeg (`winget install Gyan.FFmpeg`, then reopen the terminal; check `ffmpeg -version`).
+2. In the project folder: `npm install`, then `npx playwright install chromium` (needed for image posts).
+3. Copy `.env.example` to `.env` (`copy .env.example .env`), open it in Notepad and fill `GEMINI_API_KEY=`.
+4. `npm start`, then open http://127.0.0.1:8787.
+Note: Windows paths were adjusted but this tool was built and tested on Linux, so report any Windows-specific error.
