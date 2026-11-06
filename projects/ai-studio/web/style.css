@@ -1,0 +1,36 @@
+:root{--bg:#0f1218;--panel:#171b24;--panel2:#1e2430;--line:#2a3140;--text:#e8ecf3;--muted:#8b95a7;--accent:#5b8cff;--ok:#3ecf8e;--warn:#f5a524;--bad:#ff5d5d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif;display:flex;min-height:100vh}
+aside{width:200px;background:var(--panel);border-right:1px solid var(--line);padding:16px;position:sticky;top:0;height:100vh;flex:none}
+aside h1{font-size:18px;margin:0 0 16px}
+nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--muted);text-decoration:none;margin-bottom:2px;cursor:pointer}
+nav a.on,nav a:hover{background:var(--panel2);color:var(--text)}
+main{flex:1;padding:24px 28px;max-width:1200px;min-width:0}
+h2{margin:0 0 14px;font-size:20px}h3{margin:18px 0 8px;font-size:15px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}.col{display:flex;flex-direction:column;gap:4px}
+label{font-size:12px;color:var(--muted)}
+input,select,textarea,button{font:inherit;color:var(--text)}
+input[type=text],input[type=number],input[type=password],select,textarea{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+textarea{min-height:80px;resize:vertical}
+button{background:var(--accent);border:0;border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+button.sec{background:var(--panel2);border:1px solid var(--line)}button.bad{background:var(--bad)}button:disabled{opacity:.45;cursor:not-allowed}
+.small{font-size:12px}.muted{color:var(--muted)}
+.pill{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;background:var(--panel2);border:1px solid var(--line)}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad-t{color:var(--bad)}
+.pill.ok{border-color:var(--ok)}.pill.warn{border-color:var(--warn)}.pill.err{border-color:var(--bad);color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.av{background:var(--panel2);border:2px solid transparent;border-radius:12px;padding:8px;cursor:pointer;text-align:center}
+.av img{width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover;background:#00b140}.av.sel{border-color:var(--accent)}.av b{display:block;margin-top:4px}
+table{width:100%;border-collapse:collapse}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{font-size:12px;color:var(--muted)}
+.steps{display:flex;gap:6px;flex-wrap:wrap}.step{padding:3px 9px;border-radius:6px;font-size:12px;background:var(--panel2);border:1px solid var(--line)}
+.step.done{border-color:var(--ok);color:var(--ok)}.step.running{border-color:var(--accent);color:var(--accent)}.step.failed,.step.blocked{border-color:var(--bad);color:var(--bad)}.step.awaiting_approval{border-color:var(--warn);color:var(--warn)}
+.banner{border-radius:10px;padding:12px 14px;margin-bottom:14px;border:1px solid var(--warn);background:#2a2314}.banner.err{border-color:var(--bad);background:#2a1616}.banner.ok{border-color:var(--ok);background:#13251c}
+.scene{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:var(--panel2)}
+video,img.prev{max-width:100%;border-radius:10px;background:#000}video.v{max-height:560px}
+audio{width:100%;height:34px}
+#modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:9}#modal[hidden]{display:none}
+#modal .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;max-width:560px;width:92%;max-height:90vh;overflow:auto}
+.bar{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent)}
+pre{white-space:pre-wrap;background:var(--panel2);padding:10px;border-radius:8px;font-size:12px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}.tabs button{background:var(--panel2);border:1px solid var(--line)}.tabs button.on{background:var(--accent);border-color:var(--accent)}
+@media(max-width:800px){body{flex-direction:column}aside{width:auto;height:auto;position:static}nav{display:flex;flex-wrap:wrap;gap:4px}}

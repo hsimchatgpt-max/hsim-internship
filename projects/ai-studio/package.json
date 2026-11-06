@@ -1,0 +1,21 @@
+{
+  "name": "ai-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Gemini-powered content studio: scripts, voice (Gemini TTS), avatars, video editing with FFmpeg",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file=.env server/index.js",
+    "test": "node --test \"tests/unit/*.test.js\"",
+    "test:live": "node --env-file=.env tests/live/run.js"
+  },
+  "dependencies": {
+    "@expo-google-fonts/noto-sans": "^0.4.2",
+    "@expo-google-fonts/noto-sans-devanagari": "^0.4.2",
+    "express": "^5.3.0",
+    "multer": "^2.5.0"
+  }
+}
