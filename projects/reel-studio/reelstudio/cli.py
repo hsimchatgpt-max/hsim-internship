@@ -11,7 +11,39 @@ from .env import load_env
 from .pipeline import Options, run
 
 
+def _stage_main(argv: list[str]) -> int:
+    """Sub-commands used by the four Claude agents (each agent runs only its own)."""
+    from . import stages
+    ap = argparse.ArgumentParser(prog="reel.py")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    v = sub.add_parser("validate-script", help="Script Writer: check + normalise script.json")
+    v.add_argument("file"); v.add_argument("--platform"); v.add_argument("--lang"); v.add_argument("--duration", type=int)
+    f = sub.add_parser("fetch-broll", help="Visual Director: download B-roll for shots.json")
+    f.add_argument("shots"); f.add_argument("--broll-dir"); f.add_argument("--orientation", default="portrait",
+                                                                          choices=["portrait", "square", "landscape"])
+    r = sub.add_parser("render", help="Video Editor: script.json + shots.json -> mp4")
+    r.add_argument("--script", required=True); r.add_argument("--shots", required=True); r.add_argument("--out", required=True)
+    r.add_argument("--platform", choices=list(PLATFORMS))
+    r.add_argument("--avatar", choices=["none", "ai", "face"], default="ai")
+    r.add_argument("--avatar-image"); r.add_argument("--face-video"); r.add_argument("--music"); r.add_argument("--voice")
+    r.add_argument("--gender", choices=["female", "male"], default="female")
+    r.add_argument("--params", help='editor tweaks as JSON, e.g. \'{"shot_scale":0.7}\'')
+    n = sub.add_parser("analyze", help="Analyzer: score the mp4")
+    n.add_argument("--video", required=True); n.add_argument("--script", required=True)
+    n.add_argument("--narration", required=True); n.add_argument("--platform", choices=list(PLATFORMS))
+    a = ap.parse_args(argv)
+    load_env()
+    if not shutil.which("ffmpeg"):
+        print("ERROR: ffmpeg not found on PATH", file=sys.stderr)
+        return 2
+    return {"validate-script": stages.validate_script, "fetch-broll": stages.fetch_broll,
+            "render": stages.render, "analyze": stages.analyze}[a.cmd](a)
+
+
 def main(argv: list[str] | None = None) -> int:
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] in ("validate-script", "fetch-broll", "render", "analyze"):
+        return _stage_main(argv)
     ap = argparse.ArgumentParser(
         prog="reelstudio",
         description="Topic do, Reel/LinkedIn video lo: Script -> Visuals -> Edit -> Analyze -> Download.")

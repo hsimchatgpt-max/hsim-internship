@@ -2,6 +2,39 @@
 
 Topic do → Instagram Reel aur LinkedIn video (Hindi / Hinglish / English) taiyaar. **Sab free tools.**
 
+## Tareeka 1 (recommended): Claude ke 4 alag agents
+
+Repo ke root mein `.claude/agents/` mein chaar agents hain, har ek ka apna alag kaam:
+
+| Agent | Kaam | Output |
+|---|---|---|
+| `reel-script-writer` | Script, hook, titles, caption, hashtags | `script.json` |
+| `reel-visual-director` | Har scene mein kya dikhega (avatar / B-roll / text card) + B-roll download | `shots.json` |
+| `reel-video-editor` | Edit: voice, cuts, transitions, captions, music, sound effects | `.mp4` |
+| `reel-analyzer` | Video ko score karta hai, batata hai kaun sa agent kya sudhare, phir pass/fail | report |
+
+Claude Code ko **repo ke root folder** (`hsim-internship`) mein kholo aur likho:
+
+```
+/reel Subah jaldi uthne ke fayde
+/reel Money saving tips --platforms instagram --lang hindi --duration 30
+/reel Time management --platforms linkedin --lang english --avatar face --face-video me.mp4
+```
+
+`/reel` chaaron agents ko order mein chalata hai. Analyzer kamzori pakde to us kaam ke agent ko wapas bhejta hai (max 2 baar).
+Is tareeke mein **Gemini/Groq key ki zaroorat nahi**: script Claude khud likhta hai. Setup (python, `pip install -r requirements.txt`, ffmpeg) neeche wala hi hai.
+
+Video engine (agents isko chalate hain), har stage alag se bhi chal sakta hai:
+
+```bash
+python projects/reel-studio/reel.py validate-script script.json
+python projects/reel-studio/reel.py fetch-broll shots.json
+python projects/reel-studio/reel.py render --script script.json --shots shots.json --out out --avatar ai
+python projects/reel-studio/reel.py analyze --video out/instagram_hinglish.mp4 --script script.json --narration out/instagram_hinglish_narration.json
+```
+
+## Tareeka 2: seedha command (bina Claude ke)
+
 ```
 Topic ─► Agent 1 Script Writer ─► Agent 2 Visual Director ─► Agent 3 Video Editor ─► Agent 4 Analyzer ─► download
               ▲                              ▲                        ▲                    │
